@@ -39,14 +39,11 @@ data_path = "../data"
 ori_path = "../data/ori"
 clean_path = "../data/clean"
 fill_path = "../data/fill"
-stats_path = "../data/stats"
-plot_path = "../data/plot"
 user_path = clean_path + "/user.csv"
 action_path = clean_path + "/action.csv"
 product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
-output_path = '../output'
 cache_path = '../cache'
 
 # %% 特征提取
@@ -140,20 +137,6 @@ def feat_cart(start_date, end_date):
 def feat_user():
     print('\tuser.csv')
     feat = pd.read_csv(user_path, na_filter=False, skip_blank_lines=True)
-    return feat
-
-
-# 用户是否购买
-def feat_user_if_buy(start_date, end_date):
-    print('\tuser_if_buy_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/user_if_buy_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
-    if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
-    else:
-        feat = feat_user_buy_amt(start_date, end_date)
-        feat.ix[feat['user_buy_amt'] > 0, ['user_buy_amt']] = 1
-        feat = feat.rename(columns={'user_buy_amt': 'user_if_buy'})
-        feat.to_csv(dump_path, index=False)
     return feat
 
 
