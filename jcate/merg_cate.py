@@ -2,18 +2,14 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
 # @Author  : xiaotong niu
-# @File    : merg_uc.py
+# @File    : merg_user.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 
-import os, time, sys, shutil
-import numpy as np
-import pandas as pd
-from datetime import datetime
-from datetime import timedelta
+import time
 from cate_feat import *
-from user_feat import *
+from juser.user_feat import *
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
 
@@ -117,20 +113,19 @@ def extract_feat(end_date, time_gap, mark):
     print('global')
     start_date = end_date - timedelta(30 - 1)
     # user
-    feat = pkey
-    pd.merge(feat, feat_user(), on='user_id', how='left')
-    pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-    pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-    pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-    pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-    pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-    pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user(), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
     # user cate
-    pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-    pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-    pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-    pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-    pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+    feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+    feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+    feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+    feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+    feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
     feat.fillna(0, inplace=True)
     # TODO 结束：与time_gap无关的feat
     return feat
@@ -141,37 +136,29 @@ def get_label(end_date, mark):
     label：预测label,提交集=-1
     """
     print('生成标签')
-    _time_0 = time.clock()
-    dump_path = cache_path + '/uc_label_%s.csv' % (end_date.strftime('%y%m%d'))
-    if os.path.exists(dump_path):
-        label = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
-    else:
-        # 可能购买
-        user = pd.read_csv(clean_path + "/user.csv", na_filter=False, skip_blank_lines=True, usecols=['user_id'])
+    if mark == 'submit':
+        user = pd.read_csv(submit_path+'/user.csv',na_filter=False)
         cate = pd.DataFrame({'cate': list(range(1, 82)), 'key': [1] * 81})
         user_cate = pd.merge(pd.DataFrame({'user_id': user['user_id'].values, 'key': [1] * user.shape[0]}), cate,
-                             how='left',
-                             on='key')
-        user_cate = user_cate.drop_duplicates()
-        user_cate = user_cate.drop(['key'], axis=1)
-        pkey = user_cate
+                             how='left', on='key')
+        label = user_cate.drop(['key'], axis=1)
+    else:
+        # 可能购买
+        user_buy_amt = feat_user_buy_amt(end_date + timedelta(days=1), end_date + timedelta(days=7))
+        user = user_buy_amt[user_buy_amt['user_buy_amt'] > 0]
+        user_cate = pd.merge(pd.DataFrame({'user_id': user['user_id'].values, 'key': [1] * user.shape[0]}),
+                             pd.DataFrame({'cate': list(range(1, 82)), 'key': [1] * 81}),
+                             how='left', on='key')
+        pkey = user_cate.drop(['key'], axis=1)
         # 真实购买
-        if mark == 'submit':
-            label = pkey
-        else:
-            buy_plus = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))
-            buy_user_cate = buy_plus[['user_id', 'cate']]
-            buy_user_cate = buy_user_cate.drop_duplicates()
-            print('\t真实购买', buy_user_cate.shape)
-            label_1 = pd.concat([buy_user_cate.reset_index(), pd.DataFrame({'label': [1] * buy_user_cate.shape[0]})],
-                                axis=1)
-            label_1 = label_1.drop(['index'], axis=1)
-            label = pd.merge(pkey, label_1, on=['user_id', 'cate'], how='left')
-        # 最后调整
-        label.fillna(0, inplace=True)
-        label = label.sort_values('user_id')
-        label = label.astype('int')
-        label.to_csv(dump_path, index=False)
+        buy_user_cate = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))[['user_id', 'cate']]
+        buy_user_cate.drop_duplicates(inplace=True)
+        label_1 = pd.concat([buy_user_cate, pd.DataFrame({'label': [1] * buy_user_cate.shape[0]})], axis=1)
+        label = pd.merge(pkey, label_1, on=['user_id', 'cate'], how='left')
+        print('\t真实购买', buy_user_cate.shape)
+    # 最后调整
+    label.fillna(0, inplace=True)
+    label = label.astype('int')
     print("\tshape", label.shape)
     print("\tcols", label.columns)
     print("\thead")

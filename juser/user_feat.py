@@ -13,6 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
+
 # %% 配置
 # 输出设置
 pd.set_option('display.max_columns', None)
@@ -45,6 +46,7 @@ product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
 cache_path = '../cache'
+
 
 # %% 特征提取
 
@@ -208,7 +210,8 @@ def feat_user_cart_amt(start_date, end_date):
 # 用户行为转化率
 def feat_user_action_ratio(start_date, end_date):
     print('\tuser_action_ratio_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/user_action_ratio_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/user_action_ratio_%s_%s.csv' % (
+    start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:

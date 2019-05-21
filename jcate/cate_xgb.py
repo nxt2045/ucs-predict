@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
 # @Author  : xiaotong niu
-# @File    : uc_xgb.py
+# @File    : user_xgb.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
@@ -12,7 +12,7 @@ import time
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from merg_uc import gen_feat
+from merg_user import gen_feat
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
@@ -122,7 +122,7 @@ def train(df_train, drop_column):
     # dtrain.save_binary('./output/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
     bst = xgb.train(bst_param, dtrain, num_rounds)
-    bst.save_model("./output/bst.model")
+    bst.save_model("./output/bst.jcate")
     plot_feat(bst)
     print('<< 完成训练模型, 用时', time.clock() - time_0, 's')
 
@@ -131,7 +131,7 @@ def test(df_test, drop_column):
     """ 训练
     xgboost模型训练
     """
-    dump_path = './output/bst.model'
+    dump_path = './output/bst.jcate'
     if os.path.exists(dump_path):
         time_0 = time.clock()
         # 划分(X,y)
@@ -146,8 +146,7 @@ def test(df_test, drop_column):
         y_probab = bst.predict(dtest)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
-        df_pred = df_pred.sort_values(by='probab', ascending=False)
-        df_pred.ix[:int(np.sum(df_test['label'].values)), 'label'] = 1
+        # TODO: 待完成转换函数
         df_pred.to_csv('./output/test_pred.csv', index=False)
         report(df_pred['label'], df_pred['pred'])
         print('<< 完成测试模型, 用时', time.clock() - time_0, 's')
@@ -159,7 +158,7 @@ def submit(df_sub, drop_column):
     """
     xgboost模型提交
     """
-    dump_path = './output/bst.model'
+    dump_path = './output/bst.jcate'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print('\n>> 开始划分X,y')
@@ -174,8 +173,7 @@ def submit(df_sub, drop_column):
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_sub, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
-        df_pred = df_pred.sort_values(by='probab', ascending=False)
-        df_pred.ix[:160000, 'label'] = 1
+        # TODO: 待完成转换函数
         df_pred.to_csv('./output/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['label'] == 1]
