@@ -55,14 +55,14 @@ def plot_feat(bst):
     """
     plt.rcParams['figure.figsize'] = (20, 10)
     xgb.plot_importance(bst)
-    plt.savefig(output_path + '/uc_feat.png', dpi=300)
+    plt.savefig('./output/uc_feat.png', dpi=300)
     f_score = bst.get_fscore()
     f_id = pd.DataFrame(list(f_score.keys()))
     f_pro = pd.DataFrame(list(f_score.values()))
     f_score = pd.concat([f_id, f_pro], axis=1)
     f_score.columns = ['f_id', 'f_pro']
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-    f_score.to_csv(output_path + '/uc_feat.csv', index=False)
+    f_score.to_csv('./output/uc_feat.csv', index=False)
 
 
 def report(real, pred):
@@ -119,10 +119,10 @@ def train(df_train, drop_column):
     # 训练模型
     print('\n>> 开始训练模型')
     dtrain = xgb.DMatrix(X_train, label=y_train)
-    # dtrain.save_binary(output_path + '/dtrain.buffer')
+    # dtrain.save_binary('./output/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
     bst = xgb.train(bst_param, dtrain, num_rounds)
-    bst.save_model(output_path + "/bst.model")
+    bst.save_model("./output/bst.model")
     plot_feat(bst)
     print('<< 完成训练模型, 用时', time.clock() - time_0, 's')
 
@@ -131,7 +131,7 @@ def test(df_test, drop_column):
     """ 训练
     xgboost模型训练
     """
-    dump_path = output_path + '/bst.model'
+    dump_path = './output/bst.model'
     if os.path.exists(dump_path):
         time_0 = time.clock()
         # 划分(X,y)
@@ -142,13 +142,13 @@ def test(df_test, drop_column):
         print('\n>> 开始加载模型')
         dtest = xgb.DMatrix(X_test)
         bst = xgb.Booster(model_file=dump_path)
-        # dtest.save_binary(output_path + '/dtest.buffer')
+        # dtest.save_binary('./output/dtest.buffer')
         y_probab = bst.predict(dtest)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
         df_pred = df_pred.sort_values(by='probab', ascending=False)
-        df_pred.ix[:int(np.sum(df_pred['label'].values)), 'label'] = 1
-        df_pred.to_csv(output_path + '/test_pred.csv', index=False)
+        df_pred.ix[:int(np.sum(df_test['label'].values)), 'label'] = 1
+        df_pred.to_csv('./output/test_pred.csv', index=False)
         report(df_pred['label'], df_pred['pred'])
         print('<< 完成测试模型, 用时', time.clock() - time_0, 's')
     else:
@@ -159,7 +159,7 @@ def submit(df_sub, drop_column):
     """
     xgboost模型提交
     """
-    dump_path = output_path + '/bst.model'
+    dump_path = './output/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print('\n>> 开始划分X,y')
@@ -169,14 +169,14 @@ def submit(df_sub, drop_column):
         # 预测提交
         print('\n>> 开始预测提交')
         dsub = xgb.DMatrix(X_sub)
-        # dsub.save_binary(output_path + '/dsub.buffer')
+        # dsub.save_binary('./output/dsub.buffer')
         bst = xgb.Booster(model_file=dump_path)
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_sub, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
         df_pred = df_pred.sort_values(by='probab', ascending=False)
         df_pred.ix[:160000, 'label'] = 1
-        df_pred.to_csv(output_path + '/sub_pred.csv', index=False)
+        df_pred.to_csv('./output/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['label'] == 1]
         df_pred = df_pred[drop_column]
@@ -193,15 +193,15 @@ def main():
     主流程
     """
     # 定义参数
-    time_gap = [1, 2, 3, 7, 14, 28]
+    time_gap = [1, 2, 3, 7, 14]
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
     drop_column = ['user_id', 'cate', 'label']
 
     # 训练模型
-    # df_train = gen_feat(train_end_date, time_gap, 'train')
-    # train(df_train, drop_column)
+    df_train = gen_feat(train_end_date, time_gap, 'train')
+    train(df_train, drop_column)
 
     # 测试模型
     df_test = gen_feat(test_end_date, time_gap, 'test')

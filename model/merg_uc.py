@@ -87,27 +87,32 @@ def extract_feat(end_date, time_gap, mark):
     pkey = label.drop('label', axis=1)
     feat_concat = [label]
     for gap in time_gap:
-        print('gap', gap)
-        start_date = end_date - timedelta(days=gap - 1)
-        # 初始化feat
-        feat = pkey
-        # user
-        pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-        pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-        pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-        pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-        pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-        # user + cate
-        pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        print('\tuc_%s_%s.csv' % (end_date.strftime('%y%m%d'), str(gap)))
+        dump_path = cache_path + '/uc_%s_%s.csv' % (end_date.strftime('%y%m%d'), str(gap))
+        if os.path.exists(dump_path):
+            feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+        else:
+            start_date = end_date - timedelta(days=gap - 1)
+            # 初始化feat
+            feat = pkey
+            # user
+            feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+            feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+            feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+            feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+            feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+            # user + cate
+            feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat.to_csv(dump_path, index=False)
         # 最后调整
-        feat.drop(['user_id', 'cate'], axis=1)
+        feat.drop(['user_id', 'cate'], axis=1, inplace=True)
         feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
         feat_concat.append(feat)
-    # feat = pd.concat(feat_concat, axis=1)
+    feat = pd.concat(feat_concat, axis=1)
     # TODO 开始：与time_gap无关的feat
     print('global')
     start_date = end_date - timedelta(30 - 1)
@@ -144,7 +149,8 @@ def get_label(end_date, mark):
         # 可能购买
         user = pd.read_csv(clean_path + "/user.csv", na_filter=False, skip_blank_lines=True, usecols=['user_id'])
         cate = pd.DataFrame({'cate': list(range(1, 82)), 'key': [1] * 81})
-        user_cate = pd.merge(pd.DataFrame({'user_id': user['user_id'].values, 'key': [1] * user.shape[0]}), cate, how='left',
+        user_cate = pd.merge(pd.DataFrame({'user_id': user['user_id'].values, 'key': [1] * user.shape[0]}), cate,
+                             how='left',
                              on='key')
         user_cate = user_cate.drop_duplicates()
         user_cate = user_cate.drop(['key'], axis=1)
@@ -157,7 +163,8 @@ def get_label(end_date, mark):
             buy_user_cate = buy_plus[['user_id', 'cate']]
             buy_user_cate = buy_user_cate.drop_duplicates()
             print('\t真实购买', buy_user_cate.shape)
-            label_1 = pd.concat([buy_user_cate.reset_index(), pd.DataFrame({'label': [1] * buy_user_cate.shape[0]})], axis=1)
+            label_1 = pd.concat([buy_user_cate.reset_index(), pd.DataFrame({'label': [1] * buy_user_cate.shape[0]})],
+                                axis=1)
             label_1 = label_1.drop(['index'], axis=1)
             label = pd.merge(pkey, label_1, on=['user_id', 'cate'], how='left')
         # 最后调整
