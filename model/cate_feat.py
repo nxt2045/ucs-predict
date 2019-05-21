@@ -63,7 +63,8 @@ def feat_view_plus(start_date, end_date):
         shop = pd.read_csv(shop_path, na_filter=False)
         feat = pd.merge(feat, product, on='sku_id', how='left')
         feat = pd.merge(feat, shop, on='shop_id', how='left')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 购买行为+商品
@@ -78,7 +79,8 @@ def feat_buy_plus(start_date, end_date):
         shop = pd.read_csv(shop_path, na_filter=False)
         feat = pd.merge(feat, product, on='sku_id', how='left')
         feat = pd.merge(feat, shop, on='shop_id', how='left')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 关注行为+商品
@@ -93,7 +95,8 @@ def feat_follow_plus(start_date, end_date):
         shop = pd.read_csv(shop_path, na_filter=False)
         feat = pd.merge(feat, product, on='sku_id', how='left')
         feat = pd.merge(feat, shop, on='shop_id', how='left')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 评论行为+商品
@@ -108,7 +111,8 @@ def feat_remark_plus(start_date, end_date):
         shop = pd.read_csv(shop_path, na_filter=False)
         feat = pd.merge(feat, product, on='sku_id', how='left')
         feat = pd.merge(feat, shop, on='shop_id', how='left')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 购物车行为+商品
@@ -123,7 +127,8 @@ def feat_cart_plus(start_date, end_date):
         shop = pd.read_csv(shop_path, na_filter=False)
         feat = pd.merge(feat, product, on='sku_id', how='left')
         feat = pd.merge(feat, shop, on='shop_id', how='left')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # TODO: (user_id,cate) pkey
@@ -137,7 +142,8 @@ def feat_user_cate_view_amt(start_date, end_date):
     else:
         action = feat_view_plus(start_date, end_date)
         feat = action.groupby(['user_id', 'cate']).size().reset_index(name='user_cate_view_amt')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 用户品类购买量
@@ -149,7 +155,8 @@ def feat_user_cate_buy_amt(start_date, end_date):
     else:
         action = feat_buy_plus(start_date, end_date)
         feat = action.groupby(['user_id', 'cate']).size().reset_index(name='user_cate_buy_amt')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 用户品类关注量
@@ -161,7 +168,8 @@ def feat_user_cate_follow_amt(start_date, end_date):
     else:
         action = feat_follow_plus(start_date, end_date)
         feat = action.groupby(['user_id', 'cate']).size().reset_index(name='user_cate_follow_amt')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 用户品类评论量
@@ -173,7 +181,8 @@ def feat_user_cate_remark_amt(start_date, end_date):
     else:
         action = feat_remark_plus(start_date, end_date)
         feat = action.groupby(['user_id', 'cate']).size().reset_index(name='user_cate_remark_amt')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 # 用户品类购物车量
@@ -185,7 +194,8 @@ def feat_user_cate_cart_amt(start_date, end_date):
     else:
         action = feat_cart_plus(start_date, end_date)
         feat = action.groupby(['user_id', 'cate']).size().reset_index(name='user_cate_cart_amt')
-        # feat.to_csv(dump_path, index=False)return feat
+        # feat.to_csv(dump_path, index=False)
+    return feat
 
 
 if __name__ == "__main__":

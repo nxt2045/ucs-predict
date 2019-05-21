@@ -71,7 +71,7 @@ def report(real, pred):
     recall = metrics.recall_score(real, pred)
     print('准确率: ' + str(precision))
     print('召回率: ' + str(recall))
-    F11 = 6.0 * precision * recall / (5.0 * precision + recall)
+    F11 = 3.0 * precision * recall / (2.0 * precision + recall)
     print('F11=' + str(F11))
 
 
