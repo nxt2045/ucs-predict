@@ -5,6 +5,10 @@
 
 
 ### 参考
+- jdata 思路
+```txt
+https://blog.csdn.net/weixin_42182923/article/details/82432717
+```
 - jdata 代码
 ```txt    
 https://github.com/hecongqing/2017-jdata-competition

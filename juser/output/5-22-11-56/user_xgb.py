@@ -61,7 +61,7 @@ def plot_feat(bst):
     f_score = pd.concat([f_id, f_pro], axis=1)
     f_score.columns = ['f_id', 'f_pro']
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-    f_score.to_csv('./output/uc_feat.csv', index=False)
+    f_score.to_csv('./output/impt_feat.csv', index=False)
 
 
 def plot_grid(results, scoring):
@@ -180,7 +180,7 @@ def train(df_train, drop_column):
     # 训练模型
     print(datetime.now())
     print('>> 开始训练模型')
-    bst_param = {'verbosity': 3, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200, 'eval_metric': 'auc',
+    bst_param = {'verbosity': 3, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200,
                  'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
                  'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27,'tree_method':'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)

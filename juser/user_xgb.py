@@ -49,19 +49,16 @@ cache_path = '../cache'
 
 
 # %% xgboost模型
-def plot_feat(bst):
+def impt_feat(feat_cols, bst):
     """ feat 重要性
     """
-    plt.rcParams['figure.figsize'] = (20, 10)
-    xgb.plot_importance(bst)
-    plt.savefig('./output/uc_feat.png', dpi=300)
     f_score = bst.get_fscore()
-    f_id = pd.DataFrame(list(f_score.keys()))
-    f_pro = pd.DataFrame(list(f_score.values()))
-    f_score = pd.concat([f_id, f_pro], axis=1)
-    f_score.columns = ['f_id', 'f_pro']
+    f_id = pd.DataFrame({'f_id': list(f_score.keys())})
+    f_name = pd.DataFrame({'f_name': feat_cols})
+    f_pro = pd.DataFrame({'f_pro': list(f_score.values())})
+    f_score = pd.concat([f_id, f_name, f_pro], axis=1)
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-    f_score.to_csv('./output/uc_feat.csv', index=False)
+    f_score.to_csv('./output/impt_feat.csv', index=False)
 
 
 def plot_grid(results, scoring):
@@ -176,20 +173,22 @@ def train(df_train, drop_column):
     print('>> 开始划分X,y')
     X_train = df_train.drop(drop_column, axis=1).values
     y_train = df_train['label'].values
+    feat_cols = df_train.drop(drop_column, axis=1).columns
     print('<< 完成划分数据')
 
     # 训练模型
     print(datetime.now())
     print('>> 开始训练模型')
-    bst_param = {'verbosity': 3, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200, 'eval_metric': 'auc',
+    bst_param = {'verbosity': 3, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200,
                  'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
-                 'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27,'tree_method':'exact'}
+                 'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27, 'tree_method': 'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)
     # dtrain.save_binary('./output/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
     bst = xgb.train(bst_param, dtrain, num_rounds)
     bst.save_model("./output/bst.model")
-    plot_feat(bst)
+    impt_feat(feat_cols, bst)
+    print(datetime.now())
     print('<< 完成训练模型')
 
 
@@ -197,7 +196,7 @@ def test(df_test, drop_column):
     """ 训练
     xgboost模型训练
     """
-    dump_path = './output/bst.jcate'
+    dump_path = './output/bst.model'
     if os.path.exists(dump_path):
 
         # 划分(X,y)
@@ -212,9 +211,10 @@ def test(df_test, drop_column):
         # dtest.save_binary('./output/dtest.buffer')
         y_probab = bst.predict(dtest)
         print('> 概率转换0,1')
-        df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
+        df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
         df_pred = df_pred.sort_values(by='probab', ascending=False)
-        df_pred.ix[:int(np.sum(df_test['label'].values)), 'label'] = 1
+        df_pred.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
+        print('> 保存结果')
         df_pred.to_csv('./output/test_pred.csv', index=False)
         f11_score(df_pred['label'], df_pred['pred'])
         print('<< 完成测试模型')

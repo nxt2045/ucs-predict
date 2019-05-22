@@ -50,20 +50,18 @@ cache_path = '../cache'
 
 
 
+
 # %% xgboost模型
-def plot_feat(bst):
+def impt_feat(feat_cols, bst):
     """ feat 重要性
     """
-    plt.rcParams['figure.figsize'] = (20, 10)
-    xgb.plot_importance(bst)
-    plt.savefig('./output/uc_feat.png', dpi=300)
     f_score = bst.get_fscore()
-    f_id = pd.DataFrame(list(f_score.keys()))
-    f_pro = pd.DataFrame(list(f_score.values()))
-    f_score = pd.concat([f_id, f_pro], axis=1)
-    f_score.columns = ['f_id', 'f_pro']
+    f_id = pd.DataFrame({'f_id':list(f_score.keys())})
+    f_name = pd.DataFrame({'f_name':feat_cols})
+    f_pro = pd.DataFrame({'f_pro':list(f_score.values())})
+    f_score = pd.concat([f_id, f_name, f_pro], axis=1)
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-    f_score.to_csv('./output/uc_feat.csv', index=False)
+    f_score.to_csv('./output/impt_feat.csv', index=False)
 
 
 def plot_grid(results, scoring):
@@ -104,7 +102,7 @@ def plot_grid(results, scoring):
 
     plt.legend(loc="best")
     plt.grid(False)
-    plt.savefig('./output/%s.png'%(results['params']),dpi=200)
+    plt.show()
 
 
 def f11_score(real, pred):
@@ -116,7 +114,6 @@ def f11_score(real, pred):
     F11 = 3.0 * precision * recall / (2.0 * precision + recall)
     print('F11=' + str(F11))
     return F11
-
 
 
 def gridcv(df_train, drop_column):
@@ -179,11 +176,13 @@ def train(df_train, drop_column):
     print('>> 开始划分X,y')
     X_train = df_train.drop(drop_column, axis=1).values
     y_train = df_train['label'].values
+    feat_cols = df_train.drop(drop_column, axis=1).columns
     print('<< 完成划分数据')
 
     # 训练模型
     print(datetime.now())
     print('>> 开始训练模型')
+    # TODO: 'eval_metric'不确定是'auc'，正在尝试默认值得分
     bst_param = {'verbosity': 3, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200, 'eval_metric': 'auc',
                  'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
                  'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27,'tree_method':'exact'}
@@ -192,8 +191,10 @@ def train(df_train, drop_column):
     num_rounds = 1000  # 迭代次数
     bst = xgb.train(bst_param, dtrain, num_rounds)
     bst.save_model("./output/bst.model")
-    plot_feat(bst)
+    impt_feat(feat_cols, bst)
+    print(datetime.now())
     print('<< 完成训练模型')
+
 
 
 def test(df_test, drop_column):
@@ -270,13 +271,14 @@ def main():
     df_train = gen_feat(train_end_date, time_gap, 'train')
     train(df_train, drop_column)
 
-    # 测试模型
-    df_test = gen_feat(test_end_date, time_gap, 'test')
-    train(df_test, drop_column)
+    # TODO: test 跑前需要先完成概率转换(0,1)
+    # # 测试模型
+    # df_test = gen_feat(test_end_date, time_gap, 'test')
+    # test(df_test, drop_column)
 
-    # 生成提交结果
-    df_sub = gen_feat(sub_end_date, time_gap, 'submit')
-    submit(df_sub, drop_column)
+    # # 生成提交结果
+    # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
+    # submit(df_sub, drop_column)
 
 
 if __name__ == "__main__":

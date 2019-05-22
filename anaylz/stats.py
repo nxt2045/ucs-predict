@@ -61,16 +61,27 @@ shop = pd.read_csv(fill_path + "/jdata_shop.csv", na_filter=False)
 def fill_hist():
     print("> 原频率分布直方图")
     plt.rcParams['figure.figsize'] = (15, 10)
-    product.hist(bins=20)
+    product.hist()
     plt.savefig('./plot/product_hist.png', dpi=300)
-    user.hist(bins=20)
+    user.hist()
     plt.savefig('./plot/user_hist.png', dpi=300)
-    action.hist(bins=20)
+    action.hist()
     plt.savefig('./plot/action_hist.png', dpi=300)
-    comment.hist(bins=20)
-    plt.savefig('./plot/comment_hist.png', dpi=300)
-    shop.hist(bins=20)
+    shop.hist()
     plt.savefig('./plot/shop_hist.png', dpi=300)
+
+
+# %% 每日购买折线
+def daily_buy_line():
+    print("> 每日购买折线图")
+    buy = action[action['type'] == 2]
+    buy = pd.concat([buy, pd.DataFrame({'action_date':buy['action_time'].values.astype('datetime64[D]')})],axis=1)
+    buy_user = buy[['action_date','user_id']].drop_duplicates()
+    buy_user_amt = buy_user.groupby('action_date').size().reset_index(name='user_amt')
+    plt.rcParams['figure.figsize'] = (15, 10)
+    plt.plot(buy_user_amt['action_date'],buy_user_amt['user_amt'])
+    plt.savefig('./plot/daily_buy_line.png', dpi=300)
+
 
 
 # %% 购买用户数量
@@ -94,3 +105,7 @@ def per_action_plus():
         df = pd.merge(group[1], product, on='sku_id')
         df = df.sort_values(by=['action_time'])
         df.to_csv('./csv/每个用户行为详情/用户_%s.csv' % (str(user_id)), index=False)
+
+
+if __name__ == "__main__":
+    fill_hist()

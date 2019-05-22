@@ -63,15 +63,15 @@ def fill_NaN():
             df = pd.read_csv(in_file, dtype=object)
             print(df[df.isnull().values == True].head())
             print("> filling", file_name)
-            print('读取完成！用时', time.clock() - _time_0, 's')
+            print('读取完成！')
             df.fillna(-1, inplace=True)
             df.to_csv(out_file, index=False)
-            print('保存完成！用时', time.clock() - _time_0, 's')
+            print('保存完成！')
         else:
             print("> copying", file_name)
             shutil.copyfile(in_file, out_file)
-            print('复制完成！用时', time.clock() - _time_0, 's')
-    print('<< 数据替换完成！用时', time.clock() - _time_0, 's')
+            print('复制完成！')
+    print('<< 数据替换完成！')
 
 
 # %% step 2 删除无效 输出到/data/clean
@@ -189,7 +189,7 @@ def clean_action():
     action = pd.read_csv(fill_path + "/jdata_action.csv", parse_dates=['action_time'],
                          na_filter=False)
     print('before:', action.shape)
-    print('读取完成！用时', time.clock() - _time_0, 's')
+    print('读取完成！')
     # # action.csv每个人都至少购买了一次
     # action_type = pd.concat([action[['user_id']], pd.get_dummies(action['type'], prefix='type')], axis=1)
     # user_action_type_amt = (action_type.groupby('user_id').sum().reset_index()).astype(int)
@@ -202,9 +202,9 @@ def clean_action():
     action = action[action['user_id'].isin(user['user_id'])]
     print('after:', action.shape)
     action = action.sort_values(by=['user_id', 'action_time'])
-    print('排序完成！用时', time.clock() - _time_0, 's')
+    print('排序完成！')
     action.to_csv(clean_path + "/action.csv", index=False)
-    print('保存完成！用时', time.clock() - _time_0, 's')
+    print('保存完成！')
 
 if __name__ == "__main__":
     clean_data()
