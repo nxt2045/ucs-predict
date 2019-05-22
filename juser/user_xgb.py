@@ -179,7 +179,7 @@ def train(df_train, drop_column):
     # 训练模型
     print(datetime.now())
     print('>> 开始训练模型')
-    bst_param = {'verbosity': 3, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200,
+    bst_param = {'silent': 0, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200,
                  'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
                  'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27, 'tree_method': 'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)
