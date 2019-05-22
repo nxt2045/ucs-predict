@@ -9,6 +9,7 @@
 
 import os
 import time
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -19,9 +20,7 @@ from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
 
 # %% 配置
-
 # 输出设置
-
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
@@ -47,7 +46,6 @@ product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
 cache_path = '../cache'
-
 
 
 # %% xgboost模型
@@ -104,7 +102,7 @@ def plot_grid(results, scoring):
 
     plt.legend(loc="best")
     plt.grid(False)
-    plt.savefig('./output/%s.png'%(results['params']),dpi=200)
+    plt.show()
 
 
 def f11_score(real, pred):
@@ -118,12 +116,10 @@ def f11_score(real, pred):
     return F11
 
 
-
 def gridcv(df_train, drop_column):
-    """ 参数
-    xgboost参数优化
+    """ 训练
+    xgboost模型训练
     """
-    # TODO: ERROR
     # 划分(X,y)
     print(datetime.now())
     print('>> 开始划分X,y')
@@ -216,12 +212,14 @@ def test(df_test, drop_column):
         y_probab = bst.predict(dtest)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
-        # TODO: 待完成转换函数
+        df_pred = df_pred.sort_values(by='probab', ascending=False)
+        df_pred.ix[:int(np.sum(df_test['label'].values)), 'label'] = 1
         df_pred.to_csv('./output/test_pred.csv', index=False)
         f11_score(df_pred['label'], df_pred['pred'])
         print('<< 完成测试模型')
     else:
         print('<< 没有训练模型')
+
 
 def submit(df_sub, drop_column):
     """
@@ -230,6 +228,7 @@ def submit(df_sub, drop_column):
     dump_path = './output/bst.jcate'
     if os.path.exists(dump_path):
         # 划分(X,y)
+        print(datetime.now())
         print('>> 开始划分X,y')
         X_sub = df_sub.drop(drop_column, axis=1).values
         print('<< 完成划分数据')
@@ -242,7 +241,8 @@ def submit(df_sub, drop_column):
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_sub, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
-        # TODO: 待完成转换函数
+        df_pred = df_pred.sort_values(by='probab', ascending=False)
+        df_pred.ix[:160000, 'label'] = 1
         df_pred.to_csv('./output/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['label'] == 1]
@@ -264,19 +264,20 @@ def main():
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
-    drop_column = ['user_id', 'cate', 'label']
+    drop_column = ['user_id', 'label']
 
     # 训练模型
     df_train = gen_feat(train_end_date, time_gap, 'train')
+    # gridcv(df_train, drop_column)
     train(df_train, drop_column)
 
-    # 测试模型
-    df_test = gen_feat(test_end_date, time_gap, 'test')
-    train(df_test, drop_column)
+    # # 测试模型
+    # df_test = gen_feat(test_end_date, time_gap, 'test')
+    # test(df_test, drop_column)
 
-    # 生成提交结果
-    df_sub = gen_feat(sub_end_date, time_gap, 'submit')
-    submit(df_sub, drop_column)
+    # # 生成提交结果
+    # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
+    # submit(df_sub, drop_column)
 
 
 if __name__ == "__main__":

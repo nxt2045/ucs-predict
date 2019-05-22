@@ -48,49 +48,49 @@ shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
 cache_path = '../cache'
 
-# 读取
-print('> reading')
+# %% 读取数据
+print('> 读取数据')
 product = pd.read_csv(fill_path + "/jdata_product.csv", na_filter=False)
 user = pd.read_csv(fill_path + "/jdata_user.csv", na_filter=False)
 action = pd.read_csv(fill_path + "/jdata_action.csv", na_filter=False, parse_dates=['action_time'])
 comment = pd.read_csv(fill_path + "/jdata_comment.csv", na_filter=False)
 shop = pd.read_csv(fill_path + "/jdata_shop.csv", na_filter=False)
-# 总hist
-'''
-print("> histing")
-plt.rcParams['figure.figsize'] = (15, 10)
-product.hist(bins=20)
-plt.savefig('./plot/product_hist.png', dpi=300)
-user.hist(bins=20)
-plt.savefig('./plot/user_hist.png', dpi=300)
-action.hist(bins=20)
-plt.savefig('./plot/action_hist.png', dpi=300)
-comment.hist(bins=20)
-plt.savefig('./plot/comment_hist.png', dpi=300)
-shop.hist(bins=20)
-plt.savefig('./plot/shop_hist.png', dpi=300)
-'''
-
-# 每人行为
-print('> per user action plus')
-groups = action.groupby(action['user_id'])
-for group in groups:
-    print(group[0])
-    user_id = group[0]
-    df = pd.merge(group[1], product, on='sku_id')
-    df = df.sort_values(by=['action_time'])
-    df.to_csv('./csv/user_action_product/action_plus_%s.csv' % (str(user_id)), index=False)
 
 
-# 购买过每人行为
-print('> per buy_user action plus')
-buy = action[action['type'] == 2]
-buy_user = user[user['user_id'].isin(buy['user_id'])]
-buy_user_action = action[action['user_id'].isin(buy_user['user_id'])]
-groups = buy_user_action.groupby(buy_user_action['user_id'])
-for group in groups:
-    print(group[0])
-    user_id = group[0]
-    df = pd.merge(group[1], product, on='sku_id')
-    df = df.sort_values(by=['action_time'])
-    df.to_csv('./csv/buy_user_action_product/action_plus_%s.csv' % (str(user_id)), index=False)
+# %% 原hist
+def fill_hist():
+    print("> 原频率分布直方图")
+    plt.rcParams['figure.figsize'] = (15, 10)
+    product.hist(bins=20)
+    plt.savefig('./plot/product_hist.png', dpi=300)
+    user.hist(bins=20)
+    plt.savefig('./plot/user_hist.png', dpi=300)
+    action.hist(bins=20)
+    plt.savefig('./plot/action_hist.png', dpi=300)
+    comment.hist(bins=20)
+    plt.savefig('./plot/comment_hist.png', dpi=300)
+    shop.hist(bins=20)
+    plt.savefig('./plot/shop_hist.png', dpi=300)
+
+
+# %% 购买用户数量
+def buy_user_amt():
+    """
+    全部的用户数量： 1608707 买过的用户数量： 1608707
+    """
+    print('> 每个购买过的用户行为详情')
+    buy = action[action['type'] == 2]
+    buy_user = user[user['user_id'].isin(buy['user_id'])]
+    print('全部的用户数量：', user.shape[0], '买过的用户数量：', buy_user.shape[0], )
+
+
+# %% 每人行为
+def per_action_plus():
+    print('> 每个用户行为详情')
+    groups = action.groupby(action['user_id'])
+    for group in groups:
+        print(group[0])
+        user_id = group[0]
+        df = pd.merge(group[1], product, on='sku_id')
+        df = df.sort_values(by=['action_time'])
+        df.to_csv('./csv/每个用户行为详情/用户_%s.csv' % (str(user_id)), index=False)

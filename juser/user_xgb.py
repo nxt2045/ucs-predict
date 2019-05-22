@@ -102,7 +102,7 @@ def plot_grid(results, scoring):
 
     plt.legend(loc="best")
     plt.grid(False)
-    plt.savefig('./output/%s.png'%(results['params']),dpi=200)
+    plt.show()
 
 
 def f11_score(real, pred):
@@ -116,10 +116,11 @@ def f11_score(real, pred):
     return F11
 
 
-def train(df_train, drop_column):
-    """ 训练
-    xgboost模型训练
+def gridcv(df_train, drop_column):
+    """ 参数
+    xgboost参数优化
     """
+    # TODO: ERROR
     # 划分(X,y)
     print(datetime.now())
     print('>> 开始划分X,y')
@@ -132,7 +133,7 @@ def train(df_train, drop_column):
     print('>> 开始优化参数')
     F11_score = metrics.make_scorer(f11_score, greater_is_better=True, needs_proba=True)
     scoring = {'F11': F11_score}
-    xgb_model = XGBClassifier(learning_rate=0.1, n_estimators=500, max_depth=5, min_child_weight=2, gamma=0,
+    xgb_model = XGBClassifier(learning_rate=0.1, n_estimators=200, max_depth=5, min_child_weight=2, gamma=0,
                               subsample=0.8, colsample_bytree=0.8, objective='binary:logistic', nthread=4,
                               scale_pos_weight=1, seed=27)
     param_list = [
@@ -144,10 +145,10 @@ def train(df_train, drop_column):
         {'n_estimators': [50, 100, 200, 500, 1000]},
         {'learning_rate': [0.001, 0.01, 0.05, 0.1, 0.2]}
     ]
-    bst_param = {'silent': 0, 'nthread': -1}
+    bst_param = {'silent': 0, 'nthread': 4}
     for param_dict in param_list:
         print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring=scoring, cv=5, n_jobs=-1, verbose=10,
+        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring=scoring, cv=5, n_jobs=-1, verbose=100,
                            return_train_score=True, refit=False)
         clf.fit(X_train, y_train)
         bst_param.update(clf.best_params_)
@@ -160,18 +161,33 @@ def train(df_train, drop_column):
         for mean, std, params in zip(means, stds, clf.cv_results_['params']):
             print("%0.3f (+/-%0.03f) for %r"
                   % (mean, std * 2, params))
-        # plot_grid(clf.cv_results_, scoring)
+        plot_grid(clf.cv_results_, scoring)
     print("最佳参数组合:")
     print(bst_param)
     print('<< 完成优化参数')
 
+
+def train(df_train, drop_column):
+    """ 训练
+    xgboost模型训练
+    """
+    # 划分(X,y)
+    print(datetime.now())
+    print('>> 开始划分X,y')
+    X_train = df_train.drop(drop_column, axis=1).values
+    y_train = df_train['label'].values
+    print('<< 完成划分数据')
+
     # 训练模型
     print(datetime.now())
     print('>> 开始训练模型')
+    bst_param = {'verbosity': 3, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200, 'eval_metric': 'auc',
+                 'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
+                 'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27,'tree_method':'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)
     # dtrain.save_binary('./output/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
-    bst = xgb.train(bst_param, dtrain, num_rounds, obj=f11_score)
+    bst = xgb.train(bst_param, dtrain, num_rounds)
     bst.save_model("./output/bst.model")
     plot_feat(bst)
     print('<< 完成训练模型')
@@ -253,6 +269,7 @@ def main():
 
     # 训练模型
     df_train = gen_feat(train_end_date, time_gap, 'train')
+    # gridcv(df_train, drop_column)
     train(df_train, drop_column)
 
     # # 测试模型
