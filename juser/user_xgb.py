@@ -53,53 +53,15 @@ def impt_feat(feat_cols, bst):
     """ feat 重要性
     """
     f_score = bst.get_fscore()
+    f_name = []
+    for id in list(f_score.keys()):
+        f_name.append(feat_cols[int(id)])
     f_id = pd.DataFrame({'f_id': list(f_score.keys())})
-    f_name = pd.DataFrame({'f_name': feat_cols})
     f_pro = pd.DataFrame({'f_pro': list(f_score.values())})
-    f_score = pd.concat([f_id, f_name, f_pro], axis=1)
+    f_name = pd.DataFrame({'f_name': f_name})
+    f_score = pd.concat([f_id,f_name, f_pro], axis=1)
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
     f_score.to_csv('./output/impt_feat.csv', index=False)
-
-
-def plot_grid(results, scoring):
-    plt.figure(figsize=(13, 13))
-    plt.title("GridSearchCV evaluating %s" % (results['params']),
-              fontsize=16)
-    plt.xlabel(results['params'])
-    plt.ylabel("F11 Score")
-
-    ax = plt.gca()
-    ax.set_xlim(0, 402)
-    ax.set_ylim(0.73, 1)
-
-    # Get the regular numpy array from the MaskedArray
-    X_axis = np.array(results['params'].data, dtype=float)
-
-    for scorer, color in zip(sorted(scoring), ['g', 'k']):
-        for sample, style in (('train', '--'), ('test', '-')):
-            sample_score_mean = results['mean_%s_%s' % (sample, scorer)]
-            sample_score_std = results['std_%s_%s' % (sample, scorer)]
-            ax.fill_between(X_axis, sample_score_mean - sample_score_std,
-                            sample_score_mean + sample_score_std,
-                            alpha=0.1 if sample == 'test' else 0, color=color)
-            ax.plot(X_axis, sample_score_mean, style, color=color,
-                    alpha=1 if sample == 'test' else 0.7,
-                    label="%s (%s)" % (scorer, sample))
-
-        best_index = np.nonzero(results['rank_test_%s' % scorer] == 1)[0][0]
-        best_score = results['mean_test_%s' % scorer][best_index]
-
-        # Plot a dotted vertical line at the best score for that scorer marked by x
-        ax.plot([X_axis[best_index], ] * 2, [0, best_score],
-                linestyle='-.', color=color, marker='x', markeredgewidth=3, ms=8)
-
-        # Annotate the best score for that scorer
-        ax.annotate("%0.2f" % best_score,
-                    (X_axis[best_index], best_score + 0.005))
-
-    plt.legend(loc="best")
-    plt.grid(False)
-    plt.show()
 
 
 def f11_score(real, pred):
@@ -117,7 +79,7 @@ def gridcv(df_train, drop_column):
     """ 参数
     xgboost参数优化
     """
-    # TODO: ERROR
+    # TODO: Success but Warning
     # 划分(X,y)
     print(datetime.now())
     print('>> 开始划分X,y')
@@ -128,8 +90,8 @@ def gridcv(df_train, drop_column):
     # 优化参数
     print(datetime.now())
     print('>> 开始优化参数')
-    F11_score = metrics.make_scorer(f11_score, greater_is_better=True, needs_proba=True)
-    scoring = {'F11': F11_score}
+    # F11_score = metrics.make_scorer(f11_score, greater_is_better=True, needs_proba=True)
+    # scoring = {'F11': F11_score}
     xgb_model = XGBClassifier(learning_rate=0.1, n_estimators=200, max_depth=5, min_child_weight=2, gamma=0,
                               subsample=0.8, colsample_bytree=0.8, objective='binary:logistic', nthread=4,
                               scale_pos_weight=1, seed=27)
@@ -145,8 +107,8 @@ def gridcv(df_train, drop_column):
     bst_param = {'silent': 0, 'nthread': 4}
     for param_dict in param_list:
         print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring=scoring, cv=5, n_jobs=-1, verbose=100,
-                           return_train_score=True, refit=False)
+        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, cv=5, n_jobs=-1, verbose=10,
+                           return_train_score=True)
         clf.fit(X_train, y_train)
         bst_param.update(clf.best_params_)
         print(datetime.now())
@@ -158,7 +120,6 @@ def gridcv(df_train, drop_column):
         for mean, std, params in zip(means, stds, clf.cv_results_['params']):
             print("%0.3f (+/-%0.03f) for %r"
                   % (mean, std * 2, params))
-        plot_grid(clf.cv_results_, scoring)
     print("最佳参数组合:")
     print(bst_param)
     print('<< 完成优化参数')
@@ -268,13 +229,13 @@ def main():
     drop_column = ['user_id', 'label']
 
     # 训练模型
-    df_train = gen_feat(train_end_date, time_gap, 'train')
+    # df_train = gen_feat(train_end_date, time_gap, 'train')
     # gridcv(df_train, drop_column)
-    train(df_train, drop_column)
+    # train(df_train, drop_column)
 
     # # 测试模型
-    # df_test = gen_feat(test_end_date, time_gap, 'test')
-    # test(df_test, drop_column)
+    df_test = gen_feat(test_end_date, time_gap, 'test')
+    test(df_test, drop_column)
 
     # # 生成提交结果
     # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
@@ -282,4 +243,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    df = pd.read_csv(cache_path+'/feat_user_180408.csv')
+    feat_cols = df.columns
+    imp = pd.read_csv('./output/5-22-17-33/impt_feat.csv')
+    f_name = []
+    for id in imp['f_id'].values:
+        f_name.append(feat_cols[int(id[1:])])
+    f_score = pd.concat([imp,pd.DataFrame({'f_name':f_name})], axis=1)
+    f_score.to_csv('./output/5-22-17-33/impt_feat.csv',index=False)
+
+
+
