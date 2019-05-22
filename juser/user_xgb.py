@@ -64,7 +64,48 @@ def plot_feat(bst):
     f_score.to_csv('./output/uc_feat.csv', index=False)
 
 
-def report(real, pred):
+def plot_grid(results, scoring):
+    plt.figure(figsize=(13, 13))
+    plt.title("GridSearchCV evaluating %s" % (results['params']),
+              fontsize=16)
+    plt.xlabel(results['params'])
+    plt.ylabel("F11 Score")
+
+    ax = plt.gca()
+    ax.set_xlim(0, 402)
+    ax.set_ylim(0.73, 1)
+
+    # Get the regular numpy array from the MaskedArray
+    X_axis = np.array(results['params'].data, dtype=float)
+
+    for scorer, color in zip(sorted(scoring), ['g', 'k']):
+        for sample, style in (('train', '--'), ('test', '-')):
+            sample_score_mean = results['mean_%s_%s' % (sample, scorer)]
+            sample_score_std = results['std_%s_%s' % (sample, scorer)]
+            ax.fill_between(X_axis, sample_score_mean - sample_score_std,
+                            sample_score_mean + sample_score_std,
+                            alpha=0.1 if sample == 'test' else 0, color=color)
+            ax.plot(X_axis, sample_score_mean, style, color=color,
+                    alpha=1 if sample == 'test' else 0.7,
+                    label="%s (%s)" % (scorer, sample))
+
+        best_index = np.nonzero(results['rank_test_%s' % scorer] == 1)[0][0]
+        best_score = results['mean_test_%s' % scorer][best_index]
+
+        # Plot a dotted vertical line at the best score for that scorer marked by x
+        ax.plot([X_axis[best_index], ] * 2, [0, best_score],
+                linestyle='-.', color=color, marker='x', markeredgewidth=3, ms=8)
+
+        # Annotate the best score for that scorer
+        ax.annotate("%0.2f" % best_score,
+                    (X_axis[best_index], best_score + 0.005))
+
+    plt.legend(loc="best")
+    plt.grid(False)
+    plt.savefig('./output/%s.png'%(results['params']),dpi=200)
+
+
+def f11_score(real, pred):
     # 计算所有用户购买评价指标
     precision = metrics.precision_score(real, pred)
     recall = metrics.recall_score(real, pred)
@@ -72,6 +113,7 @@ def report(real, pred):
     print('召回率: ' + str(recall))
     F11 = 3.0 * precision * recall / (2.0 * precision + recall)
     print('F11=' + str(F11))
+    return F11
 
 
 def train(df_train, drop_column):
@@ -88,7 +130,10 @@ def train(df_train, drop_column):
     # 优化参数
     print(datetime.now())
     print('>> 开始优化参数')
-    xgb_model = XGBClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, min_child_weight=1, gamma=0, subsample=0.8, colsample_bytree=0.8, objective='binary:logistic', nthread=4,
+    F11_score = metrics.make_scorer(f11_score, greater_is_better=True, needs_proba=True)
+    scoring = {'F11': F11_score}
+    xgb_model = XGBClassifier(learning_rate=0.1, n_estimators=500, max_depth=5, min_child_weight=2, gamma=0,
+                              subsample=0.8, colsample_bytree=0.8, objective='binary:logistic', nthread=4,
                               scale_pos_weight=1, seed=27)
     param_list = [
         {'max_depth': range(3, 10, 1)},
@@ -99,20 +144,23 @@ def train(df_train, drop_column):
         {'n_estimators': [50, 100, 200, 500, 1000]},
         {'learning_rate': [0.001, 0.01, 0.05, 0.1, 0.2]}
     ]
-    bst_param = {'silent': 0, 'nthread': 4}
+    bst_param = {'silent': 0, 'nthread': -1}
     for param_dict in param_list:
         print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring='roc_auc', n_jobs=4, iid=False, cv=5)
+        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring=scoring, cv=5, n_jobs=-1, verbose=10,
+                           return_train_score=True, refit=False)
         clf.fit(X_train, y_train)
         bst_param.update(clf.best_params_)
         print(datetime.now())
         print("最佳参数:", clf.best_params_)
+        print("最佳得分:", clf.best_score_)
         print("搜索得分:")
         means = clf.cv_results_['mean_test_score']
         stds = clf.cv_results_['std_test_score']
         for mean, std, params in zip(means, stds, clf.cv_results_['params']):
             print("%0.3f (+/-%0.03f) for %r"
                   % (mean, std * 2, params))
+        # plot_grid(clf.cv_results_, scoring)
     print("最佳参数组合:")
     print(bst_param)
     print('<< 完成优化参数')
@@ -123,7 +171,7 @@ def train(df_train, drop_column):
     dtrain = xgb.DMatrix(X_train, label=y_train)
     # dtrain.save_binary('./output/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
-    bst = xgb.train(bst_param, dtrain, num_rounds)
+    bst = xgb.train(bst_param, dtrain, num_rounds, obj=f11_score)
     bst.save_model("./output/bst.model")
     plot_feat(bst)
     print('<< 完成训练模型')
@@ -152,7 +200,7 @@ def test(df_test, drop_column):
         df_pred = df_pred.sort_values(by='probab', ascending=False)
         df_pred.ix[:int(np.sum(df_test['label'].values)), 'label'] = 1
         df_pred.to_csv('./output/test_pred.csv', index=False)
-        report(df_pred['label'], df_pred['pred'])
+        f11_score(df_pred['label'], df_pred['pred'])
         print('<< 完成测试模型')
     else:
         print('<< 没有训练模型')
@@ -205,10 +253,10 @@ def main():
 
     # 训练模型
     df_train = gen_feat(train_end_date, time_gap, 'train')
-    # train(df_train, drop_column)
+    train(df_train, drop_column)
 
     # # 测试模型
-    df_test = gen_feat(test_end_date, time_gap, 'test')
+    # df_test = gen_feat(test_end_date, time_gap, 'test')
     # test(df_test, drop_column)
 
     # # 生成提交结果

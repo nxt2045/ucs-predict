@@ -79,4 +79,4 @@ groups = action.groupby(action['user_id'])
 for group in groups:
     user_id = group[0]
     df = pd.merge(group[1], product, on='sku_id')
-    df.to_csv('./csv/%s.csv' % (str(user_id)))
+    df.to_csv('./csv/action_plus_%s.csv' % (str(user_id)))
