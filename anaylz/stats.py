@@ -77,6 +77,8 @@ buy = action[action['type'] == 2]
 print('> per action plus')
 groups = action.groupby(action['user_id'])
 for group in groups:
+    print(group[0])
     user_id = group[0]
     df = pd.merge(group[1], product, on='sku_id')
-    df.to_csv('./csv/action_plus_%s.csv' % (str(user_id)))
+    df = df.sort_values(by=['action_time'])
+    df.to_csv('./csv/action_plus_%s.csv' % (str(user_id)), index=False)
