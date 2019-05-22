@@ -15,7 +15,7 @@ from pandas.plotting import register_matplotlib_converters
 
 # %% 配置
 # 输出设置
-time_0 = time.clock()
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
@@ -54,8 +54,8 @@ def gen_feat(end_date, time_gap, mark):
     遍历获取每个结束时间对应的特征
     并拼接
     """
-    print('\n>> 开始生成特征X,y')
-    print('> end_date', end_date)
+    print('>> 开始生成特征X,y')
+    print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
     dump_path = cache_path + '/uc_%s.csv' % (end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
@@ -63,13 +63,13 @@ def gen_feat(end_date, time_gap, mark):
     else:
         feat = extract_feat(end_date, time_gap, mark)
         # feat.to_csv(dump_path, index=False)
-    print("\tfeat", feat.shape)
-    print("\tcols", feat.columns)
-    print("\thead")
+    print("feat", feat.shape)
+    print("cols", feat.columns)
+    print("head")
     print(feat.head())
-    print("\ttail")
+    print("tail")
     print(feat.tail())
-    print('\t生成特征%s，用时%ss' % (str(feat.shape), str(time.clock() - time_0)))
+    print('生成特征%s' % (str(feat.shape)))
     return feat
 
 
@@ -83,7 +83,8 @@ def extract_feat(end_date, time_gap, mark):
     pkey = label.drop('label', axis=1)
     feat_concat = [label]
     for gap in time_gap:
-        print('\tuc_%s_%s.csv' % (end_date.strftime('%y%m%d'), str(gap)))
+        print(datetime.now())
+        print('> 开始生成特征gap=%s' % (str(gap)))
         dump_path = cache_path + '/uc_%s_%s.csv' % (end_date.strftime('%y%m%d'), str(gap))
         if os.path.exists(dump_path):
             feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
@@ -110,7 +111,8 @@ def extract_feat(end_date, time_gap, mark):
         feat_concat.append(feat)
     feat = pd.concat(feat_concat, axis=1)
     # TODO 开始：与time_gap无关的feat
-    print('global')
+    print(datetime.now())
+    print('> 生成全局特征')
     start_date = end_date - timedelta(30 - 1)
     # user
     feat = pd.merge(feat, feat_user(), on='user_id', how='left')
@@ -135,7 +137,8 @@ def get_label(end_date, mark):
     """生成某一结束时间对应的特征label
     label：预测label,提交集=-1
     """
-    print('生成标签')
+    print(datetime.now())
+    print('> 开始生成标签')
     if mark == 'submit':
         user = pd.read_csv(submit_path+'/user.csv',na_filter=False)
         cate = pd.DataFrame({'cate': list(range(1, 82)), 'key': [1] * 81})
@@ -155,14 +158,14 @@ def get_label(end_date, mark):
         buy_user_cate.drop_duplicates(inplace=True)
         label_1 = pd.concat([buy_user_cate, pd.DataFrame({'label': [1] * buy_user_cate.shape[0]})], axis=1)
         label = pd.merge(pkey, label_1, on=['user_id', 'cate'], how='left')
-        print('\t真实购买', buy_user_cate.shape)
+        print('真实购买', buy_user_cate.shape)
     # 最后调整
     label.fillna(0, inplace=True)
     label = label.astype('int')
-    print("\tshape", label.shape)
-    print("\tcols", label.columns)
-    print("\thead")
+    print("shape", label.shape)
+    print("cols", label.columns)
+    print("head")
     print(label.head())
-    print("\ttail")
+    print("tail")
     print(label.tail())
     return label

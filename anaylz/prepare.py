@@ -53,8 +53,8 @@ cache_path = '../cache'
 # %% step 1 填充空值 输出到/data/fill
 
 def fill_NaN():
-    _time_0 = time.clock()
-    print('\n>> 开始替换数据')
+
+    print('>> 开始替换数据')
     for file_name in ori_list:
         in_file = ori_path + "/" + file_name
         out_file = fill_path + "/" + file_name
@@ -63,27 +63,27 @@ def fill_NaN():
             df = pd.read_csv(in_file, dtype=object)
             print(df[df.isnull().values == True].head())
             print("> filling", file_name)
-            print('\t读取完成！用时', time.clock() - _time_0, 's')
+            print('读取完成！用时', time.clock() - _time_0, 's')
             df.fillna(-1, inplace=True)
             df.to_csv(out_file, index=False)
-            print('\t保存完成！用时', time.clock() - _time_0, 's')
+            print('保存完成！用时', time.clock() - _time_0, 's')
         else:
             print("> copying", file_name)
             shutil.copyfile(in_file, out_file)
-            print('\t复制完成！用时', time.clock() - _time_0, 's')
+            print('复制完成！用时', time.clock() - _time_0, 's')
     print('<< 数据替换完成！用时', time.clock() - _time_0, 's')
 
 
 # %% step 2 删除无效 输出到/data/clean
 def clean_data():
-    time_0 = time.clock()
-    print('\n>> 开始处理数据')
-    clean_action()  # 必须先action
+
+    print('>> 开始处理数据')
+    # clean_action()  # 必须先action
     clean_user()
     clean_product()
     clean_comment()
     clean_shop()
-    print('<< 数据处理完成！用时', time.clock() - time_0, 's')
+    print('<< 数据处理完成!')
 
 
 def map_month(x):
@@ -119,7 +119,7 @@ def clean_user():
     dtype_user = {'age': 'category', 'sex': 'category', 'user_lv_cd': 'category', 'city_level': 'category',
                   'province': 'category', 'city': 'category', 'county': 'category'}
     user = pd.read_csv(fill_path + "/jdata_user.csv", parse_dates=['user_reg_tm'], na_filter=False)
-    print('\tbefore:', user.shape)
+    print('before:', user.shape)
     action = pd.read_csv(clean_path + "/action.csv", usecols=['user_id'])
     user = user[user['user_id'].isin(action['user_id'])]
     user = user.drop_duplicates('user_id')
@@ -127,7 +127,7 @@ def clean_user():
     user['user_reg_cate'] = user['user_reg_month'].apply(cate_reg)
     user = user.sort_values('user_id')
     user = user.drop('user_reg_tm', axis=1)
-    print('\tafter:', user.shape)
+    print('after:', user.shape)
     user.to_csv(clean_path + "/user.csv", index=False)
 
 
@@ -136,7 +136,7 @@ def clean_product():
     print('> cleaning product')
     dtype_product = {'cate': 'category'}
     product = pd.read_csv(fill_path + "/jdata_product.csv", parse_dates=['market_time'], na_filter=False)
-    print('\tbefore:', product.shape)
+    print('before:', product.shape)
 
     action = pd.read_csv(clean_path + "/action.csv", usecols=['sku_id'])
     product = product[product['sku_id'].isin(action['sku_id'])]
@@ -147,7 +147,7 @@ def clean_product():
     product = product.drop('product_month', axis=1)
 
     product = product.sort_values(by=['shop_id', 'cate', 'brand', 'product_cate'])
-    print('\tafter:', product.shape)
+    print('after:', product.shape)
     product.to_csv(clean_path + "/product.csv", index=False)
 
 
@@ -155,13 +155,13 @@ def clean_shop():
     # all column: 'vender_id', 'shop_id', 'fans_num', 'vip_num', 'shop_reg_tm','cate', 'shop_score'
     print('> cleaning shop')
     shop = pd.read_csv(fill_path + "/jdata_shop.csv", parse_dates=['shop_reg_tm'], na_filter=False)
-    print('\tbefore:', shop.shape)
+    print('before:', shop.shape)
 
     product = pd.read_csv(clean_path + "/product.csv", usecols=['shop_id'])
     shop = shop[shop['shop_id'].isin(product['shop_id'])]
     shop = shop.drop_duplicates('shop_id')
     shop.rename(columns={'cate': 'shop_cate'}, inplace=True)
-    print('\tafter:', shop.shape)
+    print('after:', shop.shape)
     shop = shop.sort_values(by=['shop_id'])
     shop.to_csv(clean_path + "/shop.csv", index=False)
 
@@ -170,41 +170,41 @@ def clean_comment():
     print('> cleaning comment')
     # all column: 'dt', 'sku_id', 'comments', 'good_comments', 'bad_comments'
     comment = pd.read_csv(fill_path + "/jdata_comment.csv", parse_dates=['dt'], na_filter=False)
-    print('\tbefore:', comment.shape)
+    print('before:', comment.shape)
 
     product = pd.read_csv(clean_path + "/product.csv", usecols=['sku_id'])
 
     comment = comment[comment['sku_id'].isin(product['sku_id'])]
     comment = comment.sort_values(by=['sku_id', 'dt'])
-    print('\tafter:', comment.shape)
+    print('after:', comment.shape)
     comment.to_csv(clean_path + "/comment.csv", index=False)
 
 
 def clean_action():
     print('> cleaning action')
-    _time_0 = time.clock()
+
     product = pd.read_csv(fill_path + "/jdata_product.csv", usecols=['sku_id'], na_filter=False)
     user = pd.read_csv(fill_path + "/jdata_user.csv", usecols=['user_id'], na_filter=False)
     # all column: 'user_id', 'sku_id', 'action_time', 'module_id', 'type' 1浏览 2下单 3关注 4评论 5加购物车
     action = pd.read_csv(fill_path + "/jdata_action.csv", parse_dates=['action_time'],
                          na_filter=False)
-    print('\tbefore:', action.shape)
-    print('\t读取完成！用时', time.clock() - _time_0, 's')
+    print('before:', action.shape)
+    print('读取完成！用时', time.clock() - _time_0, 's')
     # # action.csv每个人都至少购买了一次
     # action_type = pd.concat([action[['user_id']], pd.get_dummies(action['type'], prefix='type')], axis=1)
     # user_action_type_amt = (action_type.groupby('user_id').sum().reset_index()).astype(int)
     # user_buy = user_action_type_amt[user_action_type_amt['type_2'] > 0]
-    # print('\tbefore user_buy:', action.shape)
+    # print('before user_buy:', action.shape)
     # action = action[action['user_id'].isin(user_buy['user_id'])]
-    print('\tbefore sku_id:', action.shape)
+    print('before sku_id:', action.shape)
     action = action[action['sku_id'].isin(product['sku_id'])]
-    print('\tbefore user_id:', action.shape)
+    print('before user_id:', action.shape)
     action = action[action['user_id'].isin(user['user_id'])]
-    print('\tafter:', action.shape)
+    print('after:', action.shape)
     action = action.sort_values(by=['user_id', 'action_time'])
-    print('\t排序完成！用时', time.clock() - _time_0, 's')
+    print('排序完成！用时', time.clock() - _time_0, 's')
     action.to_csv(clean_path + "/action.csv", index=False)
-    print('\t保存完成！用时', time.clock() - _time_0, 's')
+    print('保存完成！用时', time.clock() - _time_0, 's')
 
 if __name__ == "__main__":
     clean_data()

@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 # %% 配置
 
 # 输出设置
-time_0 = time.clock()
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
@@ -80,13 +80,13 @@ def train(df_train, drop_column):
     xgboost模型训练
     """
     # 划分(X,y)
-    print('\n>> 开始划分X,y')
+    print('>> 开始划分X,y')
     X_train = df_train.drop(drop_column, axis=1).values
     y_train = df_train['label'].values
-    print('<< 完成划分数据, 用时%ss' % (str(time.clock() - time_0)))
+    print('<< 完成划分数据')
 
     # 优化参数
-    print('\n>> 开始优化参数')
+    print('>> 开始优化参数')
     xgb_model = XGBClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, min_child_weight=1, gamma=0, subsample=0.8, colsample_bytree=0.8, objective='binary:logistic', nthread=4,
                               scale_pos_weight=1, seed=27)
     param_list = [
@@ -104,7 +104,7 @@ def train(df_train, drop_column):
         clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring='roc_auc', n_jobs=4, iid=False, cv=5)
         clf.fit(X_train, y_train)
         bst_param.update(clf.best_params_)
-        print('\n搜索用时 %.2f s' % (time.time() - start))
+        print('搜索用时 %.2f s' % (time.time() - start))
         print("最佳参数:", clf.best_params_)
         print("搜索得分:")
         means = clf.cv_results_['mean_test_score']
@@ -114,17 +114,17 @@ def train(df_train, drop_column):
                   % (mean, std * 2, params))
     print("最佳参数组合:")
     print(bst_param)
-    print('<< 完成优化参数, 用时', time.clock() - time_0, 's')
+    print('<< 完成优化参数')
 
     # 训练模型
-    print('\n>> 开始训练模型')
+    print('>> 开始训练模型')
     dtrain = xgb.DMatrix(X_train, label=y_train)
     # dtrain.save_binary('./output/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
     bst = xgb.train(bst_param, dtrain, num_rounds)
     bst.save_model("./output/bst.jcate")
     plot_feat(bst)
-    print('<< 完成训练模型, 用时', time.clock() - time_0, 's')
+    print('<< 完成训练模型')
 
 
 def test(df_test, drop_column):
@@ -133,13 +133,13 @@ def test(df_test, drop_column):
     """
     dump_path = './output/bst.jcate'
     if os.path.exists(dump_path):
-        time_0 = time.clock()
+
         # 划分(X,y)
-        print('\n>> 开始划分X,y')
+        print('>> 开始划分X,y')
         X_test = df_test.drop(drop_column, axis=1).values
-        print('<< 完成划分数据, 用时%ss' % (str(time.clock() - time_0)))
+        print('<< 完成划分数据')
         # 测试模型
-        print('\n>> 开始加载模型')
+        print('>> 开始加载模型')
         dtest = xgb.DMatrix(X_test)
         bst = xgb.Booster(model_file=dump_path)
         # dtest.save_binary('./output/dtest.buffer')
@@ -149,9 +149,9 @@ def test(df_test, drop_column):
         # TODO: 待完成转换函数
         df_pred.to_csv('./output/test_pred.csv', index=False)
         report(df_pred['label'], df_pred['pred'])
-        print('<< 完成测试模型, 用时', time.clock() - time_0, 's')
+        print('<< 完成测试模型')
     else:
-        print('\n<< 没有训练模型')
+        print('<< 没有训练模型')
 
 
 def submit(df_sub, drop_column):
@@ -161,12 +161,12 @@ def submit(df_sub, drop_column):
     dump_path = './output/bst.jcate'
     if os.path.exists(dump_path):
         # 划分(X,y)
-        print('\n>> 开始划分X,y')
+        print('>> 开始划分X,y')
         X_sub = df_sub.drop(drop_column, axis=1).values
-        print('<< 完成划分数据, 用时%ss' % (str(time.clock() - time_0)))
+        print('<< 完成划分数据')
 
         # 预测提交
-        print('\n>> 开始预测提交')
+        print('>> 开始预测提交')
         dsub = xgb.DMatrix(X_sub)
         # dsub.save_binary('./output/dsub.buffer')
         bst = xgb.Booster(model_file=dump_path)
@@ -181,9 +181,9 @@ def submit(df_sub, drop_column):
         df_pred = df_pred.drop(['label'], axis=1)
         df_pred.to_csv(submit_path + '/uc.csv', index=False)
         print('> 提交结果', df_pred.shape)
-        print('<< 完成预测提交！用时', time.clock() - time_0, 's')
+        print('<< 完成预测提交!')
     else:
-        print('\n<< 没有训练模型')
+        print('<< 没有训练模型')
 
 
 def main():

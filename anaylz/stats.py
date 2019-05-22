@@ -70,10 +70,13 @@ plt.savefig('./plot/comment_hist.png', dpi=300)
 shop.hist(bins=20)
 plt.savefig('./plot/shop_hist.png', dpi=300)
 '''
+# 购买人数
+buy = action[action['type'] == 2]
+
 # 每人行为
 print('> per action plus')
 groups = action.groupby(action['user_id'])
 for group in groups:
     user_id = group[0]
     df = pd.merge(group[1], product, on='sku_id')
-    df.to_csv('./csv/%s.csv'%(str(user_id)))
+    df.to_csv('./csv/%s.csv' % (str(user_id)))
