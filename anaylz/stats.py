@@ -70,15 +70,27 @@ plt.savefig('./plot/comment_hist.png', dpi=300)
 shop.hist(bins=20)
 plt.savefig('./plot/shop_hist.png', dpi=300)
 '''
-# 购买人数
-buy = action[action['type'] == 2]
 
 # 每人行为
-print('> per action plus')
+print('> per user action plus')
 groups = action.groupby(action['user_id'])
 for group in groups:
     print(group[0])
     user_id = group[0]
     df = pd.merge(group[1], product, on='sku_id')
     df = df.sort_values(by=['action_time'])
-    df.to_csv('./csv/action_plus_%s.csv' % (str(user_id)), index=False)
+    df.to_csv('./csv/user_action_product/action_plus_%s.csv' % (str(user_id)), index=False)
+
+
+# 购买过每人行为
+print('> per buy_user action plus')
+buy = action[action['type'] == 2]
+buy_user = user[user['user_id'].isin(buy['user_id'])]
+buy_user_action = action[action['user_id'].isin(buy_user['user_id'])]
+groups = buy_user_action.groupby(buy_user_action['user_id'])
+for group in groups:
+    print(group[0])
+    user_id = group[0]
+    df = pd.merge(group[1], product, on='sku_id')
+    df = df.sort_values(by=['action_time'])
+    df.to_csv('./csv/buy_user_action_product/action_plus_%s.csv' % (str(user_id)), index=False)
