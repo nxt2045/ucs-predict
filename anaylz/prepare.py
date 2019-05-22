@@ -143,8 +143,9 @@ def clean_product():
 
     product = product.drop_duplicates('sku_id')
     product['product_month'] = product['market_time'].apply(map_month)
+
     product['product_cate'] = product['product_month'].apply(cate_reg)
-    product = product.drop('product_month', axis=1)
+    product = product.drop('market_time', axis=1)
 
     product = product.sort_values(by=['shop_id', 'cate', 'brand', 'product_cate'])
     print('after:', product.shape)
@@ -190,12 +191,6 @@ def clean_action():
                          na_filter=False)
     print('before:', action.shape)
     print('读取完成！')
-    # # action.csv每个人都至少购买了一次
-    # action_type = pd.concat([action[['user_id']], pd.get_dummies(action['type'], prefix='type')], axis=1)
-    # user_action_type_amt = (action_type.groupby('user_id').sum().reset_index()).astype(int)
-    # user_buy = user_action_type_amt[user_action_type_amt['type_2'] > 0]
-    # print('before user_buy:', action.shape)
-    # action = action[action['user_id'].isin(user_buy['user_id'])]
     print('before sku_id:', action.shape)
     action = action[action['sku_id'].isin(product['sku_id'])]
     print('before user_id:', action.shape)

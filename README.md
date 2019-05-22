@@ -1,7 +1,17 @@
-### 步骤
-1. 将原数据放至data/ori 
+
+### 统计规律
+- 每个用户都至少购买过一次
+- 2月23日前7天购买用户人数异常
+
+### TODO
+- 每日(0,1) 特征堆积图
+- 日期转梯度
+
 
 ### 特征
+
+
+
 
 
 ### 参考
@@ -61,6 +71,10 @@ https://zhuanlan.zhihu.com/p/41202576
 https://blog.csdn.net/pearl8899/article/details/80820067
 https://blog.csdn.net/u012735708/article/details/82877501
 ```
+
+
+### 步骤
+1. 将原数据放至data/ori 
 
 ### 环境
 ```txt

@@ -243,14 +243,7 @@ def main():
 
 
 if __name__ == "__main__":
-    df = pd.read_csv(cache_path+'/feat_user_180408.csv')
-    feat_cols = df.columns
-    imp = pd.read_csv('./output/5-22-17-33/impt_feat.csv')
-    f_name = []
-    for id in imp['f_id'].values:
-        f_name.append(feat_cols[int(id[1:])])
-    f_score = pd.concat([imp,pd.DataFrame({'f_name':f_name})], axis=1)
-    f_score.to_csv('./output/5-22-17-33/impt_feat.csv',index=False)
+    main()
 
 
 
