@@ -21,6 +21,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
 register_matplotlib_converters()
+plt.style.use('seaborn')
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
@@ -133,7 +134,6 @@ def daily_buy_line():
     buy_user_amt.to_csv('./csv/daily_buy_user_amt.csv', index=False)
     plt.figure(figsize=(20, 6))
     plt.xticks(rotation=90)
-    plt.grid()
     ax = plt.gca()
     ax.plot_date(buy_user_amt['action_date'].values, buy_user_amt['user_amt'].values, linestyle="-", marker="o")
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
@@ -190,4 +190,5 @@ def feat_bar(f_path):
 
 if __name__ == "__main__":
     # total_bar()
+    # buy_cate_bar()
     daily_buy_line()
