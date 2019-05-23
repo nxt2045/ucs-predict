@@ -13,6 +13,7 @@ from datetime import timedelta
 from datetime import datetime
 from user_feat import *
 import matplotlib.pyplot as plt
+import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
 
 # %% 配置
@@ -53,37 +54,37 @@ cache_path = '../cache'
 
 # %% 特征融合
 def gen_feat(end_date, time_gap, mark):
-    """
-    遍历获取每个结束时间对应的特征
-    并拼接
+    """ 主调用
+    调用 label-extract-map
     """
     print(datetime.now())
-    print('>> 开始生成特征X,y')
+    print('>> 开始生成特征(X,y)')
     print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
     dump_path = cache_path + '/feat_user_%s.csv' % (end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path)
     else:
-        feat = extract_feat(end_date, time_gap, mark)
-        # feat.to_csv(dump_path, index=False)
-    # print("feat", feat.shape)
-    # print("cols", feat.columns)
+        label = get_label(end_date, mark)
+        feat = extract_feat(end_date, time_gap, label)
+        feat.to_csv(dump_path, index=False)
+    # TODO: 分箱数据 [自定义]
+    feat = map_feat(feat)
+    # print("back", back.shape)
+    # print("cols", back.columns)
     # print("head")
-    # print(feat.head())
+    # print(back.head())
     # print("tail")
-    # print(feat.tail())
+    # print(back.tail())
     print('生成特征%s' % (str(feat.shape)))
     return feat
 
 
-def extract_feat(end_date, time_gap, mark):
+def extract_feat(end_date, time_gap, label):
     """生成某一结束时间对应的特征
     1. user信息
     2. action对应信息
     """
-    # 添加label
-    label = get_label(end_date, mark)
     pkey = label.drop('label', axis=1)
     feat_concat = [label]
     for gap in time_gap:
@@ -117,9 +118,10 @@ def extract_feat(end_date, time_gap, mark):
     feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+    feat.drop(['city', 'county', 'province'], axis=1)
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
-    feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
     print(feat.head())
     # TODO 结束：与time_gap无关的feat
     return feat
@@ -154,4 +156,41 @@ def get_label(end_date, mark):
     return label
 
 
+def map_feat(feat):
+    """ 分箱数据
+    可执行 qcut 分析
+    :param feat:
+    :return:
+    """
+    qcut_feat(feat)
+    # TODO: 自定义函数
+    return feat
 
+
+def qcut_feat(feat):
+    """等频分箱
+    与"label"无关
+    不适用<数值无意义>类别 (city province)
+    :param feat:
+    :return:
+    """
+    print(datetime.now())
+    print('> 开始映射特征')
+    feat = feat.drop(['user_id'], axis=1)
+    for col in feat.columns:
+        counts = feat[col].value_counts().values
+        if len(counts) == 1:
+            print('\n无效特征列：', col)
+        elif col != 'label' and len(counts) > 30:
+            cuts = int(50.0 * feat.shape[0] / (feat.shape[0] - counts[0]))
+            print('\n开始划分：%s(%s)' % (col, str(cuts)))
+            cutted = pd.qcut(feat[col], cuts, duplicates='drop')
+            if len(cutted.value_counts()) > 30:
+                cutted = pd.qcut(feat[col], 100, duplicates='drop')
+                if len(cutted.value_counts()) > 30:
+                    cutted = pd.qcut(feat[col], 50, duplicates='drop')
+                    if len(cutted.value_counts()) > 30:
+                        cutted = pd.qcut(feat[col], 30, duplicates='drop')
+            feat.loc[:, col] = cutted
+            print(feat[col].value_counts(sort=False))
+            print('已完成：', col)

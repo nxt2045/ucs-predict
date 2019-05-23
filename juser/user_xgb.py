@@ -48,33 +48,11 @@ submit_path = '../submit'
 cache_path = '../cache'
 
 
-# 特征分析
-def feat_stats(feat, drop_column):
-    drop_column.remove('label')
-    feat = feat.drop(drop_column, axis=1)
-    for col in feat.columns:
-        if col != 'label':
-            feat_pos = feat[feat['label'] == 1]
-            feat_neg = feat[feat['label'] == 0]
-            pos = pd.DataFrame(feat_pos[col].value_counts(sort=False).sort_index())
-            neg = pd.DataFrame(feat_neg[col].value_counts(sort=False).sort_index())
-            feat_amt = pd.concat([pos, neg], axis=1)
-            feat_amt = feat_amt.fillna(0)
-            # feat_amt = feat_amt.astype(int)
-            feat_amt.reset_index(inplace=True)
-            feat_amt.columns = ['value', 'pos_' + col, 'neg_' + col]
-            feat_amt['pos/neg'] = round(feat_amt['pos_' + col] * 1.0 / feat_amt['neg_' + col],2)
-            feat_amt['pos*l0/neg*l1'] = round(feat_amt['pos/neg'] * feat_neg.shape[0] / feat_pos.shape[0],2)
-            print(col)
-            print(feat_amt.head())
-            print('label=1 类别数目:', pos.shape[0])
-            print('label=0 类别数目:', neg.shape[0])
-            feat_amt.to_csv('./feat/%s.csv' % col.replace('/', '#'), index=False)
 
 
 # %% xgboost模型
 def impt_feat(feat_cols, bst):
-    """ feat 重要性
+    """ back 重要性
     """
     f_score = bst.get_fscore()
     f_name = []
@@ -85,7 +63,7 @@ def impt_feat(feat_cols, bst):
     f_name = pd.DataFrame({'f_name': f_name})
     f_score = pd.concat([f_id, f_name, f_pro], axis=1)
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-    f_score.to_csv('./output/impt_feat.csv', index=False)
+    f_score.to_csv('./out/impt_feat.csv', index=False)
 
 
 def f11_score(real, pred):
@@ -146,7 +124,7 @@ def gridcv(df_train, drop_column):
     print("最佳参数组合:")
     print(bst_param)
     df = pd.DataFrame(bst_param)
-    df.to_csv('./output/gridcv/bst_param.csv')
+    df.to_csv('./out/gridcv/bst_param.csv')
     print('<< 完成优化参数')
 
 
@@ -169,10 +147,10 @@ def train(df_train, drop_column):
                  'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
                  'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27, 'tree_method': 'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)
-    # dtrain.save_binary('./output/dtrain.buffer')
+    # dtrain.save_binary('./out/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
     bst = xgb.train(bst_param, dtrain, num_rounds)
-    bst.save_model("./output/bst.model")
+    bst.save_model("./out/bst.model")
     impt_feat(feat_cols, bst)
     print(datetime.now())
     print('<< 完成训练模型')
@@ -182,7 +160,7 @@ def test(df_test, drop_column):
     """ 训练
     xgboost模型训练
     """
-    dump_path = './output/bst.model'
+    dump_path = './out/bst.model'
     if os.path.exists(dump_path):
 
         # 划分(X,y)
@@ -194,14 +172,14 @@ def test(df_test, drop_column):
         print('>> 开始加载模型')
         dtest = xgb.DMatrix(X_test)
         bst = xgb.Booster(model_file=dump_path)
-        # dtest.save_binary('./output/dtest.buffer')
+        # dtest.save_binary('./out/dtest.buffer')
         y_probab = bst.predict(dtest)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
         df_pred = df_pred.sort_values(by='probab', ascending=False)
         df_pred.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
         print('> 保存结果')
-        df_pred.to_csv('./output/test_pred.csv', index=False)
+        df_pred.to_csv('./out/test_pred.csv', index=False)
         f11_score(df_pred['label'], df_pred['pred'])
         print('<< 完成测试模型')
     else:
@@ -212,7 +190,7 @@ def submit(df_sub, drop_column):
     """
     xgboost模型提交
     """
-    dump_path = './output/bst.jcate'
+    dump_path = './out/bst.jcate'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
@@ -223,14 +201,14 @@ def submit(df_sub, drop_column):
         # 预测提交
         print('>> 开始预测提交')
         dsub = xgb.DMatrix(X_sub)
-        # dsub.save_binary('./output/dsub.buffer')
+        # dsub.save_binary('./out/dsub.buffer')
         bst = xgb.Booster(model_file=dump_path)
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
         df_pred = pd.concat([df_sub, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
         df_pred = df_pred.sort_values(by='probab', ascending=False)
         df_pred.ix[:160000, 'label'] = 1
-        df_pred.to_csv('./output/sub_pred.csv', index=False)
+        df_pred.to_csv('./out/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['label'] == 1]
         df_pred = df_pred[drop_column]
@@ -255,12 +233,11 @@ def main():
 
     # 训练模型
     df_train = gen_feat(train_end_date, time_gap, 'train')
-    feat_stats(df_train, drop_column)
     # gridcv(df_train, drop_column)
     # train(df_train, drop_column)
 
     # # 测试模型
-    df_test = gen_feat(test_end_date, time_gap, 'test')
+    # df_test = gen_feat(test_end_date, time_gap, 'test')
     # feat_stats(df_test, drop_column)
     # test(df_test, drop_column)
 

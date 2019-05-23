@@ -228,31 +228,18 @@ def feat_user_action_ratio(start_date, end_date):
         feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
         feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
         feat.fillna(0, inplace=True)
-        bins = [-1, 0.001, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0, 10, 25, 50, 100, 250, 500]
-        labels = ['-1', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '1', '10', '25', '50', '100', '250',
-                  '500']
-        feat['user_buy/follow'] = feat['user_buy_amt'] / (feat['user_follow_amt'] + 0.01)
-        feat['user_buy/follow'] = pd.cut(feat['user_buy/follow'].values, bins=bins, labels=labels)
-        print(feat['user_buy/follow'].value_counts())
-
-        feat['user_buy/remark'] = feat['user_buy_amt'] / (feat['user_remark_amt'] + 0.01)
-        feat['user_buy/remark'] = pd.cut(feat['user_buy/remark'].values, bins=bins, labels=labels)
-        print(feat['user_buy/remark'].value_counts())
-
-        bins = [-1, 50, 100, 200, 300, 400, 500]
-        labels = ['-1', '100', '200', '300', '400', '500']
-        feat['user_buy/cart'] = feat['user_buy_amt'] / (feat['user_cart_amt'] + 0.01)
-        feat['user_buy/cart'] = pd.cut(feat['user_buy/cart'].values, bins=bins, labels=labels)
-        print(feat['user_buy/cart'].value_counts())
-
-        bins = [-1, 0.001, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0, 10, 50, 100, 250, 500]
-        labels = ['-1', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '1', '10', '50', '100', '250', '500']
-        feat['user_buy/view'] = feat['user_buy_amt'] / (feat['user_view_amt'] + 0.01)
-        feat['user_buy/view'] = pd.cut(feat['user_buy/view'].values, bins=bins, labels=labels)
-        print(feat['user_buy/view'].value_counts())
-
+        feat.ix[feat['user_follow_amt'] == 0, 'user_follow_amt'] = -1
+        feat['user_buy/follow'] = feat['user_buy_amt'] / (feat['user_follow_amt']) * 100
+        feat.ix[feat['user_remark_amt'] == 0, 'user_remark_amt'] = -1
+        feat['user_buy/remark'] = feat['user_buy_amt'] / (feat['user_remark_amt']) * 100
+        feat.ix[feat['user_cart_amt'] == 0, 'user_cart_amt'] = -1
+        feat['user_buy/cart'] = feat['user_buy_amt'] / (feat['user_cart_amt']) * 100
+        feat.ix[feat['user_view_amt'] == 0, 'user_view_amt'] = -1
+        feat['user_buy/view'] = feat['user_buy_amt'] / (feat['user_view_amt']) * 100
         feat = feat[['user_id', 'user_buy/view', 'user_buy/follow', 'user_buy/remark', 'user_buy/cart']]
+        feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
+
     return feat
 
 

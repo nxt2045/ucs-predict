@@ -49,6 +49,7 @@ https://zhuanlan.zhihu.com/p/31182879
 ```txt    
 https://matplotlib.org/gallery/index.html
 https://seaborn.pydata.org/tutorial.html
+http://liyangbit.com/pythonvisualization/matplotlib-top-50-visualizations/#20-%E8%BF%9E%E7%BB%AD%E5%8F%98%E9%87%8F%E7%9A%84%E7%9B%B4%E6%96%B9%E5%9B%BE-histogram-for-continuous-variable
 ```
 
 - pandas大数据
