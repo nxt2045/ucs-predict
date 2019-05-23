@@ -202,12 +202,3 @@ def split_action_type():
 
 
 
-
-if __name__ == "__main__":
-    # total_bar()
-    # buy_cate_bar()
-    # daily_buy_line()
-    feat = pd.read_csv('../cache/feat_user_180401.csv')
-    feat = feat.drop('user_id',axis=1)
-
-    feat_bar(feat)

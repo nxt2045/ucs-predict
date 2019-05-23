@@ -245,8 +245,4 @@ after: (10296, 7)
 
 Process finished with exit code 0
 
-
-
-
-
 """

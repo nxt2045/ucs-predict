@@ -48,8 +48,6 @@ submit_path = '../submit'
 cache_path = '../cache'
 
 
-
-
 # %% xgboost模型
 def impt_feat(feat_cols, bst):
     """ back 重要性
@@ -213,7 +211,7 @@ def submit(df_sub, drop_column):
         df_pred = df_pred[df_pred['label'] == 1]
         df_pred = df_pred[drop_column]
         df_pred = df_pred.drop(['label'], axis=1)
-        df_pred.to_csv(submit_path + '/uc.csv', index=False)
+        df_pred.to_csv(submit_path + '/user.csv', index=False)
         print('> 提交结果', df_pred.shape)
         print('<< 完成预测提交!')
     else:
@@ -232,18 +230,18 @@ def main():
     drop_column = ['user_id', 'label']
 
     # 训练模型
-    df_train = gen_feat(train_end_date, time_gap, 'train')
+    # df_train = gen_feat(train_end_date, time_gap, 'train')
     # gridcv(df_train, drop_column)
     # train(df_train, drop_column)
 
     # # 测试模型
-    # df_test = gen_feat(test_end_date, time_gap, 'test')
+    df_test = gen_feat(test_end_date, time_gap, 'test')
     # feat_stats(df_test, drop_column)
     # test(df_test, drop_column)
 
     # # 生成提交结果
-    # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
-    # submit(df_sub, drop_column)
+    df_sub = gen_feat(sub_end_date, time_gap, 'submit')
+    submit(df_sub, drop_column)
 
 
 if __name__ == "__main__":

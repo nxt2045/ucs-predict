@@ -119,7 +119,7 @@ def extract_feat(end_date, time_gap, label):
     feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-    feat.drop(['city', 'county', 'province'], axis=1)
+    feat.drop(['city', 'county', 'province', 'user_reg_cate'], axis=1, inplace=True)
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
     print(feat.head())
@@ -162,20 +162,69 @@ def map_feat(feat):
     :param feat:
     :return:
     """
-    qcut_feat(feat)
+    # qcut_feat(feat)
     # TODO: 自定义函数
-    dicts = {'2_user_view_amt': [min(feat['2_user_view_amt'].values) - 1,
-                                 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 17, 23,
-                                 max(feat['2_user_view_amt'].values)+1],
-             '3_user_view_amt': [min(feat['2_user_view_amt'].values) - 1,
-                                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 20,
-                                 29, max(feat['2_user_view_amt'].values)+1],
-             }
+    dicts = {
+        '2_user_view_amt': [min(feat['2_user_view_amt'].values) - 1,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 17, 23,
+                            max(feat['2_user_view_amt'].values) + 1],
+        '3_user_view_amt': [min(feat['3_user_view_amt'].values) - 1,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 20,
+                            29, max(feat['3_user_view_amt'].values) + 1],
+        '7_user_view_amt': [min(feat['7_user_view_amt'].values) - 1,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 17,
+                            20, 26, 40, max(feat['7_user_view_amt'].values) + 1],
+        '7_user_follow_amt': [min(feat['7_user_follow_amt'].values) - 1,
+                              1, 3, 4, 5, 7,
+                              max(feat['7_user_follow_amt'].values) + 1],
+        '14_user_view_amt': [min(feat['14_user_view_amt'].values) - 1,
+                             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 18, 21, 25,
+                             33, 51, max(feat['14_user_view_amt'].values) + 1],
+        '14_user_buy_amt': [min(feat['14_user_buy_amt'].values) - 1,
+                            1, 2, 3,
+                            max(feat['14_user_buy_amt'].values) + 1],
+        '14_user_follow_amt': [min(feat['14_user_follow_amt'].values) - 1,
+                               1, 2, 3, 4, 5, 8,
+                               max(feat['14_user_follow_amt'].values) + 1],
+        '14_user_remark_amt': [min(feat['14_user_remark_amt'].values) - 1,
+                               1, 2, 3, 4, 5,
+                               max(feat['14_user_remark_amt'].values) + 1],
+        'user_reg_month': [min(feat['user_reg_month'].values) - 1,
+                           1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60,
+                           max(feat['user_reg_month'].values) + 1],
+        'user_view_amt': [min(feat['user_view_amt'].values) - 1,
+                          1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 16, 18, 21, 24, 29, 35, 44, 59, 94,
+                          max(feat['user_view_amt'].values) + 1],
+        'user_buy_amt': [min(feat['user_buy_amt'].values) - 1,
+                         1, 2, 3, 4, 5, 6, 8,
+                         max(feat['user_buy_amt'].values) + 1],
+        'user_follow_amt': [min(feat['user_follow_amt'].values) - 1,
+                            1, 2, 3, 4, 5, 6, 8, 12,
+                            max(feat['user_follow_amt'].values) + 1],
+        'user_remark_amt': [min(feat['user_remark_amt'].values) - 1,
+                            1, 2, 3, 4, 5, 6, 8,
+                            max(feat['user_remark_amt'].values) + 1],
+        'user_cart_amt': [min(feat['user_cart_amt'].values) - 1,
+                          1, 2, 3, 4, 5, 6, 8, 10, 14,
+                          max(feat['user_cart_amt'].values) + 1],
+        'user_buy/view': [min(feat['user_buy/view'].values) - 1,
+                          -200, -100, 0, 1, 2, 3, 4, 5, 7, 6, 8, 10, 11, 12, 13, 14, 16, 20, 25, 28, 33, 50, 100,
+                          max(feat['user_buy/view'].values) + 1],
+        'user_buy/follow': [min(feat['user_buy/follow'].values) - 1,
+                            -600, -500, -400, -300, -200, -100, 0, 1, 27, 33, 50, 66, 100, 157, 200, 300,
+                            max(feat['user_buy/follow'].values) + 1],
+        'user_buy/remark': [min(feat['user_buy/remark'].values) - 1,
+                            -500, -400, -300, -200, -100, 0, 1, 11, 25, 33, 37, 50, 66, 100, 150, 200,
+                            max(feat['user_buy/remark'].values) + 1],
+        'user_buy/cart': [min(feat['user_buy/cart'].values) - 1,
+                          -600, -400, -300, -200, -100, 0, 6, 16, 25, 33, 50, 66, 100, 166, 200, 300,
+                          max(feat['user_buy/cart'].values) + 1],
+    }
     for col, bins in dicts.items():
         print(col, bins)
         labels = [str(i) for i in range(len(bins) - 1)]
         feat.loc[:, col] = pd.cut(feat[col], bins=bins, labels=labels)
-        # print(feat[col].value_counts(sort=False))
+        print(feat[col].value_counts(sort=False))
     return feat
 
 
@@ -207,4 +256,3 @@ def qcut_feat(feat):
                         cutted = pd.qcut(feat[col], 30, duplicates='drop')
             feat.loc[:, col] = cutted
             print(feat[col].value_counts(sort=False))
-            print('已完成：', col)
