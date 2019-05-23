@@ -47,8 +47,8 @@ https://zhuanlan.zhihu.com/p/31182879
 
 - python画图
 ```txt    
-https://blog.csdn.net/jasonzhoujx/article/details/81772846
-https://machinelearningmastery.com/quick-and-dirty-data-analysis-with-pandas/
+https://matplotlib.org/gallery/index.html
+https://seaborn.pydata.org/tutorial.html
 ```
 
 - pandas大数据
