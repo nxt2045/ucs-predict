@@ -51,55 +51,77 @@ cache_path = '../cache'
 # 总数据bar
 def total_bar():
     print('> 读取数据')
-    product = pd.read_csv(product_path, na_filter=False, usecols=['cate'])
+    product = pd.read_csv(product_path, na_filter=False, usecols=['cate', 'product_reg_month', 'product_reg_cate'])
     user = pd.read_csv(user_path, na_filter=False,
                        usecols=['age', 'sex', 'user_reg_month', 'user_reg_cate', 'user_lv_cd', 'city_level',
                                 'province'])
     action = pd.read_csv(action_path, na_filter=False, usecols=['type'])
-    shop = pd.read_csv(shop_path, na_filter=False, usecols=['shop_cate'])
+    shop = pd.read_csv(shop_path, na_filter=False, usecols=['shop_cate', 'shop_reg_month', 'shop_reg_cate'])
+    # user
     print("> user数据bar图")
     plt.figure(figsize=(8, 6))
-    user['age'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/user_%s.png' % 'age', dpi=200, bbox_inches='tight')
+    user['age'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/user_%s.png' % 'age', dpi=300, bbox_inches='tight')
 
     plt.figure(figsize=(5, 5))
-    user['sex'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/user_%s.png' % 'sex', dpi=200, bbox_inches='tight')
+    user['sex'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/user_%s.png' % 'sex', dpi=300, bbox_inches='tight')
 
     plt.figure(figsize=(45, 6))
-    user['user_reg_month'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/user_%s.png' % 'reg_month', dpi=200, bbox_inches='tight')
+    user = user.sort_values(by=['user_reg_month'])
+    user['user_reg_month'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/user_%s.png' % 'reg_month', dpi=300, bbox_inches='tight')
 
     plt.figure(figsize=(8, 6))
-    user['user_reg_cate'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/user_%s.png' % 'reg_cate', dpi=200, bbox_inches='tight')
+    user['user_reg_cate'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/user_%s.png' % 'reg_cate', dpi=300, bbox_inches='tight')
 
     plt.figure(figsize=(8, 6))
-    user['user_lv_cd'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/user_%s.png' % 'lv_cd', dpi=200, bbox_inches='tight')
+    user['user_lv_cd'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/user_%s.png' % 'lv_cd', dpi=300, bbox_inches='tight')
 
     plt.figure(figsize=(8, 6))
-    user['city_level'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/user_%s.png' % 'city_level', dpi=200, bbox_inches='tight')
+    user['city_level'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/user_%s.png' % 'city_level', dpi=300, bbox_inches='tight')
 
     plt.figure(figsize=(20, 6))
-    user['province'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/user_%s.png' % 'province', dpi=200, bbox_inches='tight')
-
+    user['province'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/user_%s.png' % 'province', dpi=300, bbox_inches='tight')
+    
+    # product
     print("> product数据bar图")
     plt.figure(figsize=(20, 6))
-    product['cate'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/product_cate.png', dpi=200, bbox_inches='tight')
+    product['cate'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/product_cate.png', dpi=300, bbox_inches='tight')
 
+    plt.figure(figsize=(45, 6))
+    product = product.sort_values(by=['product_reg_month'])
+    product['product_reg_month'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/product_%s.png' % 'reg_month', dpi=300, bbox_inches='tight')
+
+    plt.figure(figsize=(8, 6))
+    product['product_reg_cate'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/product_%s.png' % 'reg_cate', dpi=300, bbox_inches='tight')
+
+    # action
     print("> action数据bar图")
     plt.figure(figsize=(6, 6))
-    action['type'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/action_type.png', dpi=200, bbox_inches='tight')
+    action['type'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/action_type.png', dpi=300, bbox_inches='tight')
 
+    # shop
     print("> shop数据bar图")
     plt.figure(figsize=(20, 6))
-    shop['shop_cate'].value_counts().plot.bar()
-    plt.savefig('./plot/总数据bar/shop_%s.png' % 'cate', dpi=200, bbox_inches='tight')
+    shop['shop_cate'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/shop_%s.png' % 'cate', dpi=300, bbox_inches='tight')
+
+    plt.figure(figsize=(8, 6))
+    shop['shop_reg_cate'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/shop_%s.png' % 'reg_cate', dpi=300, bbox_inches='tight')
+
+    plt.figure(figsize=(45, 6))
+    shop['shop_reg_month'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/总数据bar/shop_%s.png' % 'reg_month', dpi=300, bbox_inches='tight')
 
 
 # 购买品类bar
@@ -110,14 +132,12 @@ def buy_cate_bar():
     buy_plus = pd.merge(buy, product, on='sku_id')
     print("> 购买品类bar")
     plt.figure(figsize=(20, 6))
-    buy_plus['cate'].value_counts().plot.bar()
-    plt.savefig('./plot/buy_cate_bar.png', dpi=200, bbox_inches='tight')
+    buy_plus['cate'].value_counts(sort=False).sort_index().plot.bar()
+    plt.savefig('./plot/buy_cate_bar.png', dpi=300, bbox_inches='tight')
     print("> 购买品类/商品品类")
     plt.figure(figsize=(20, 6))
-    buy_plus = buy_plus.sort_values(by=['cate'])
-    product = product.sort_values(by=['cate'])
-    (buy_plus['cate'].value_counts()/product['cate'].value_counts()).plot.bar()
-    plt.savefig('./plot/buy_cate_ratio_bar.png', dpi=200, bbox_inches='tight')
+    (buy_plus['cate'].value_counts(sort=False).sort_index() / product['cate'].value_counts(sort=False).sort_index()).plot.bar()
+    plt.savefig('./plot/buy_cate_ratio_bar.png', dpi=300, bbox_inches='tight')
 
 
 # 每日购买折线
@@ -140,7 +160,7 @@ def daily_buy_line():
     plt.gca().xaxis.set_major_locator(mdates.DayLocator())
     # 日期的排列根据图像的大小自适应
     # fig.autofmt_xdate()
-    plt.savefig('./plot/daily_buy_line.png', dpi=200, bbox_inches='tight')
+    plt.savefig('./plot/daily_buy_line.png', dpi=300, bbox_inches='tight')
 
 
 # 购买用户数量
@@ -189,6 +209,6 @@ def feat_bar(f_path):
 
 
 if __name__ == "__main__":
-    # total_bar()
-    # buy_cate_bar()
+    total_bar()
+    buy_cate_bar()
     daily_buy_line()

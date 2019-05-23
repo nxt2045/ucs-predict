@@ -72,7 +72,7 @@ def fill_NaN():
             df = pd.read_csv(in_file, dtype=object)
             print(df[df.isnull().values].head())
             print("> filling", file_name)
-            df.ix[df['shop_reg_tm'].isnull(),'shop_reg_tm'] = '2018-04-16 00:00:00.0'
+            df.ix[df['shop_reg_tm'].isnull(), 'shop_reg_tm'] = '2018-04-16 00:00:00.0'
             df.fillna(-1, inplace=True)
             df.to_csv(out_file, index=False)
             print('保存完成！')
@@ -99,7 +99,7 @@ def map_month(x):
         d = datetime.strptime(sub_start_date, '%Y-%m-%d') - x
         d = d.days // 30
     else:
-        d=-1
+        d = -1
     return d
 
 
@@ -149,12 +149,12 @@ def clean_product():
     product = product[product['sku_id'].isin(action['sku_id'])]
 
     product = product.drop_duplicates('sku_id')
-    product['product_month'] = product['market_time'].apply(map_month)
+    product['product_reg_month'] = product['market_time'].apply(map_month)
 
-    product['product_cate'] = product['product_month'].apply(cate_reg)
+    product['product_reg_cate'] = product['product_reg_month'].apply(cate_reg)
     product = product.drop('market_time', axis=1)
 
-    product = product.sort_values(by=['shop_id', 'cate', 'brand', 'product_cate'])
+    product = product.sort_values(by=['shop_id', 'cate', 'brand', 'product_reg_cate'])
     print('after:', product.shape)
     product.to_csv(clean_path + "/product.csv", index=False)
 
@@ -173,9 +173,9 @@ def clean_shop():
     shop['shop_reg_month'] = shop['shop_reg_tm'].apply(map_month)
     shop['shop_reg_cate'] = shop['shop_reg_month'].apply(cate_reg)
     shop = shop.drop('shop_reg_tm', axis=1)
-    
+
     print('after:', shop.shape)
-    shop = shop.sort_values(by=['shop_id'])
+    shop = shop.sort_values(by=['shop_reg_month'])
     shop.to_csv(clean_path + "/shop.csv", index=False)
 
 
