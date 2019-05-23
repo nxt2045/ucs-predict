@@ -16,12 +16,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
+
 # %% 配置
 # 输出设置
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
 register_matplotlib_converters()
+plt.style.use('seaborn')
 plt.rcParams['figure.figsize'] = (12, 8)
 
 # 时间划分
@@ -53,7 +55,6 @@ cache_path = '../cache'
 # %% step 1 填充空值 输出到/data/fill
 
 def fill_NaN():
-
     print('>> 开始替换数据')
     for file_name in ori_list:
         in_file = ori_path + "/" + file_name
@@ -76,7 +77,6 @@ def fill_NaN():
 
 # %% step 2 删除无效 输出到/data/clean
 def clean_data():
-
     print('>> 开始处理数据')
     # clean_action()  # 必须先action
     clean_user()
@@ -200,6 +200,7 @@ def clean_action():
     print('排序完成！')
     action.to_csv(clean_path + "/action.csv", index=False)
     print('保存完成！')
+
 
 if __name__ == "__main__":
     clean_data()
