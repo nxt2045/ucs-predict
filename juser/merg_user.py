@@ -162,8 +162,20 @@ def map_feat(feat):
     :param feat:
     :return:
     """
-    qcut_feat(feat)
+    # qcut_feat(feat)
     # TODO: 自定义函数
+    dicts = {'2_user_view_amt': [min(feat['2_user_view_amt'].values) - 1,
+                                 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 17, 23,
+                                 max(feat['2_user_view_amt'].values)+1],
+             '3_user_view_amt': [min(feat['2_user_view_amt'].values) - 1,
+                                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 20,
+                                 29, max(feat['2_user_view_amt'].values)+1],
+             }
+    for col, bins in dicts.items():
+        print(col, bins)
+        labels = [str(i) for i in range(len(bins) - 1)]
+        feat.loc[:, col] = pd.cut(feat[col], bins=bins, labels=labels)
+        # print(feat[col].value_counts(sort=False))
     return feat
 
 
@@ -184,6 +196,8 @@ def qcut_feat(feat):
         elif col != 'label' and len(counts) > 30:
             cuts = int(50.0 * feat.shape[0] / (feat.shape[0] - counts[0]))
             print('\n开始划分：%s(%s)' % (col, str(cuts)))
+            print('min：%s' % (str(min(feat[col].values))))
+            print('max：%s' % (str(max(feat[col].values))))
             cutted = pd.qcut(feat[col], cuts, duplicates='drop')
             if len(cutted.value_counts()) > 30:
                 cutted = pd.qcut(feat[col], 100, duplicates='drop')
