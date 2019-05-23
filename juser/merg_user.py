@@ -162,7 +162,7 @@ def map_feat(feat):
     :param feat:
     :return:
     """
-    # qcut_feat(feat)
+    qcut_feat(feat)
     # TODO: 自定义函数
     dicts = {'2_user_view_amt': [min(feat['2_user_view_amt'].values) - 1,
                                  1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 17, 23,
