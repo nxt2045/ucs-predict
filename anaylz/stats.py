@@ -184,7 +184,7 @@ def feat_bar(f_path):
     feat = pd.read_csv(f_path)
     file_name = f_path.split('/')[-1]
     for col in feat.columns:
-        feat.groupby('label')[col].value_counts().unstack().plot(kind='bar')
+        sns.countplot(x="label", hue=col, data=feat)
         plt.savefig('./%s_bar/%s_label.png' % (file_name, col))
 
 

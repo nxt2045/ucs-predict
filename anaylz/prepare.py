@@ -36,7 +36,6 @@ sub_end_date = "2018-04-22"
 
 # 文件列表
 ori_list = ['jdata_action.csv', 'jdata_user.csv', 'jdata_product.csv', 'jdata_shop.csv', 'jdata_comment.csv']
-fill_list = ['jdata_user.csv', 'jdata_shop.csv']
 clean_list = ['action.csv', 'user.csv', 'product.csv', 'shop.csv', 'comment.csv']
 
 # 路径
@@ -59,12 +58,21 @@ def fill_NaN():
     for file_name in ori_list:
         in_file = ori_path + "/" + file_name
         out_file = fill_path + "/" + file_name
-        if file_name in fill_list:
+        if file_name == 'jdata_user.csv':
             print("> Null in ", file_name)
             df = pd.read_csv(in_file, dtype=object)
-            print(df[df.isnull().values == True].head())
+            print(df[df.isnull().values].head())
             print("> filling", file_name)
             print('读取完成！')
+            df.fillna(-1, inplace=True)
+            df.to_csv(out_file, index=False)
+            print('保存完成！')
+        elif file_name == 'jdata_shop.csv':
+            print("> Null in ", file_name)
+            df = pd.read_csv(in_file, dtype=object)
+            print(df[df.isnull().values].head())
+            print("> filling", file_name)
+            df.ix[df['shop_reg_tm'].isnull(),'shop_reg_tm'] = '2018-04-16 00:00:00.0'
             df.fillna(-1, inplace=True)
             df.to_csv(out_file, index=False)
             print('保存完成！')
@@ -78,7 +86,7 @@ def fill_NaN():
 # %% step 2 删除无效 输出到/data/clean
 def clean_data():
     print('>> 开始处理数据')
-    # clean_action()  # 必须先action
+    clean_action()  # 必须先action
     clean_user()
     clean_product()
     clean_comment()
@@ -91,7 +99,7 @@ def map_month(x):
         d = datetime.strptime(sub_start_date, '%Y-%m-%d') - x
         d = d.days // 30
     else:
-        d = -1
+        d=-1
     return d
 
 
@@ -134,7 +142,6 @@ def clean_user():
 def clean_product():
     # all column: 'sku_id', 'brand', 'shop_id', 'cate', 'market_time'
     print('> cleaning product')
-    dtype_product = {'cate': 'category'}
     product = pd.read_csv(fill_path + "/jdata_product.csv", parse_dates=['market_time'], na_filter=False)
     print('before:', product.shape)
 
@@ -162,6 +169,11 @@ def clean_shop():
     shop = shop[shop['shop_id'].isin(product['shop_id'])]
     shop = shop.drop_duplicates('shop_id')
     shop.rename(columns={'cate': 'shop_cate'}, inplace=True)
+
+    shop['shop_reg_month'] = shop['shop_reg_tm'].apply(map_month)
+    shop['shop_reg_cate'] = shop['shop_reg_month'].apply(cate_reg)
+    shop = shop.drop('shop_reg_tm', axis=1)
+    
     print('after:', shop.shape)
     shop = shop.sort_values(by=['shop_id'])
     shop.to_csv(clean_path + "/shop.csv", index=False)
@@ -203,4 +215,38 @@ def clean_action():
 
 
 if __name__ == "__main__":
-    clean_data()
+    # fill_NaN()
+    clean_shop()
+
+"""log
+D:\Program\Miniconda3\envs\env_jdata\python.exe D:/Project/JData-UCS/anaylz/prepare.py
+>> 开始处理数据
+> cleaning action
+before: (37214269, 5)
+读取完成！
+before sku_id: (37214269, 5)
+before user_id: (36858846, 5)
+after: (36858846, 5)
+排序完成！
+保存完成！
+> cleaning user
+before: (1608707, 9)
+after: (1602150, 10)
+> cleaning product
+before: (352539, 5)
+after: (352539, 6)
+> cleaning comment
+before: (1774233, 5)
+after: (1710752, 5)
+> cleaning shop
+before: (10399, 7)
+after: (10296, 7)
+<< 数据处理完成!
+
+Process finished with exit code 0
+
+
+
+
+
+"""

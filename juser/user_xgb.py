@@ -59,7 +59,7 @@ def impt_feat(feat_cols, bst):
     f_id = pd.DataFrame({'f_id': list(f_score.keys())})
     f_pro = pd.DataFrame({'f_pro': list(f_score.values())})
     f_name = pd.DataFrame({'f_name': f_name})
-    f_score = pd.concat([f_id,f_name, f_pro], axis=1)
+    f_score = pd.concat([f_id, f_name, f_pro], axis=1)
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
     f_score.to_csv('./output/impt_feat.csv', index=False)
 
@@ -92,9 +92,7 @@ def gridcv(df_train, drop_column):
     print('>> 开始优化参数')
     # F11_score = metrics.make_scorer(f11_score, greater_is_better=True, needs_proba=True)
     # scoring = {'F11': F11_score}
-    xgb_model = XGBClassifier(learning_rate=0.1, n_estimators=200, max_depth=5, min_child_weight=2, gamma=0,
-                              subsample=0.8, colsample_bytree=0.8, objective='binary:logistic', nthread=4,
-                              scale_pos_weight=1, seed=27)
+    xgb_model = XGBClassifier(objective='binary:logistic', seed=27)
     param_list = [
         {'max_depth': range(3, 10, 1)},
         {'min_child_weight': range(1, 6, 1)},
@@ -102,13 +100,14 @@ def gridcv(df_train, drop_column):
         {'subsample': [i / 10.0 for i in range(6, 10)]},
         {'colsample_bytree': [i / 10.0 for i in range(6, 10)]},
         {'n_estimators': [50, 100, 200, 500, 1000]},
-        {'learning_rate': [0.001, 0.01, 0.05, 0.1, 0.2]}
+        {'learning_rate': [0.001, 0.01, 0.05, 0.1, 0.2]},
+        {'scale_pos_weight': [1, 2, 3, 4, 5]},
+        {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]}
     ]
     bst_param = {'silent': 0, 'nthread': 4}
     for param_dict in param_list:
         print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, cv=5, n_jobs=-1, verbose=10,
-                           return_train_score=True)
+        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring='roc_auc', cv=5,verbose=1)
         clf.fit(X_train, y_train)
         bst_param.update(clf.best_params_)
         print(datetime.now())
@@ -122,6 +121,8 @@ def gridcv(df_train, drop_column):
                   % (mean, std * 2, params))
     print("最佳参数组合:")
     print(bst_param)
+    df = pd.DataFrame(bst_param)
+    df.to_csv('./output/gridcv/bst_param.csv')
     print('<< 完成优化参数')
 
 
@@ -229,13 +230,13 @@ def main():
     drop_column = ['user_id', 'label']
 
     # 训练模型
-    # df_train = gen_feat(train_end_date, time_gap, 'train')
-    # gridcv(df_train, drop_column)
+    df_train = gen_feat(train_end_date, time_gap, 'train')
+    gridcv(df_train, drop_column)
     # train(df_train, drop_column)
 
     # # 测试模型
-    df_test = gen_feat(test_end_date, time_gap, 'test')
-    test(df_test, drop_column)
+    # df_test = gen_feat(test_end_date, time_gap, 'test')
+    # test(df_test, drop_column)
 
     # # 生成提交结果
     # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
@@ -244,6 +245,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
