@@ -48,6 +48,30 @@ submit_path = '../submit'
 cache_path = '../cache'
 
 
+# 特征分析
+def feat_stats(feat, drop_column):
+    drop_column.remove('label')
+    feat = feat.drop(drop_column, axis=1)
+    for col in feat.columns:
+        if col != 'label':
+            feat_pos = feat[feat['label'] == 1]
+            feat_neg = feat[feat['label'] == 0]
+            pos = pd.DataFrame(feat_pos[col].value_counts(sort=False).sort_index())
+            neg = pd.DataFrame(feat_neg[col].value_counts(sort=False).sort_index())
+            feat_amt = pd.concat([pos, neg], axis=1)
+            feat_amt = feat_amt.fillna(0)
+            # feat_amt = feat_amt.astype(int)
+            feat_amt.reset_index(inplace=True)
+            feat_amt.columns = ['value', 'pos_' + col, 'neg_' + col]
+            feat_amt['pos/neg'] = round(feat_amt['pos_' + col] * 1.0 / feat_amt['neg_' + col],2)
+            feat_amt['pos*l0/neg*l1'] = round(feat_amt['pos/neg'] * feat_neg.shape[0] / feat_pos.shape[0],2)
+            print(col)
+            print(feat_amt.head())
+            print('label=1 类别数目:', pos.shape[0])
+            print('label=0 类别数目:', neg.shape[0])
+            feat_amt.to_csv('./feat/%s.csv' % col.replace('/', '#'), index=False)
+
+
 # %% xgboost模型
 def impt_feat(feat_cols, bst):
     """ feat 重要性
@@ -107,7 +131,7 @@ def gridcv(df_train, drop_column):
     bst_param = {'silent': 0, 'nthread': 4}
     for param_dict in param_list:
         print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring='roc_auc', cv=5,verbose=1)
+        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring='roc_auc', cv=5, verbose=1)
         clf.fit(X_train, y_train)
         bst_param.update(clf.best_params_)
         print(datetime.now())
@@ -231,11 +255,13 @@ def main():
 
     # 训练模型
     df_train = gen_feat(train_end_date, time_gap, 'train')
-    gridcv(df_train, drop_column)
+    feat_stats(df_train, drop_column)
+    # gridcv(df_train, drop_column)
     # train(df_train, drop_column)
 
     # # 测试模型
-    # df_test = gen_feat(test_end_date, time_gap, 'test')
+    df_test = gen_feat(test_end_date, time_gap, 'test')
+    # feat_stats(df_test, drop_column)
     # test(df_test, drop_column)
 
     # # 生成提交结果

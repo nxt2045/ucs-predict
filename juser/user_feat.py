@@ -26,8 +26,8 @@ plt.rcParams['figure.figsize'] = (12, 8)
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
-train_start_date = "2018-02-23"
-train_end_date = "2018-04-15"
+train_start_date = "2018-03-10"
+train_end_date = "2018-04-08"
 sub_start_date = "2018-04-16"
 sub_end_date = "2018-04-22"
 
@@ -66,7 +66,7 @@ def feat_action(start_date, end_date):
             df_action = pd.read_csv(action_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
             feat = df_action[
                 (start_date <= df_action['action_time']) & (df_action['action_time'] <= end_date)]
-            # feat.to_csv(dump_path, index=False)
+            feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -79,7 +79,7 @@ def feat_view(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 1]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -92,7 +92,7 @@ def feat_buy(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 2]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -105,7 +105,7 @@ def feat_follow(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 3]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -118,7 +118,7 @@ def feat_remark(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 4]
-    # feat.to_csv(dump_path, index=False)
+    feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -131,7 +131,7 @@ def feat_cart(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 5]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -153,7 +153,7 @@ def feat_user_view_amt(start_date, end_date):
         action = feat_view(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_view_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -167,7 +167,7 @@ def feat_user_buy_amt(start_date, end_date):
         action = feat_buy(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_buy_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -181,7 +181,7 @@ def feat_user_follow_amt(start_date, end_date):
         action = feat_follow(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_follow_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -195,7 +195,7 @@ def feat_user_remark_amt(start_date, end_date):
         action = feat_remark(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_remark_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -209,7 +209,7 @@ def feat_user_cart_amt(start_date, end_date):
         action = feat_cart(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_cart_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -217,7 +217,7 @@ def feat_user_cart_amt(start_date, end_date):
 def feat_user_action_ratio(start_date, end_date):
     print('user_action_ratio_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/user_action_ratio_%s_%s.csv' % (
-    start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -228,21 +228,35 @@ def feat_user_action_ratio(start_date, end_date):
         feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
         feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
         feat.fillna(0, inplace=True)
-        class_le = LabelEncoder()
-        feat['user_buy/view'] = feat['user_buy_amt'] / feat['user_view_amt']
-        feat['user_buy/view'] = class_le.fit_transform(feat['user_buy/view'])
-        feat['user_buy/follow'] = feat['user_buy_amt'] / feat['user_follow_amt']
-        feat['user_buy/follow'] = class_le.fit_transform(feat['user_buy/follow'])
-        feat['user_buy/remark'] = feat['user_buy_amt'] / feat['user_remark_amt']
-        feat['user_buy/remark'] = class_le.fit_transform(feat['user_buy/remark'])
-        feat['user_buy/cart'] = feat['user_buy_amt'] / feat['user_cart_amt']
-        feat['user_buy/cart'] = class_le.fit_transform(feat['user_buy/cart'])
+        bins = [-1, 0.001, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0, 10, 25, 50, 100, 250, 500]
+        labels = ['-1', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '1', '10', '25', '50', '100', '250',
+                  '500']
+        feat['user_buy/follow'] = feat['user_buy_amt'] / (feat['user_follow_amt'] + 0.01)
+        feat['user_buy/follow'] = pd.cut(feat['user_buy/follow'].values, bins=bins, labels=labels)
+        print(feat['user_buy/follow'].value_counts())
+
+        feat['user_buy/remark'] = feat['user_buy_amt'] / (feat['user_remark_amt'] + 0.01)
+        feat['user_buy/remark'] = pd.cut(feat['user_buy/remark'].values, bins=bins, labels=labels)
+        print(feat['user_buy/remark'].value_counts())
+
+        bins = [-1, 50, 100, 200, 300, 400, 500]
+        labels = ['-1', '100', '200', '300', '400', '500']
+        feat['user_buy/cart'] = feat['user_buy_amt'] / (feat['user_cart_amt'] + 0.01)
+        feat['user_buy/cart'] = pd.cut(feat['user_buy/cart'].values, bins=bins, labels=labels)
+        print(feat['user_buy/cart'].value_counts())
+
+        bins = [-1, 0.001, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0, 10, 50, 100, 250, 500]
+        labels = ['-1', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '1', '10', '50', '100', '250', '500']
+        feat['user_buy/view'] = feat['user_buy_amt'] / (feat['user_view_amt'] + 0.01)
+        feat['user_buy/view'] = pd.cut(feat['user_buy/view'].values, bins=bins, labels=labels)
+        print(feat['user_buy/view'].value_counts())
+
         feat = feat[['user_id', 'user_buy/view', 'user_buy/follow', 'user_buy/remark', 'user_buy/cart']]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
 if __name__ == "__main__":
     end_date = datetime.strptime(train_end_date, '%Y-%m-%d')
     start_date = datetime.strptime(train_start_date, '%Y-%m-%d')
-    feat_user_view_amt(start_date, end_date)
+    feat_user_action_ratio(start_date, end_date)

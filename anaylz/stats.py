@@ -87,7 +87,7 @@ def total_bar():
     plt.figure(figsize=(20, 6))
     user['province'].value_counts(sort=False).sort_index().plot.bar()
     plt.savefig('./plot/总数据bar/user_%s.png' % 'province', dpi=300, bbox_inches='tight')
-    
+
     # product
     print("> product数据bar图")
     plt.figure(figsize=(20, 6))
@@ -136,7 +136,8 @@ def buy_cate_bar():
     plt.savefig('./plot/buy_cate_bar.png', dpi=300, bbox_inches='tight')
     print("> 购买品类/商品品类")
     plt.figure(figsize=(20, 6))
-    (buy_plus['cate'].value_counts(sort=False).sort_index() / product['cate'].value_counts(sort=False).sort_index()).plot.bar()
+    (buy_plus['cate'].value_counts(sort=False).sort_index() / product['cate'].value_counts(
+        sort=False).sort_index()).plot.bar()
     plt.savefig('./plot/buy_cate_ratio_bar.png', dpi=300, bbox_inches='tight')
 
 
@@ -199,16 +200,14 @@ def split_action_type():
     buy.to_csv('./csv/buy.csv', index=False)
 
 
-# 特征标签bar
-def feat_bar(f_path):
-    feat = pd.read_csv(f_path)
-    file_name = f_path.split('/')[-1]
-    for col in feat.columns:
-        sns.countplot(x="label", hue=col, data=feat)
-        plt.savefig('./%s_bar/%s_label.png' % (file_name, col))
+
 
 
 if __name__ == "__main__":
-    total_bar()
-    buy_cate_bar()
-    daily_buy_line()
+    # total_bar()
+    # buy_cate_bar()
+    # daily_buy_line()
+    feat = pd.read_csv('../cache/feat_user_180401.csv')
+    feat = feat.drop('user_id',axis=1)
+
+    feat_bar(feat)

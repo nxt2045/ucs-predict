@@ -66,13 +66,13 @@ def gen_feat(end_date, time_gap, mark):
         feat = pd.read_csv(dump_path)
     else:
         feat = extract_feat(end_date, time_gap, mark)
-        feat.to_csv(dump_path, index=False)
-    print("feat", feat.shape)
-    print("cols", feat.columns)
-    print("head")
-    print(feat.head())
-    print("tail")
-    print(feat.tail())
+        # feat.to_csv(dump_path, index=False)
+    # print("feat", feat.shape)
+    # print("cols", feat.columns)
+    # print("head")
+    # print(feat.head())
+    # print("tail")
+    # print(feat.tail())
     print('生成特征%s' % (str(feat.shape)))
     return feat
 
@@ -120,7 +120,6 @@ def extract_feat(end_date, time_gap, mark):
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
     feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-    feat.fillna(0, inplace=True)
     print(feat.head())
     # TODO 结束：与time_gap无关的feat
     return feat
@@ -153,3 +152,6 @@ def get_label(end_date, mark):
     print("tail")
     print(label.tail())
     return label
+
+
+
