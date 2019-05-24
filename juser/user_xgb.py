@@ -179,7 +179,7 @@ def model(df_train, df_test, drop_column):
     # 训练模型(watchlist)
     print(datetime.now())
     print('>> 开始训练模型')
-    bst = xgb.train(param, dtrain, num_round, evallist, early_stopping_rounds=50)
+    bst = xgb.train(param, dtrain, num_round, evallist, early_stopping_rounds=20)
     bst.save_model("./out/bst.model")
     print('<< 完成训练模型')
 
@@ -251,8 +251,8 @@ def main():
     # gridcv(df_train, drop_column)
 
     # 构造模型
-    model(df_train, df_test, drop_column)
-    impt_feat(df_train, drop_column)
+    # model(df_train, df_test, drop_column)
+    # impt_feat(df_train, drop_column)
 
     # 生成提交结果
     # df_sub = gen_feat(sub_end_date, time_gap, 'submit')

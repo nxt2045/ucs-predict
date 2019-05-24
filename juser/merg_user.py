@@ -29,10 +29,10 @@ plt.rcParams['figure.figsize'] = (12, 8)
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
-train_start_date = "2018-02-23"
-train_end_date = "2018-04-15"
-sub_start_date = "2018-04-16"
-sub_end_date = "2018-04-22"
+train_start_date = "2018-03-10"
+train_end_date = "2018-04-08"
+sub_start_date = "2018-04-17"
+sub_end_date = "2018-04-15"
 
 # 文件列表
 ori_list = ['jdata_action.csv', 'jdata_user.csv', 'jdata_product.csv', 'jdata_shop.csv', 'jdata_comment.csv']
@@ -94,6 +94,7 @@ def extract_feat(end_date, time_gap, label):
         # 初始化feat
         feat = pkey
         # user
+        feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
         feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
         feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
         feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
@@ -113,13 +114,16 @@ def extract_feat(end_date, time_gap, label):
     start_date = end_date - timedelta(30 - 1)
     # user
     feat = pd.merge(feat, feat_user(), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-    feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-    feat = pd.merge(feat, feat_user_last_gap(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_first_hour(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_last_hour(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_last_amt(start_date, end_date), on='user_id', how='left')
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
     # TODO 结束：与time_gap无关的feat
