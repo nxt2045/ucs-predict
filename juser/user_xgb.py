@@ -176,6 +176,7 @@ def model(df_train, df_test, drop_column):
     evallist = [(dtest, 'eval'), (dtrain, 'train')]
     print('<< 完成设置参数')
 
+
     # 训练模型(watchlist)
     print(datetime.now())
     print('>> 开始训练模型')
@@ -266,7 +267,7 @@ def main():
     主流程
     """
     # 定义参数
-    time_gap = [1, 2, 3, 7, 8, 9, 14]
+    time_gap = [1, 2, 3, 6, 7, 14]
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-15'
     verify_end_date = '2018-4-1'
