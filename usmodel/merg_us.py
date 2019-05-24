@@ -69,7 +69,7 @@ def gen_feat(end_date, time_gap, mark):
     else:
         label = get_label(end_date, mark)
         feat = extract_feat(end_date, time_gap, label)
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
     print("feat", feat.shape)
@@ -196,6 +196,12 @@ def extract_feat(end_date, time_gap, label):
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
     # GR: 用户商品
+    # 用户商品是否
+    feat = pd.merge(feat, feat_user_sku_if_view(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_if_buy(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_if_follow(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_if_remark(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_if_cart(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     # 用户商品数量
     feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
     feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
@@ -212,7 +218,6 @@ def extract_feat(end_date, time_gap, label):
     feat = pd.merge(feat, feat_user_sku_action_day(start_date, end_date), on=['user_id','sku_id'], how='left')
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
-
     return feat
 
 

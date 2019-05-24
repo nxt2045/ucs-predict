@@ -54,7 +54,6 @@ cache_path = '../cache/us'
 # TODO: (user_id,sku_id) pkey
 
 
-
 # GR: 是否系列
 # 用户商品是否行为
 def feat_user_sku_if_action(start_date, end_date):
@@ -162,7 +161,7 @@ def feat_user_sku_action_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_action(start_date, end_date)
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_action_amt')
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_action_amt')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -177,7 +176,7 @@ def feat_user_sku_view_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_view(start_date, end_date)
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_view_amt')
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_view_amt')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -192,7 +191,7 @@ def feat_user_sku_buy_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_buy(start_date, end_date)
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_buy_amt')
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_buy_amt')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -207,7 +206,7 @@ def feat_user_sku_follow_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_follow(start_date, end_date)
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_follow_amt')
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_follow_amt')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -222,7 +221,7 @@ def feat_user_sku_remark_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_remark(start_date, end_date)
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_remark_amt')
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_remark_amt')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -237,7 +236,7 @@ def feat_user_sku_cart_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_cart(start_date, end_date)
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_cart_amt')
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_cart_amt')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -252,14 +251,14 @@ def feat_user_sku_action_ratio(start_date, end_date):
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-        action = feat_action(start_date, end_date)[['user_id','sku_id']]
-        feat = action.drop_duplicates(['user_id','sku_id'])
-        feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
+        action = feat_action(start_date, end_date)[['user_id', 'sku_id']]
+        feat = action.drop_duplicates(['user_id', 'sku_id'])
+        feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
         feat.fillna(0, inplace=True)
         feat.ix[feat['user_sku_action_amt'] == 0, 'user_sku_action_amt'] = -1
         feat['user_sku_view_ratio'] = feat['user_sku_view_amt'] / (feat['user_sku_action_amt']) * 100
@@ -267,12 +266,14 @@ def feat_user_sku_action_ratio(start_date, end_date):
         feat['user_sku_follow_ratio'] = feat['user_sku_follow_amt'] / (feat['user_sku_action_amt']) * 100
         feat['user_sku_remark_ratio'] = feat['user_sku_remark_amt'] / (feat['user_sku_action_amt']) * 100
         feat['user_sku_cart_ratio'] = feat['user_sku_cart_amt'] / (feat['user_sku_action_amt']) * 100
-        feat = feat[['user_id', 'user_sku_view_ratio', 'user_sku_buy_ratio', 'user_sku_follow_ratio', 'user_sku_remark_ratio',
-                     'user_sku_cart_ratio']]
+        feat = feat[
+            ['user_id', 'user_sku_view_ratio', 'user_sku_buy_ratio', 'user_sku_follow_ratio', 'user_sku_remark_ratio',
+             'user_sku_cart_ratio']]
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
 
     return feat
+
 
 # 用户商品用户行为比例
 def feat_user_sku_user_action_ratio(start_date, end_date):
@@ -282,44 +283,45 @@ def feat_user_sku_user_action_ratio(start_date, end_date):
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-        action = feat_action(start_date, end_date)[['user_id','sku_id']]
-        feat = action.drop_duplicates(['user_id','sku_id'])
-        
+        action = feat_action(start_date, end_date)[['user_id', 'sku_id']]
+        feat = action.drop_duplicates(['user_id', 'sku_id'])
+
         feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on=['user_id'], how='left')
         feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on=['user_id'], how='left')
         feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on=['user_id'], how='left')
         feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on=['user_id'], how='left')
         feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on=['user_id'], how='left')
         feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on=['user_id'], how='left')
-        
-        feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
+
+        feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
         feat.fillna(0, inplace=True)
 
         feat.ix[feat['user_action_amt'] == 0, 'user_action_amt'] = -1
-        feat['user_sku_user_action_ratio'] = feat['user_sku_action_amt'] / (feat['user_sku_action_amt']) * 100
-        
+        feat['user_sku_user_action_ratio'] = feat['user_sku_action_amt'] / (feat['user_action_amt']) * 100
+
         feat.ix[feat['user_view_amt'] == 0, 'user_view_amt'] = -1
-        feat['user_sku_user_view_ratio'] = feat['user_sku_view_amt'] / (feat['user_sku_view_amt']) * 100
-        
+        feat['user_sku_user_view_ratio'] = feat['user_sku_view_amt'] / (feat['user_view_amt']) * 100
+
         feat.ix[feat['user_buy_amt'] == 0, 'user_buy_amt'] = -1
-        feat['user_sku_user_buy_ratio'] = feat['user_sku_buy_amt'] / (feat['user_sku_buy_amt']) * 100
-        
+        feat['user_sku_user_buy_ratio'] = feat['user_sku_buy_amt'] / (feat['user_buy_amt']) * 100
+
         feat.ix[feat['user_follow_amt'] == 0, 'user_follow_amt'] = -1
-        feat['user_sku_user_follow_ratio'] = feat['user_sku_follow_amt'] / (feat['user_sku_follow_amt']) * 100
-        
+        feat['user_sku_user_follow_ratio'] = feat['user_sku_follow_amt'] / (feat['user_follow_amt']) * 100
+
         feat.ix[feat['user_remark_amt'] == 0, 'user_remark_amt'] = -1
-        feat['user_sku_user_remark_ratio'] = feat['user_sku_remark_amt'] / (feat['user_sku_remark_amt']) * 100
-        
+        feat['user_sku_user_remark_ratio'] = feat['user_sku_remark_amt'] / (feat['user_remark_amt']) * 100
+
         feat.ix[feat['user_cart_amt'] == 0, 'user_cart_amt'] = -1
-        feat['user_sku_user_cart_ratio'] = feat['user_sku_cart_amt'] / (feat['user_sku_cart_amt']) * 100
-        
-        feat = feat[['user_id', 'user_sku_user_action_ratio','user_sku_user_view_ratio', 'user_sku_user_buy_ratio',
-                     'user_sku_user_follow_ratio', 'user_sku_user_remark_ratio','user_sku_user_cart_ratio']]
+        feat['user_sku_user_cart_ratio'] = feat['user_sku_cart_amt'] / (feat['user_cart_amt']) * 100
+
+        feat = feat[
+            ['user_id', 'sku_id','user_sku_user_action_ratio', 'user_sku_user_view_ratio', 'user_sku_user_buy_ratio',
+             'user_sku_user_follow_ratio', 'user_sku_user_remark_ratio', 'user_sku_user_cart_ratio']]
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
 
@@ -330,14 +332,14 @@ def feat_user_sku_user_action_ratio(start_date, end_date):
 def feat_user_sku_first_hour(start_date, end_date):
     print('user_sku_first_hour_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_sku_first_hour_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                                    start_date.strftime('%y%m%d'),
+                                                                    end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-        action = feat_action(start_date, end_date)[['user_id', 'action_time']]
-        action.sort_values(['user_id', 'action_time'], inplace=True)
-        feat = action.groupby(['user_id','sku_id']).max().reset_index()
+        action = feat_action(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        action.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
+        feat = action.groupby(['user_id', 'sku_id']).max().reset_index()
         feat['user_sku_first_hour'] = [((end_date - i).total_seconds()) // 3600 for i in feat['action_time']]
         feat.drop('action_time', axis=1, inplace=True)
         feat = feat.astype(int)
@@ -349,14 +351,14 @@ def feat_user_sku_first_hour(start_date, end_date):
 def feat_user_sku_last_hour(start_date, end_date):
     print('user_sku_last_hour_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_sku_last_hour_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                               start_date.strftime('%y%m%d'),
-                                                               end_date.strftime('%y%m%d'))
+                                                                   start_date.strftime('%y%m%d'),
+                                                                   end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-        action = feat_action(start_date, end_date)[['user_id', 'action_time']]
-        action.sort_values(['user_id', 'action_time'], inplace=True)
-        feat = action.groupby(['user_id','sku_id']).min().reset_index()
+        action = feat_action(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        action.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
+        feat = action.groupby(['user_id', 'sku_id']).min().reset_index()
         feat['user_sku_last_hour'] = [((end_date - i).total_seconds()) // 3600 for i in feat['action_time']]
         feat.drop('action_time', axis=1, inplace=True)
         feat = feat.astype(int)
@@ -368,17 +370,17 @@ def feat_user_sku_last_hour(start_date, end_date):
 def feat_user_sku_last_amt(start_date, end_date):
     print('user_sku_last_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_sku_last_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                              start_date.strftime('%y%m%d'),
-                                                              end_date.strftime('%y%m%d'))
+                                                                  start_date.strftime('%y%m%d'),
+                                                                  end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-        action = feat_action(start_date, end_date)[['user_id', 'action_time']]
-        action.sort_values(['user_id', 'action_time'], inplace=True)
+        action = feat_action(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        action.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
         action['action_time'] = action['action_time'].values.astype('datetime64[D]')
-        sub_action = action.groupby(['user_id','sku_id']).first().reset_index()
-        action = pd.merge(sub_action, action, on=['user_id', 'action_time'], how='left')
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_last_amt')
+        sub_action = action.groupby(['user_id', 'sku_id']).first().reset_index()
+        action = pd.merge(sub_action, action, on=['user_id', 'sku_id', 'action_time'], how='left')
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_last_amt')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -388,17 +390,16 @@ def feat_user_sku_last_amt(start_date, end_date):
 def feat_user_sku_action_day(start_date, end_date):
     print('user_sku_action_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_sku_action_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                                    start_date.strftime('%y%m%d'),
+                                                                    end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-        action = feat_action(start_date, end_date)[['user_id', 'action_time']]
-        action.sort_values(['user_id', 'action_time'], inplace=True)
+        action = feat_action(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        action.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
         action['action_time'] = action['action_time'].values.astype('datetime64[D]')
-        action = action.drop_duplicates(['user_id', 'action_time'])
-        feat = action.groupby(['user_id','sku_id']).size().reset_index(name='user_sku_action_day')
+        action = action.drop_duplicates(['user_id', 'sku_id', 'action_time'])
+        feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_action_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
-

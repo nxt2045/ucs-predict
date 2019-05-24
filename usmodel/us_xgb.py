@@ -190,10 +190,20 @@ def model(df_train, df_test, drop_column):
     print('> 概率转换0,1')
     df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
     df_pred = df_pred.sort_values(by='probab', ascending=False)
-    df_pred.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
-    print('> 保存结果')
-    df_pred.to_csv('./out/test_pred.csv', index=False)
-    f11_score(df_pred['label'], df_pred['pred'])
+
+    df_same = df_pred
+    df_same.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
+    df_same.to_csv('./out/test_pred_same.csv', index=False)
+    print('前%s行[same] label=1：' % (str(int(np.sum(df_same['label'].values)))))
+    f11_score(df_same['label'], df_same['pred'])
+
+    for i in range(10000, 160000, 10000):
+        df = df_pred
+        print('前%s行 label=1：' % (str(i)))
+        df.ix[:i, 'pred'] = 1
+        df.to_csv('./out/test_pred_%s.csv'%(str(i)), index=False)
+        f11_score(df['label'], df['pred'])
+
     print('<< 完成测试模型')
 
 
@@ -251,8 +261,8 @@ def main():
     # gridcv(df_train, drop_column)
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
-    # impt_feat(df_train, drop_column)
+    model(df_train, df_test, drop_column)
+    impt_feat(df_train, drop_column)
 
     # 生成提交结果
     df_sub = gen_feat(sub_end_date, time_gap, 'submit')
