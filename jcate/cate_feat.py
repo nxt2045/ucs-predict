@@ -136,7 +136,8 @@ def feat_cart_plus(start_date, end_date):
 # 用户品类浏览量
 def feat_user_cate_view_amt(start_date, end_date):
     print('user_cate_view_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/user_cate_view_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/user_cate_view_amt_%s_%s.csv' % (
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -149,7 +150,8 @@ def feat_user_cate_view_amt(start_date, end_date):
 # 用户品类购买量
 def feat_user_cate_buy_amt(start_date, end_date):
     print('user_cate_buy_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/user_cate_buy_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/user_cate_buy_amt_%s_%s.csv' % (
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -162,7 +164,8 @@ def feat_user_cate_buy_amt(start_date, end_date):
 # 用户品类关注量
 def feat_user_cate_follow_amt(start_date, end_date):
     print('user_cate_follow_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/user_cate_follow_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/user_cate_follow_amt_%s_%s.csv' % (
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -175,7 +178,8 @@ def feat_user_cate_follow_amt(start_date, end_date):
 # 用户品类评论量
 def feat_user_cate_remark_amt(start_date, end_date):
     print('user_cate_remark_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/user_cate_remark_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/user_cate_remark_amt_%s_%s.csv' % (
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -188,7 +192,8 @@ def feat_user_cate_remark_amt(start_date, end_date):
 # 用户品类购物车量
 def feat_user_cate_cart_amt(start_date, end_date):
     print('user_cate_cart_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/user_cate_cart_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/user_cate_cart_amt_%s_%s.csv' % (
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -199,12 +204,6 @@ def feat_user_cate_cart_amt(start_date, end_date):
 
 
 if __name__ == "__main__":
-    end_date = datetime.strptime('2018-4-8', '%Y-%m-%d')
-    start_date = end_date - timedelta(days=7 - 1)
+    end_date = datetime.strptime(data_end_date, '%Y-%m-%d')
+    start_date = datetime.strptime(data_start_date, '%Y-%m-%d')
     action = feat_buy_plus(start_date, end_date)
-    action = action[['user_id', 'cate']]
-    action = action.drop_duplicates()
-    print(action)
-    action = pd.concat([action, pd.DataFrame({'shop_id': [3230] * action.shape[0]})], axis=1)
-    action = action.astype(int)
-    action.to_csv("2.csv", index=False)
