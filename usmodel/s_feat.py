@@ -144,6 +144,19 @@ def feat_sku():
     feat = pd.read_csv(product_path, na_filter=False)
     return feat
 
+def feat_sku_plus():
+    print('sku_plus')
+    dump_path = cache_path + '/sku_plus.csv'
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        product = pd.read_csv(product_path, na_filter=False)
+        shop = pd.read_csv(shop_path, na_filter=False)
+        feat = pd.merge(product, shop, on='shop_id', how='left')
+        feat = feat.drop(['vender_id','shop_id'],axis=1)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
 
 # GR: 是否系列
 # 商品是否行为

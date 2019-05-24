@@ -267,7 +267,7 @@ def feat_user_sku_action_ratio(start_date, end_date):
         feat['user_sku_remark_ratio'] = feat['user_sku_remark_amt'] / (feat['user_sku_action_amt']) * 100
         feat['user_sku_cart_ratio'] = feat['user_sku_cart_amt'] / (feat['user_sku_action_amt']) * 100
         feat = feat[
-            ['user_id', 'user_sku_view_ratio', 'user_sku_buy_ratio', 'user_sku_follow_ratio', 'user_sku_remark_ratio',
+            ['user_id','sku_id', 'user_sku_view_ratio', 'user_sku_buy_ratio', 'user_sku_follow_ratio', 'user_sku_remark_ratio',
              'user_sku_cart_ratio']]
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)

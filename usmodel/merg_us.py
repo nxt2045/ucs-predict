@@ -63,13 +63,13 @@ def gen_feat(end_date, time_gap, mark):
     print('\n>> 开始生成特征(X,y)')
     print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    dump_path = cache_path + '/feat_user_%s.csv' % (end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/feat_us_%s.csv' % (end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path)
     else:
         label = get_label(end_date, mark)
         feat = extract_feat(end_date, time_gap, label)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
     print("feat", feat.shape)
@@ -178,7 +178,7 @@ def extract_feat(end_date, time_gap, label):
     feat = feat.astype(int)
     # GR: 商品
     # 商品基本信息
-    feat = pd.merge(feat, feat_sku(), on='sku_id', how='left')
+    feat = pd.merge(feat, feat_sku_plus(), on='sku_id', how='left')
     # 商品数量
     feat = pd.merge(feat, feat_sku_action_amt(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_view_amt(start_date, end_date), on='sku_id', how='left')

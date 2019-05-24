@@ -74,8 +74,11 @@ def impt_feat(df_train, drop_column):
         f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
         f_score.to_csv('./out/impt_feat.csv', index=False)
 
+def report(df):
+    f11_score()
+    f12_score()
 
-def f11_score(real, pred):
+def f11_score(real,pred):
     # 计算所有用户购买评价指标
     precision = metrics.precision_score(real, pred)
     recall = metrics.recall_score(real, pred)
@@ -84,7 +87,15 @@ def f11_score(real, pred):
     F11 = 3.0 * precision * recall / (2.0 * precision + recall)
     print('F11=' + str(F11))
     return F11
-
+def f12_score(real,pred):
+    # 计算所有用户购买评价指标
+    precision = metrics.precision_score(real, pred)
+    recall = metrics.recall_score(real, pred)
+    print('准确率: ' + str(precision))
+    print('召回率: ' + str(recall))
+    F11 = 3.0 * precision * recall / (2.0 * precision + recall)
+    print('F11=' + str(F11))
+    return F11
 
 def gridcv(df_train, drop_column):
     """ 参数
@@ -190,19 +201,20 @@ def model(df_train, df_test, drop_column):
     print('> 概率转换0,1')
     df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
     df_pred = df_pred.sort_values(by='probab', ascending=False)
+    df_pred = df_pred.drop_duplicates(['user_id', 'cate'], keep='first')
 
     df_same = df_pred
     df_same.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
     df_same.to_csv('./out/test_pred_same.csv', index=False)
     print('前%s行[same] label=1：' % (str(int(np.sum(df_same['label'].values)))))
-    f11_score(df_same['label'], df_same['pred'])
+    report(df_same)
 
     for i in range(10000, 160000, 10000):
         df = df_pred
         print('前%s行 label=1：' % (str(i)))
         df.ix[:i, 'pred'] = 1
         df.to_csv('./out/test_pred_%s.csv'%(str(i)), index=False)
-        f11_score(df['label'], df['pred'])
+        report(df)
 
     print('<< 完成测试模型')
 
