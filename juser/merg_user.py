@@ -58,7 +58,7 @@ def gen_feat(end_date, time_gap, mark):
     调用 label-extract-map
     """
     print(datetime.now())
-    print('>> 开始生成特征(X,y)')
+    print('\n>> 开始生成特征(X,y)')
     print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
     dump_path = cache_path + '/feat_user_%s.csv' % (end_date.strftime('%y%m%d'))

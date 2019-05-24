@@ -138,8 +138,8 @@ def gridcv(df_train, drop_column):
 
 
 def model(df_train, df_test, drop_column):
-    """ 训练
-    xgboost模型训练
+    """ 构造
+    xgboost模型训练测试
     """
     # 划分(X,y)
     print(datetime.now())
@@ -148,52 +148,53 @@ def model(df_train, df_test, drop_column):
     y_train = df_train['label'].values
     X_test = df_test.drop(drop_column, axis=1).values
     y_test = df_test['label'].values
+    print('>> 开始获取特征')
     print('<< 完成划分数据')
 
-    # 训练模型
+    # 设置参数(gridcv最佳)
     print(datetime.now())
     print('>> 开始设置参数')
-    bst_param = {'verbosity': 1, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200,
-                 'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
-                 'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27, 'tree_method': 'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)
-    dtest = xgb.DMatrix(X_test)
-    num_rounds = 1000  # 迭代次数
-    print('>> 开始训练模型')
-    bst = xgb.train(bst_param, dtrain, num_rounds)
-    bst.save_model("./out/bst.model")
+    dtest = xgb.DMatrix(X_test, label=y_test)
+    param = {
+        # 默认
+        'silent': 1,
+        'objective': 'binary:logistic',
+        'scale_pos_weight': 1,
+        'eval_metric': 'logloss',
+        # 调整
+        'learning_rate': 0.1,
+        'n_estimators': 1000,
+        'max_depth': 3,
+        'min_child_weight': 5,
+        'gamma': 0,
+        'subsample': 1.0,
+        'colsample_bytree': 0.8,
+        'eta': 0.05,
+    }
+    num_round = 500
+    evallist = [(dtest, 'eval'), (dtrain, 'train')]
+    print('<< 完成设置参数')
+
+    # 训练模型(watchlist)
     print(datetime.now())
+    print('>> 开始训练模型')
+    bst = xgb.train(param, dtrain, num_round, evallist, early_stopping_rounds=50)
+    bst.save_model("./out/bst.model")
     print('<< 完成训练模型')
 
-
-def verify(df_test, drop_column):
-    """ 训练
-    xgboost模型训练
-    """
-    dump_path = './out/bst.model'
-    if os.path.exists(dump_path):
-
-        # 划分(X,y)
-        print(datetime.now())
-        print('>> 开始划分X,y')
-        X_test = df_test.drop(drop_column, axis=1).values
-        print('<< 完成划分数据')
-        # 测试模型
-        print('>> 开始加载模型')
-        dtest = xgb.DMatrix(X_test)
-        bst = xgb.Booster(model_file=dump_path)
-        # dtest.save_binary('./out/dtest.buffer')
-        y_probab = bst.predict(dtest)
-        print('> 概率转换0,1')
-        df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
-        df_pred = df_pred.sort_values(by='probab', ascending=False)
-        df_pred.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
-        print('> 保存结果')
-        df_pred.to_csv('./out/test_pred.csv', index=False)
-        f11_score(df_pred['label'], df_pred['pred'])
-        print('<< 完成测试模型')
-    else:
-        print('<< 没有训练模型')
+    # 测试模型
+    print(datetime.now())
+    print('>> 开始测试模型')
+    y_probab = bst.predict(dtest)
+    print('> 概率转换0,1')
+    df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
+    df_pred = df_pred.sort_values(by='probab', ascending=False)
+    df_pred.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
+    print('> 保存结果')
+    df_pred.to_csv('./out/test_pred.csv', index=False)
+    f11_score(df_pred['label'], df_pred['pred'])
+    print('<< 完成测试模型')
 
 
 def submit(df_sub, drop_column):
@@ -235,25 +236,25 @@ def main():
     主流程
     """
     # 定义参数
-    time_gap = [1, 2, 3, 6, 7, 14]
+    time_gap = [1, 2, 3, 7, 14]
     train_end_date = '2018-4-8'
-    test_end_date = '2018-4-15'
-    verify_end_date = '2018-4-1'
+    test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
     drop_column = ['user_id', 'label']
 
-    # 构造模型
+    # 生成特征
+    print(datetime.now())
     df_train = gen_feat(train_end_date, time_gap, 'train')
-    # gridcv(df_train, drop_column)
     df_test = gen_feat(test_end_date, time_gap, 'test')
+
+    # 优化参数
+    # gridcv(df_train, drop_column)
+
+    # 构造模型
     model(df_train, df_test, drop_column)
     impt_feat(df_train, drop_column)
 
-    # 验证模型
-    # df_verify = gen_feat(verify_end_date, time_gap, 'verify')
-    # verify(df_verify, drop_column)
-
-    # # 生成提交结果
+    # 生成提交结果
     # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
     # submit(df_sub, drop_column)
 
