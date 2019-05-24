@@ -88,19 +88,34 @@ def feat_user_shop_cart_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_cart_plus(start_date, end_date)
-        feat = action.groupby(['user_id', 'shop_id']).size().reset_index(name='user_cate_cart_amt')
+        feat = action.groupby(['user_id', 'shop_id']).size().reset_index(name='user_shop_cart_amt')
         # feat.to_csv(dump_path, index=False)
     return feat
 
 # 用户商店评论量
 def feat_user_shop_remark_amt(start_date, end_date):
     print('user_shop_remark_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/%s/user_cate_remark_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/%s/user_shop_remark_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_remark_plus(start_date, end_date)
         feat = action.groupby(['user_id', 'shop_id']).size().reset_index(name='user_shop_remark_amt')
+        # feat.to_csv(dump_path, index=False)
+    return feat
+
+# 关注行为+商品
+def feat_user_shop_follow_amt(start_date, end_date):
+    print('user_shop_follow_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_shop_follow_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = feat_follow(start_date, end_date)
+        product = pd.read_csv(product_path, na_filter=False)
+        shop = pd.read_csv(shop_path, na_filter=False)
+        feat = pd.merge(feat, product, on='sku_id', how='left')
+        feat = pd.merge(feat, shop, on='shop_id', how='left')
         # feat.to_csv(dump_path, index=False)
     return feat
 

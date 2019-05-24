@@ -9,6 +9,7 @@
 
 import time
 from cate_feat import *
+from shop_feat import *
 from juser.user_feat import *
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
@@ -93,20 +94,21 @@ def extract_feat(end_date, time_gap, mark):
             # 初始化feat
             feat = pkey
             # user
-            feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-            feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-            feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-            feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-            feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-            # user + cate
-            feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-            feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-            feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-            feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-            feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            # feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+            # feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+            # feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+            # feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+            # feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+
+            # user + shop
+            feat = pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+            feat = pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
             feat.to_csv(dump_path, index=False)
         # 最后调整
-        feat.drop(['user_id', 'cate'], axis=1, inplace=True)
+        feat.drop(['user_id', 'shop_id'], axis=1, inplace=True)
         feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
         feat_concat.append(feat)
     feat = pd.concat(feat_concat, axis=1)
