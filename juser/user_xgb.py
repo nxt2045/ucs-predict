@@ -49,19 +49,30 @@ cache_path = '../cache'
 
 
 # %% xgboost模型
-def impt_feat(feat_cols, bst):
+def impt_feat(df_train, drop_column):
     """ back 重要性
     """
-    f_score = bst.get_fscore()
-    f_name = []
-    for id in list(f_score.keys()):
-        f_name.append(feat_cols[int(id)])
-    f_id = pd.DataFrame({'f_id': list(f_score.keys())})
-    f_pro = pd.DataFrame({'f_pro': list(f_score.values())})
-    f_name = pd.DataFrame({'f_name': f_name})
-    f_score = pd.concat([f_id, f_name, f_pro], axis=1)
-    f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-    f_score.to_csv('./out/impt_feat.csv', index=False)
+    dump_path = './out/bst.model'
+    if os.path.exists(dump_path):
+        # 获取特征
+        print(datetime.now())
+        print('>> 开始获取特征')
+        feat_cols = (df_train.drop(drop_column, axis=1)).columns
+        print('<< 完成获取特征')
+        # 测试模型
+        print('>> 开始加载模型')
+        bst = xgb.Booster(model_file=dump_path)
+        f_score = bst.get_fscore()
+        f_name = []
+        for id in list(f_score.keys()):
+            print(id)
+            f_name.append(feat_cols[int(id[1:])])
+        f_id = pd.DataFrame({'f_id': list(f_score.keys())})
+        f_pro = pd.DataFrame({'f_pro': list(f_score.values())})
+        f_name = pd.DataFrame({'f_name': f_name})
+        f_score = pd.concat([f_id, f_name, f_pro], axis=1)
+        f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
+        f_score.to_csv('./out/impt_feat.csv', index=False)
 
 
 def f11_score(real, pred):
@@ -122,7 +133,7 @@ def gridcv(df_train, drop_column):
     print("最佳参数组合:")
     print(bst_param)
     df = pd.DataFrame(bst_param)
-    df.to_csv('./out/gridcv/bst_param.csv')
+    df.to_csv('./out/bst_param.csv')
     print('<< 完成优化参数')
 
 
@@ -135,21 +146,20 @@ def train(df_train, drop_column):
     print('>> 开始划分X,y')
     X_train = df_train.drop(drop_column, axis=1).values
     y_train = df_train['label'].values
-    feat_cols = df_train.drop(drop_column, axis=1).columns
     print('<< 完成划分数据')
 
     # 训练模型
     print(datetime.now())
-    print('>> 开始训练模型')
-    bst_param = {'silent': 0, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200,
+    print('>> 开始设置参数')
+    bst_param = {'verbosity': 1, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200,
                  'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
                  'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27, 'tree_method': 'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)
     # dtrain.save_binary('./out/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
+    print('>> 开始训练模型')
     bst = xgb.train(bst_param, dtrain, num_rounds)
     bst.save_model("./out/bst.model")
-    impt_feat(feat_cols, bst)
     print(datetime.now())
     print('<< 完成训练模型')
 
@@ -223,25 +233,25 @@ def main():
     主流程
     """
     # 定义参数
-    time_gap = [1, 2, 3, 7, 14]
+    time_gap = [1, 2, 3, 6, 7, 14]
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
     drop_column = ['user_id', 'label']
 
     # 训练模型
-    # df_train = gen_feat(train_end_date, time_gap, 'train')
+    df_train = gen_feat(train_end_date, time_gap, 'train')
     # gridcv(df_train, drop_column)
-    # train(df_train, drop_column)
+    train(df_train, drop_column)
+    impt_feat(df_train, drop_column)
 
     # # 测试模型
     df_test = gen_feat(test_end_date, time_gap, 'test')
-    # feat_stats(df_test, drop_column)
-    # test(df_test, drop_column)
+    test(df_test, drop_column)
 
     # # 生成提交结果
-    df_sub = gen_feat(sub_end_date, time_gap, 'submit')
-    submit(df_sub, drop_column)
+    # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
+    # submit(df_sub, drop_column)
 
 
 if __name__ == "__main__":

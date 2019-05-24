@@ -93,6 +93,13 @@ def clean_data():
     clean_shop()
     print('<< 数据处理完成!')
 
+def map_day(x):
+    if x < datetime.strptime(sub_start_date, '%Y-%m-%d'):
+        d = datetime.strptime(sub_start_date, '%Y-%m-%d') - x
+        d = d.days
+    else:
+        d = -1
+    return d
 
 def map_month(x):
     if x < datetime.strptime(sub_start_date, '%Y-%m-%d'):
@@ -102,8 +109,14 @@ def map_month(x):
         d = -1
     return d
 
-
-def cate_reg(d):
+def map_year(x):
+    if x < datetime.strptime(sub_start_date, '%Y-%m-%d'):
+        d = datetime.strptime(sub_start_date, '%Y-%m-%d') - x
+        d = d.days // 365
+    else:
+        d = -1
+    return d
+def map_cate(d):
     if d < 0:
         d = -1
     elif 0 <= d <= 3:
@@ -124,15 +137,15 @@ def cate_reg(d):
 def clean_user():
     # all column: 'user_id', 'age', 'sex', 'user_reg_tm', 'user_lv_cd', 'city_level', 'province', 'city', 'county'
     print('> cleaning user')
-    dtype_user = {'age': 'category', 'sex': 'category', 'user_lv_cd': 'category', 'city_level': 'category',
-                  'province': 'category', 'city': 'category', 'county': 'category'}
     user = pd.read_csv(fill_path + "/jdata_user.csv", parse_dates=['user_reg_tm'], na_filter=False)
     print('before:', user.shape)
     action = pd.read_csv(clean_path + "/action.csv", usecols=['user_id'])
     user = user[user['user_id'].isin(action['user_id'])]
     user = user.drop_duplicates('user_id')
+    user['user_reg_day'] = user['user_reg_tm'].apply(map_day)
     user['user_reg_month'] = user['user_reg_tm'].apply(map_month)
-    user['user_reg_cate'] = user['user_reg_month'].apply(cate_reg)
+    user['user_reg_cate'] = user['user_reg_month'].apply(map_cate)
+    user['user_reg_year'] = user['user_reg_tm'].apply(map_year)
     user = user.sort_values('user_id')
     user = user.drop('user_reg_tm', axis=1)
     print('after:', user.shape)
@@ -151,7 +164,7 @@ def clean_product():
     product = product.drop_duplicates('sku_id')
     product['product_reg_month'] = product['market_time'].apply(map_month)
 
-    product['product_reg_cate'] = product['product_reg_month'].apply(cate_reg)
+    product['product_reg_cate'] = product['product_reg_month'].apply(map_cate)
     product = product.drop('market_time', axis=1)
 
     product = product.sort_values(by=['shop_id', 'cate', 'brand', 'product_reg_cate'])
@@ -171,7 +184,7 @@ def clean_shop():
     shop.rename(columns={'cate': 'shop_cate'}, inplace=True)
 
     shop['shop_reg_month'] = shop['shop_reg_tm'].apply(map_month)
-    shop['shop_reg_cate'] = shop['shop_reg_month'].apply(cate_reg)
+    shop['shop_reg_cate'] = shop['shop_reg_month'].apply(map_cate)
     shop = shop.drop('shop_reg_tm', axis=1)
 
     print('after:', shop.shape)
@@ -216,10 +229,11 @@ def clean_action():
 
 if __name__ == "__main__":
     # fill_NaN()
-    clean_shop()
+    # clean_shop()
+    clean_user()
 
 """log
-D:\Program\Miniconda3\envs\env_jdata\python.exe D:/Project/JData-UCS/anaylz/prepare.py
+D:\Program\Miniconda3\envs\env_jdata\python.exe D:/Project/JData-UCS/prepr/prepare.py
 >> 开始处理数据
 > cleaning action
 before: (37214269, 5)
