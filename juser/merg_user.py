@@ -13,6 +13,7 @@ from datetime import timedelta
 from datetime import datetime
 from user_feat import *
 import matplotlib.pyplot as plt
+import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
 
 # %% 配置
@@ -53,37 +54,37 @@ cache_path = '../cache'
 
 # %% 特征融合
 def gen_feat(end_date, time_gap, mark):
-    """
-    遍历获取每个结束时间对应的特征
-    并拼接
+    """ 主调用
+    调用 label-extract-map
     """
     print(datetime.now())
-    print('>> 开始生成特征X,y')
+    print('>> 开始生成特征(X,y)')
     print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
     dump_path = cache_path + '/feat_user_%s.csv' % (end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path)
     else:
-        feat = extract_feat(end_date, time_gap, mark)
-        feat.to_csv(dump_path, index=False)
-    print("feat", feat.shape)
-    print("cols", feat.columns)
+        label = get_label(end_date, mark)
+        feat = extract_feat(end_date, time_gap, label)
+        # feat.to_csv(dump_path, index=False)
+    # TODO: 分箱数据 [结果变差]
+    # feat = map_feat(feat)
+    print("back", back.shape)
+    print("cols", back.columns)
     print("head")
-    print(feat.head())
+    print(back.head())
     print("tail")
-    print(feat.tail())
+    print(back.tail())
     print('生成特征%s' % (str(feat.shape)))
     return feat
 
 
-def extract_feat(end_date, time_gap, mark):
+def extract_feat(end_date, time_gap, label):
     """生成某一结束时间对应的特征
     1. user信息
     2. action对应信息
     """
-    # 添加label
-    label = get_label(end_date, mark)
     pkey = label.drop('label', axis=1)
     feat_concat = [label]
     for gap in time_gap:
@@ -117,11 +118,10 @@ def extract_feat(end_date, time_gap, mark):
     feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
     feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+    feat = pd.merge(feat, feat_user_last_gap(start_date, end_date), on='user_id', how='left')
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
-    feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-    feat.fillna(0, inplace=True)
-    print(feat.head())
     # TODO 结束：与time_gap无关的feat
     return feat
 
@@ -133,7 +133,8 @@ def get_label(end_date, mark):
     print(datetime.now())
     print('> 开始生成标签')
     if mark == 'submit':
-        label = pd.read_csv(clean_path + '/user.csv', na_filter=False, usecols=['user_id'])
+        pkey = pd.read_csv(clean_path + '/user.csv', na_filter=False, usecols=['user_id'])
+        label = pd.concat([pkey, pd.DataFrame({'label': [-1] * pkey.shape[0]})], axis=1)
     else:
         # 可能购买
         pkey = pd.read_csv(clean_path + '/user.csv', na_filter=False, usecols=['user_id'])
@@ -153,3 +154,105 @@ def get_label(end_date, mark):
     print("tail")
     print(label.tail())
     return label
+
+
+def map_feat(feat):
+    """ 分箱数据
+    可执行 qcut 分析
+    :param feat:
+    :return:
+    """
+    # qcut_feat(feat)
+    # TODO: 自定义函数
+    dicts = {
+        '2_user_view_amt': [min(0,min(feat['2_user_view_amt'].values)) - 1,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 17, 23,
+                            max(342, max(feat['2_user_view_amt'].values)) + 1],
+        '3_user_view_amt': [min(0,min(feat['3_user_view_amt'].values)) - 1,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 20,
+                            29, max(679, max(feat['3_user_view_amt'].values)) + 1],
+        '7_user_view_amt': [min(0,min(feat['7_user_view_amt'].values)) - 1,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 17,
+                            20, 26, 40, max(1648, max(feat['7_user_view_amt'].values)) + 1],
+        '7_user_follow_amt': [min(0,min(feat['7_user_follow_amt'].values)) - 1,
+                              1, 3, 4, 5, 7,
+                              max(175, max(feat['7_user_follow_amt'].values)) + 1],
+        '14_user_view_amt': [min(0,min(feat['14_user_view_amt'].values)) - 1,
+                             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 18, 21, 25,
+                             33, 51, max(2411, max(feat['14_user_view_amt'].values)) + 1],
+        '14_user_buy_amt': [min(0,min(feat['14_user_buy_amt'].values)) - 1,
+                            1, 2, 3,
+                            max(38, max(feat['14_user_buy_amt'].values)) + 1],
+        '14_user_follow_amt': [min(0,min(feat['14_user_follow_amt'].values)) - 1,
+                               1, 2, 3, 4, 5, 8,
+                               max(215, max(feat['14_user_follow_amt'].values)) + 1],
+        '14_user_remark_amt': [min(0,min(feat['14_user_remark_amt'].values)) - 1,
+                               1, 2, 3, 4, 5,
+                               max(67, max(feat['14_user_remark_amt'].values)) + 1],
+        'user_reg_month': [min(0,min(feat['user_reg_month'].values)) - 1,
+                           1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60,
+                           max(180, max(feat['user_reg_month'].values)) + 1],
+        'user_view_amt': [min(0,min(feat['user_view_amt'].values)) - 1,
+                          1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 16, 18, 21, 24, 29, 35, 44, 59, 94,
+                          max(11644, max(feat['user_view_amt'].values)) + 1],
+        'user_buy_amt': [min(0,min(feat['user_buy_amt'].values)) - 1,
+                         1, 2, 3, 4, 5, 6, 8,
+                         max(237, max(feat['user_buy_amt'].values)) + 1],
+        'user_follow_amt': [min(0,min(feat['user_follow_amt'].values)) - 1,
+                            1, 2, 3, 4, 5, 6, 8, 12,
+                            max(559, max(feat['user_follow_amt'].values)) + 1],
+        'user_remark_amt': [min(0,min(feat['user_remark_amt'].values)) - 1,
+                            1, 2, 3, 4, 5, 6, 8,
+                            max(125, max(feat['user_remark_amt'].values)) + 1],
+        'user_cart_amt': [min(0,min(feat['user_cart_amt'].values)) - 1,
+                          1, 2, 3, 4, 5, 6, 8, 10, 14,
+                          max(319, max(feat['user_cart_amt'].values)) + 1],
+        'user_buy/view': [min(-13800,min(feat['user_buy/view'].values)) - 1,
+                          -200, -100, 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 20, 25, 28, 33, 50, 100,
+                          max(1666, max(feat['user_buy/view'].values)) + 1],
+        'user_buy/follow': [min(-23700,min(feat['user_buy/follow'].values)) - 1,
+                            -600, -500, -400, -300, -200, -100, 0, 1, 27, 33, 50, 66, 100, 157, 200, 300,
+                            max(9180, max(feat['user_buy/follow'].values)) + 1],
+        'user_buy/remark': [min(-23700,min(feat['user_buy/remark'].values)) - 1,
+                            -500, -400, -300, -200, -100, 0, 1, 11, 25, 33, 37, 50, 66, 100, 150, 200,
+                            max(7400, max(feat['user_buy/remark'].values)) + 1],
+        'user_buy/cart': [min(-13800,min(feat['user_buy/cart'].values)) - 1,
+                          -600, -400, -300, -200, -100, 0, 6, 16, 25, 33, 50, 66, 100, 166, 200, 300,
+                          max(17700, max(feat['user_buy/cart'].values)) + 1],
+    }
+    for col, bins in dicts.items():
+        print(col, bins)
+        labels = [str(i) for i in range(len(bins) - 1)]
+        feat.loc[:, col] = pd.cut(feat[col], bins=bins, labels=labels)
+        print(feat[col].value_counts(sort=False))
+    return feat
+
+
+def qcut_feat(feat):
+    """等频分箱
+    与"label"无关
+    不适用<数值无意义>类别 (city province)
+    :param feat:
+    :return:
+    """
+    print(datetime.now())
+    print('> 开始映射特征')
+    feat = feat.drop(['user_id'], axis=1)
+    for col in feat.columns:
+        counts = feat[col].value_counts().values
+        if len(counts) == 1:
+            print('\n无效特征列：', col)
+        elif col != 'label' and len(counts) > 30:
+            cuts = int(50.0 * feat.shape[0] / (feat.shape[0] - counts[0]))
+            print('\n开始划分：%s(%s)' % (col, str(cuts)))
+            print('min：%s' % (str(min(feat[col].values))))
+            print('max：%s' % (str(max(feat[col].values))))
+            cutted = pd.qcut(feat[col], cuts, duplicates='drop')
+            if len(cutted.value_counts()) > 30:
+                cutted = pd.qcut(feat[col], 100, duplicates='drop')
+                if len(cutted.value_counts()) > 30:
+                    cutted = pd.qcut(feat[col], 50, duplicates='drop')
+                    if len(cutted.value_counts()) > 30:
+                        cutted = pd.qcut(feat[col], 30, duplicates='drop')
+            feat.loc[:, col] = cutted
+            print(feat[col].value_counts(sort=False))

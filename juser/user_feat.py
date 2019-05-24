@@ -9,8 +9,7 @@
 import os
 import pandas as pd
 from datetime import datetime
-from sklearn.preprocessing import LabelEncoder
-
+from datetime import timedelta
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
 
@@ -26,8 +25,8 @@ plt.rcParams['figure.figsize'] = (12, 8)
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
-train_start_date = "2018-02-23"
-train_end_date = "2018-04-15"
+train_start_date = "2018-03-10"
+train_end_date = "2018-04-08"
 sub_start_date = "2018-04-16"
 sub_end_date = "2018-04-22"
 
@@ -61,12 +60,12 @@ def feat_action(start_date, end_date):
     else:
         dump_path = cache_path + '/action_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
         if os.path.exists(dump_path):
-            feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+            feat = pd.read_csv(dump_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
         else:
-            df_action = pd.read_csv(action_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
-            feat = df_action[
-                (start_date <= df_action['action_time']) & (df_action['action_time'] <= end_date)]
-            # feat.to_csv(dump_path, index=False)
+            action = pd.read_csv(action_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
+            feat = action[
+                (start_date <= action['action_time']) & (action['action_time'] <= end_date)]
+            feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -75,11 +74,11 @@ def feat_view(start_date, end_date):
     print('view_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/view_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+        feat = pd.read_csv(dump_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 1]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -88,11 +87,11 @@ def feat_buy(start_date, end_date):
     print('buy_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/buy_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+        feat = pd.read_csv(dump_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 2]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -101,11 +100,11 @@ def feat_follow(start_date, end_date):
     print('follow_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/follow_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+        feat = pd.read_csv(dump_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 3]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -114,11 +113,11 @@ def feat_remark(start_date, end_date):
     print('remark_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/remark_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+        feat = pd.read_csv(dump_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 4]
-    # feat.to_csv(dump_path, index=False)
+    feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -127,11 +126,11 @@ def feat_cart(start_date, end_date):
     print('cart_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/cart_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+        feat = pd.read_csv(dump_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 5]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -153,7 +152,7 @@ def feat_user_view_amt(start_date, end_date):
         action = feat_view(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_view_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -167,7 +166,7 @@ def feat_user_buy_amt(start_date, end_date):
         action = feat_buy(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_buy_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -181,7 +180,7 @@ def feat_user_follow_amt(start_date, end_date):
         action = feat_follow(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_follow_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -195,7 +194,7 @@ def feat_user_remark_amt(start_date, end_date):
         action = feat_remark(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_remark_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -209,7 +208,7 @@ def feat_user_cart_amt(start_date, end_date):
         action = feat_cart(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_cart_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -217,7 +216,7 @@ def feat_user_cart_amt(start_date, end_date):
 def feat_user_action_ratio(start_date, end_date):
     print('user_action_ratio_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/user_action_ratio_%s_%s.csv' % (
-    start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -228,21 +227,40 @@ def feat_user_action_ratio(start_date, end_date):
         feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
         feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
         feat.fillna(0, inplace=True)
-        class_le = LabelEncoder()
-        feat['user_buy/view'] = feat['user_buy_amt'] / feat['user_view_amt']
-        feat['user_buy/view'] = class_le.fit_transform(feat['user_buy/view'])
-        feat['user_buy/follow'] = feat['user_buy_amt'] / feat['user_follow_amt']
-        feat['user_buy/follow'] = class_le.fit_transform(feat['user_buy/follow'])
-        feat['user_buy/remark'] = feat['user_buy_amt'] / feat['user_remark_amt']
-        feat['user_buy/remark'] = class_le.fit_transform(feat['user_buy/remark'])
-        feat['user_buy/cart'] = feat['user_buy_amt'] / feat['user_cart_amt']
-        feat['user_buy/cart'] = class_le.fit_transform(feat['user_buy/cart'])
+        feat.ix[feat['user_follow_amt'] == 0, 'user_follow_amt'] = -1
+        feat['user_buy/follow'] = feat['user_buy_amt'] / (feat['user_follow_amt']) * 100
+        feat.ix[feat['user_remark_amt'] == 0, 'user_remark_amt'] = -1
+        feat['user_buy/remark'] = feat['user_buy_amt'] / (feat['user_remark_amt']) * 100
+        feat.ix[feat['user_cart_amt'] == 0, 'user_cart_amt'] = -1
+        feat['user_buy/cart'] = feat['user_buy_amt'] / (feat['user_cart_amt']) * 100
+        feat.ix[feat['user_view_amt'] == 0, 'user_view_amt'] = -1
+        feat['user_buy/view'] = feat['user_buy_amt'] / (feat['user_view_amt']) * 100
         feat = feat[['user_id', 'user_buy/view', 'user_buy/follow', 'user_buy/remark', 'user_buy/cart']]
-        # feat.to_csv(dump_path, index=False)
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+
+    return feat
+
+
+# 上次行为距结束天数
+def feat_user_last_gap(start_date, end_date):
+    print('user_last_gap_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/user_last_gap_%s_%s.csv' % (
+        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_action(start_date, end_date)[['user_id', 'action_time']]
+        action = action[(action['action_time'] <= end_date - timedelta(days=1))]
+        action.sort_values(['user_id', 'action_time'], inplace=True)
+        feat = action.groupby('user_id').min().reset_index()
+        feat['user_last_gap'] = [(end_date - i).days for i in feat['action_time']]
+        feat.drop('action_time', axis=1, inplace=True)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
 if __name__ == "__main__":
     end_date = datetime.strptime(train_end_date, '%Y-%m-%d')
     start_date = datetime.strptime(train_start_date, '%Y-%m-%d')
-    feat_user_view_amt(start_date, end_date)
+    feat_user_last_gap(start_date, end_date)
