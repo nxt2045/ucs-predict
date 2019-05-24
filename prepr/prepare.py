@@ -182,7 +182,7 @@ def clean_shop():
     shop = shop[shop['shop_id'].isin(product['shop_id'])]
     shop = shop.drop_duplicates('shop_id')
     shop.rename(columns={'cate': 'shop_cate'}, inplace=True)
-
+    shop['shop_reg_day'] = shop['shop_reg_tm'].apply(map_day)
     shop['shop_reg_month'] = shop['shop_reg_tm'].apply(map_month)
     shop['shop_reg_cate'] = shop['shop_reg_month'].apply(map_cate)
     shop = shop.drop('shop_reg_tm', axis=1)
@@ -229,8 +229,9 @@ def clean_action():
 
 if __name__ == "__main__":
     # fill_NaN()
-    # clean_shop()
-    clean_user()
+    # clean_data()
+    clean_shop()
+    # clean_user()
 
 """log
 D:\Program\Miniconda3\envs\env_jdata\python.exe D:/Project/JData-UCS/prepr/prepare.py
