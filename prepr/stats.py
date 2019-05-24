@@ -8,7 +8,6 @@
 # @Describ : ...
 import seaborn as sns
 import matplotlib.pyplot as plt
-from scipy.stats import skewnorm
 import os, time
 import numpy as np
 import pandas as pd

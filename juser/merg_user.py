@@ -70,12 +70,12 @@ def gen_feat(end_date, time_gap, mark):
         # feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
-    print("back", back.shape)
-    print("cols", back.columns)
+    print("feat", feat.shape)
+    print("cols", feat.columns)
     print("head")
-    print(back.head())
+    print(feat.head())
     print("tail")
-    print(back.tail())
+    print(feat.tail())
     print('生成特征%s' % (str(feat.shape)))
     return feat
 
