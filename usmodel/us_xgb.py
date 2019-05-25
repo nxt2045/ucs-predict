@@ -78,7 +78,7 @@ def impt_feat(df_train, drop_column):
 def report(df):
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df = pd.merge(df, product, on='sku_id', how='left')
-    df = df[['user_id','cate','shop_id','pred','label']]
+    df = df[['user_id', 'cate', 'shop_id', 'pred', 'label']]
     print('> report')
     print(df.head())
 
@@ -90,7 +90,6 @@ def report(df):
     pred = df[df['pred'] == 1]
     print('pred')
     print(pred.head())
-
 
     # 所有购买用户品类
     all_set = real[['user_id', 'cate']]
