@@ -284,7 +284,7 @@ def model(df_train, df_test, drop_column):
         # 设置参数(gridcv最佳)
         print(datetime.now())
         print('>> 开始设置参数')
-        weight = (len(y_train) - np.sum(y_train))/(np.sum(y_train))
+        weight = (np.sum(y_train)) / (len(y_train) - np.sum(y_train))
         param = {
             # 默认
             'silent': 0,
