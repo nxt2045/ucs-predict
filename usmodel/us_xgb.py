@@ -161,7 +161,7 @@ def gridcv(df_train, drop_column):
     # 优化参数
     print(datetime.now())
     print('>> 开始优化参数')
-    xgb_model = XGBClassifier(objective='binary:logistic', learning_rate =0.01,)
+    xgb_model = XGBClassifier(objective='binary:logistic', learning_rate=0.01, )
     param_grids = [
         {'max_depth': range(3, 10, 1)},
         {'min_child_weight': range(1, 6, 1)},
