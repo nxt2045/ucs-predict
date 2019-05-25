@@ -465,13 +465,14 @@ def feat_sku_last_amt(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # GR: 天数
 # 商品行为天数
 def feat_sku_action_day(start_date, end_date):
     print('sku_action_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/sku_action_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                               start_date.strftime('%y%m%d'),
+                                                               end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -484,12 +485,13 @@ def feat_sku_action_day(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # 商品浏览天数
 def feat_sku_view_day(start_date, end_date):
     print('sku_view_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/sku_view_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                             start_date.strftime('%y%m%d'),
+                                                             end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -507,8 +509,8 @@ def feat_sku_view_day(start_date, end_date):
 def feat_sku_buy_day(start_date, end_date):
     print('sku_buy_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/sku_buy_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                            start_date.strftime('%y%m%d'),
+                                                            end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -521,12 +523,13 @@ def feat_sku_buy_day(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # 商品关注天数
 def feat_sku_follow_day(start_date, end_date):
     print('sku_follow_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/sku_follow_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                               start_date.strftime('%y%m%d'),
+                                                               end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -539,12 +542,13 @@ def feat_sku_follow_day(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # 商品评论天数
 def feat_sku_remark_day(start_date, end_date):
     print('sku_remark_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/sku_remark_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                               start_date.strftime('%y%m%d'),
+                                                               end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -557,12 +561,13 @@ def feat_sku_remark_day(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # 商品购物车天数
 def feat_sku_cart_day(start_date, end_date):
     print('sku_cart_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/sku_cart_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                             start_date.strftime('%y%m%d'),
+                                                             end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -574,7 +579,6 @@ def feat_sku_cart_day(start_date, end_date):
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
-
 
 
 # GR: 特殊系列
@@ -590,13 +594,14 @@ def feat_sku_rebuy_rate(start_date, end_date):
         buy = feat_buy(start_date, end_date)[['user_id', 'sku_id']]
         df1 = buy.groupby(['user_id', 'sku_id']).size().reset_index(name='user_buy_amt')
         df2 = df1[df1['user_buy_amt'] > 1]
-        df1 = df1.drop('user_buy_amt',axis=1)
-        df2 = df2.drop('user_buy_amt',axis=1)
+        df1 = df1.drop('user_buy_amt', axis=1)
+        df2 = df2.drop('user_buy_amt', axis=1)
         df1 = df1.groupby('sku_id', as_index=False).size().reset_index(name='all_user_amt')
         df2 = df2.groupby('sku_id', as_index=False).size().reset_index(name='all_rebuy_user_amt')
         feat = pd.merge(df1, df2, on='sku_id', how='left')
         feat['sku_rebuy_rate'] = feat['all_rebuy_user_amt'] / feat['all_user_amt']
-        feat = feat[['sku_id','sku_rebuy_rate']]
+        feat = feat[['sku_id', 'sku_rebuy_rate']]
+        feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
 
