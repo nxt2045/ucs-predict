@@ -315,7 +315,6 @@ def main():
     drop_column = ['user_id', 'sku_id', 'label']
 
     # 生成特征
-    print(datetime.now())
     df_train = gen_feat(train_end_date, time_gap, 'train')
     df_test = gen_feat(test_end_date, time_gap, 'test')
 

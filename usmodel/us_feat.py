@@ -267,7 +267,8 @@ def feat_user_sku_action_ratio(start_date, end_date):
         feat['user_sku_remark_ratio'] = feat['user_sku_remark_amt'] / (feat['user_sku_action_amt']) * 100
         feat['user_sku_cart_ratio'] = feat['user_sku_cart_amt'] / (feat['user_sku_action_amt']) * 100
         feat = feat[
-            ['user_id','sku_id', 'user_sku_view_ratio', 'user_sku_buy_ratio', 'user_sku_follow_ratio', 'user_sku_remark_ratio',
+            ['user_id', 'sku_id', 'user_sku_view_ratio', 'user_sku_buy_ratio', 'user_sku_follow_ratio',
+             'user_sku_remark_ratio',
              'user_sku_cart_ratio']]
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
@@ -320,7 +321,7 @@ def feat_user_sku_user_action_ratio(start_date, end_date):
         feat['user_sku_user_cart_ratio'] = feat['user_sku_cart_amt'] / (feat['user_cart_amt']) * 100
 
         feat = feat[
-            ['user_id', 'sku_id','user_sku_user_action_ratio', 'user_sku_user_view_ratio', 'user_sku_user_buy_ratio',
+            ['user_id', 'sku_id', 'user_sku_user_action_ratio', 'user_sku_user_view_ratio', 'user_sku_user_buy_ratio',
              'user_sku_user_follow_ratio', 'user_sku_user_remark_ratio', 'user_sku_user_cart_ratio']]
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
@@ -386,6 +387,7 @@ def feat_user_sku_last_amt(start_date, end_date):
     return feat
 
 
+# GR: 天数
 # 用户商品行为天数
 def feat_user_sku_action_day(start_date, end_date):
     print('user_sku_action_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
@@ -400,6 +402,101 @@ def feat_user_sku_action_day(start_date, end_date):
         action['action_time'] = action['action_time'].values.astype('datetime64[D]')
         action = action.drop_duplicates(['user_id', 'sku_id', 'action_time'])
         feat = action.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_action_day')
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户商品浏览天数
+def feat_user_sku_view_day(start_date, end_date):
+    print('user_sku_view_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_sku_view_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                  start_date.strftime('%y%m%d'),
+                                                                  end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        view = feat_view(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        view.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
+        view['action_time'] = view['action_time'].values.astype('datetime64[D]')
+        view = view.drop_duplicates(['user_id', 'sku_id', 'action_time'])
+        feat = view.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_view_day')
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户商品购买天数
+def feat_user_sku_buy_day(start_date, end_date):
+    print('user_sku_buy_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_sku_buy_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                 start_date.strftime('%y%m%d'),
+                                                                 end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        buy = feat_buy(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        buy.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
+        buy['action_time'] = buy['action_time'].values.astype('datetime64[D]')
+        buy = buy.drop_duplicates(['user_id', 'sku_id', 'action_time'])
+        feat = buy.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_buy_day')
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户商品关注天数
+def feat_user_sku_follow_day(start_date, end_date):
+    print('user_sku_follow_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_sku_follow_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                    start_date.strftime('%y%m%d'),
+                                                                    end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        follow = feat_follow(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        follow.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
+        follow['action_time'] = follow['action_time'].values.astype('datetime64[D]')
+        follow = follow.drop_duplicates(['user_id', 'sku_id', 'action_time'])
+        feat = follow.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_follow_day')
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户商品评论天数
+def feat_user_sku_remark_day(start_date, end_date):
+    print('user_sku_remark_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_sku_remark_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                    start_date.strftime('%y%m%d'),
+                                                                    end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        remark = feat_remark(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        remark.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
+        remark['action_time'] = remark['action_time'].values.astype('datetime64[D]')
+        remark = remark.drop_duplicates(['user_id', 'sku_id', 'action_time'])
+        feat = remark.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_remark_day')
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户商品购物车天数
+def feat_user_sku_cart_day(start_date, end_date):
+    print('user_sku_cart_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_sku_cart_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                  start_date.strftime('%y%m%d'),
+                                                                  end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        cart = feat_cart(start_date, end_date)[['user_id', 'sku_id', 'action_time']]
+        cart.sort_values(['user_id', 'sku_id', 'action_time'], inplace=True)
+        cart['action_time'] = cart['action_time'].values.astype('datetime64[D]')
+        cart = cart.drop_duplicates(['user_id', 'sku_id', 'action_time'])
+        feat = cart.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_cart_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
