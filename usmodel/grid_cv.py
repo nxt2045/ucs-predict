@@ -19,7 +19,7 @@ def gsearch1(X_train, y_train):
     print(gsearch1.grid_scores_, gsearch1.best_params_, gsearch1.best_score_)
 
 
-def gsearch2(X_train, y_train):
+def gsearch1a(X_train, y_train):
     # Grid seach on subsample and max_features
     # Choose all predictors except target & IDcols
     param_test2 = {

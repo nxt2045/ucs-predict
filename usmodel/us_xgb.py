@@ -233,8 +233,7 @@ def param_search(df_train, df_test, drop_column):
         {'scale_pos_weight': [1, 2, 3, 4, 5]},
         {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]},
     ]
-    gsearch1(X_train,y_train)
-
+    gsearch1(X_train, y_train)
 
 
 def model(df_train, df_test, drop_column):
