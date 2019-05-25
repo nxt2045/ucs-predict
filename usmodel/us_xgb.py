@@ -8,18 +8,17 @@
 # @Describ : ...
 
 import os
-import time
-from s_feat import feat_buy_plus
 from datetime import datetime
 from datetime import timedelta
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from merg_us import gen_feat
-from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
-from xgboost import XGBClassifier
-import matplotlib.pyplot as plt
+
+from merg_us import gen_feat
+from s_feat import feat_buy_plus
 
 # %% 配置
 # 输出设置
@@ -54,7 +53,7 @@ cache_path = '../cache'
 def impt_feat(df_train, drop_column):
     """ back 重要性
     """
-    dump_path = './out/bst.model'
+    dump_path = './xbg/bst.model'
     if os.path.exists(dump_path):
         # 获取特征
         print(datetime.now())
@@ -72,7 +71,7 @@ def impt_feat(df_train, drop_column):
         f_name = pd.DataFrame({'f_name': f_name})
         f_score = pd.concat([f_id, f_name, f_pro], axis=1)
         f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-        f_score.to_csv('./out/impt_feat.csv', index=False)
+        f_score.to_csv('./xbg/impt_feat.csv', index=False)
 
 
 def report(real, pred):
@@ -123,10 +122,6 @@ def report(real, pred):
 
 
 def bst_param(df_train, drop_column):
-    import xgboost as xgb
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import roc_auc_score
 
     """ 构造
      xgboost模型训练测试
@@ -186,7 +181,7 @@ def model(df_train, df_test, drop_column):
     xgboost模型训练测试
     """
 
-    dump_path = './out/bst.model'
+    dump_path = './xbg/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
@@ -232,7 +227,7 @@ def model(df_train, df_test, drop_column):
         print(datetime.now())
         print('\n>> 开始训练模型')
         bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=50)
-        bst.save_model("./out/bst.model")
+        bst.save_model("./xbg/bst.model")
         print('<< 完成训练模型')
 
     # 划分(X,y)
@@ -254,7 +249,7 @@ def model(df_train, df_test, drop_column):
     df_pred.reset_index(drop=True, inplace=True)
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
-    # df_pred.to_csv('./out/test_pred.csv', index=False)
+    # df_pred.to_csv('./xbg/test_pred.csv', index=False)
 
     # 计算得分
     print('\n>> 开始计算得分')
@@ -284,7 +279,7 @@ def submit(df_sub, drop_column):
     """
     xgboost模型提交
     """
-    dump_path = './out/bst.model'
+    dump_path = './xbg/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
@@ -295,7 +290,7 @@ def submit(df_sub, drop_column):
         # 预测提交
         print('>> 开始预测提交')
         dsub = xgb.DMatrix(X_sub)
-        # dsub.save_binary('./out/dsub.buffer')
+        # dsub.save_binary('./xbg/dsub.buffer')
         bst = xgb.Booster(model_file=dump_path)
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
@@ -307,7 +302,7 @@ def submit(df_sub, drop_column):
         df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
 
         df_pred.ix[:10000, 'pred'] = 1
-        df_pred.to_csv('./out/sub_pred.csv', index=False)
+        df_pred.to_csv('./xbg/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['pred'] == 1]
         df_pred = df_pred[['user_id', 'cate', 'shop_id']]
@@ -336,10 +331,9 @@ def main():
     df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
 
     # Onehot编码
-    df_train, df_test, df_sub = trans_feat(df_train, df_test, df_sub, drop_column)
 
     # 优化参数
-    # bst_param(df_train, df_test, drop_column)
+    bst_param(df_train, df_test, drop_column)
 
     # 构造模型
     # model(df_train, df_test, drop_column)

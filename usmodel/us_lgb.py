@@ -8,18 +8,19 @@
 # @Describ : ...
 
 import os
-import time
-from s_feat import feat_buy_plus
 from datetime import datetime
 from datetime import timedelta
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from merg_us import gen_feat
-from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
-from xgboost import XGBClassifier
-import matplotlib.pyplot as plt
+import lightgbm as lgb
+from sklearn.model_selection import train_test_split
+
+from merg_us import gen_feat
+from s_feat import feat_buy_plus
 
 # %% 配置
 # 输出设置
@@ -54,47 +55,45 @@ cache_path = '../cache'
 def impt_feat(df_train, drop_column):
     """ back 重要性
     """
-    dump_path = './xbg/bst.model'
+    dump_path = './lgb/bst.model'
     if os.path.exists(dump_path):
         # 获取特征
         print(datetime.now())
-        print('>> 开始获取特征')
+        print('>> 开始特征重要性')
         feat_cols = (df_train.drop(drop_column, axis=1)).columns
-        print('<< 完成获取特征')
+        print('<< 完成特征重要性')
         # 测试模型
-        print('>> 开始加载模型')
         bst = xgb.Booster(model_file=dump_path)
         f_score = bst.get_fscore()
         f_name = []
         for id in list(f_score.keys()):
-            print(id)
             f_name.append(feat_cols[int(id[1:])])
         f_id = pd.DataFrame({'f_id': list(f_score.keys())})
         f_pro = pd.DataFrame({'f_pro': list(f_score.values())})
         f_name = pd.DataFrame({'f_name': f_name})
         f_score = pd.concat([f_id, f_name, f_pro], axis=1)
         f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-        f_score.to_csv('./xbg/impt_feat.csv', index=False)
+        f_score.to_csv('./lgb/impt_feat.csv', index=False)
 
 
 def report(real, pred):
-    print('real')
-    print(real.head())
-    print('pred')
-    print(pred.head())
+    print('real:', real.shape)
+    # print(real.head())
+    print('pred:', pred.shape)
+    # print(pred.head())
 
     # 所有购买用户品类
     all_2 = real[['user_id', 'cate']]
+    print('all_2:', all_2.shape)
     # 所有预测购买用户品类
     all_pred_2 = pred[['user_id', 'cate']]
-
+    print('all_pred_2:', all_pred_2.shape)
     # 计算所有用户品类购买评价指标
-    pos, neg = 0, 0
-    for pred_2 in all_pred_2:
-        if pred_2 in all_2:
-            pos += 1
-        else:
-            neg += 1
+    intersect = pd.merge(all_2, all_pred_2, how='inner')
+    pos = intersect.shape[0]
+    neg = all_pred_2.shape[0] - pos
+    print('pos:', pos)
+    print('neg:', neg)
     all_2_acc = 1.0 * pos / (pos + neg)
     all_2_recall = 1.0 * pos / len(all_2)
     print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_2_acc))
@@ -104,14 +103,15 @@ def report(real, pred):
 
     # 所有用户品类店铺对
     all_3 = real[['user_id', 'cate', 'shop_id']]
+    print('all_3:', all_3.shape)
     # 所有预测用户品类店铺对
     all_pred_3 = pred[['user_id', 'cate', 'shop_id']]
-    pos, neg = 0, 0
-    for pred_3 in all_pred_3:
-        if pred_3 in all_3:
-            pos += 1
-        else:
-            neg += 1
+    print('all_pred_3:', all_pred_3.shape)
+    intersect = pd.merge(all_3, all_pred_3, how='inner')
+    pos = intersect.shape[0]
+    neg = all_pred_2.shape[0] - pos
+    print('pos:', pos)
+    print('neg:', neg)
     all_3_acc = 1.0 * pos / (pos + neg)
     all_3_recall = 1.0 * pos / len(all_3)
     print('所有用户品类中预测购买店铺的准确率为 ' + str(all_3_acc))
@@ -123,140 +123,53 @@ def report(real, pred):
     print('score=' + str(score))
 
 
-def f11_score(real, pred):
-    # 计算所有用户购买评价指标
-    precision = metrics.precision_score(real, pred)
-    recall = metrics.recall_score(real, pred)
-    print('准确率: ' + str(precision))
-    print('召回率: ' + str(recall))
-    F11 = 3.0 * precision * recall / (2.0 * precision + recall)
-    print('F11=' + str(F11))
-    return F11
+def bst_param(df_train, df_test,drop_column):
 
-
-def f12_score(real, pred):
-    # 计算所有用户购买评价指标
-    precision = metrics.precision_score(real, pred)
-    recall = metrics.recall_score(real, pred)
-    print('准确率: ' + str(precision))
-    print('召回率: ' + str(recall))
-    F11 = 3.0 * precision * recall / (2.0 * precision + recall)
-    print('F11=' + str(F11))
-    return F11
-
-
-def gridcv(df_train, drop_column):
-    """ 参数
-    xgboost参数优化
-    """
-    # TODO: Success but Warning
-    # 划分(X,y)
-    print(datetime.now())
-    print('>> 开始划分X,y')
-    X_train = df_train.drop(drop_column, axis=1).values
-    y_train = df_train['label'].values
-    print('<< 完成划分数据')
-
-    # 优化参数
-    print(datetime.now())
-    print('>> 开始优化参数')
-    xgb_model = XGBClassifier(objective='binary:logistic', learning_rate=0.01, )
-    param_grids = [
-        {'max_depth': range(3, 10, 1)},
-        {'min_child_weight': range(1, 6, 1)},
-        {'gamma': [i / 10.0 for i in range(0, 5)]},
-        {'subsample': [i / 10.0 for i in range(6, 10)]},
-        {'colsample_bytree': [i / 10.0 for i in range(6, 10)]},
-        {'n_estimators': [50, 100, 200, 500, 1000]},
-        {'learning_rate': [0.01, 0.05, 0.1, 0.2]},
-        {'scale_pos_weight': [1, 2, 3, 4, 5]},
-        {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]}
-    ]
-
-    bst_param = {'silent': 0, 'nthread': 4}
-    for param_grid in param_grids:
-        print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_grid, scoring='roc_auc', cv=5, verbose=1)
-        clf.fit(X_train, y_train)
-        bst_param.update(clf.best_params_)
-        print(datetime.now())
-        print("最佳参数:", clf.best_params_)
-        print("最佳得分:", clf.best_score_)
-        print("搜索得分:")
-        means = clf.cv_results_['mean_test_score']
-        stds = clf.cv_results_['std_test_score']
-        for mean, std, params in zip(means, stds, clf.cv_results_['params']):
-            print("%0.3f (+/-%0.03f) for %r"
-                  % (mean, std * 2, params))
-    print("最佳参数组合:")
-    print(bst_param)
-    df = pd.DataFrame(bst_param)
-    df.to_csv('./xbg/bst_param.csv')
-    print('<< 完成优化参数')
-
-
-def param_search(df_train, df_test, drop_column):
     """ 构造
      xgboost模型训练测试
      """
-    # 划分(X,y)
-    print(datetime.now())
-    print('>> 开始划分X,y')
+    print('\n>> 开始划分X,y')
     X_train = df_train.drop(drop_column, axis=1).values
     y_train = df_train['label'].values
     X_test = df_test.drop(drop_column, axis=1).values
     y_test = df_test['label'].values
-    print('>> 开始获取特征')
-    print('<< 完成划分数据')
+    print('<< 完成划分X,y')
 
-    # 设置参数(gridcv最佳)
     print(datetime.now())
-    print('>> 开始设置参数')
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    dtest = xgb.DMatrix(X_test, label=y_test)
-    param_staic = {
-        # 默认
-        'silent': 1,
-        'objective': 'binary:logistic',
-        'scale_pos_weight': 1,
-        'eval_metric': 'logloss',
-        # 调整
-        'learning_rate': 0.1,
-        'n_estimators': 1000,
-        'max_depth': 3,
-        'min_child_weight': 5,
-        'gamma': 0,
-        'subsample': 0.8,
-        'colsample_bytree': 0.8,
-        'eta': 0.05,
-    }
-    param_grids = [
-        {'max_depth': range(3, 10, 1)},
-        {'min_child_weight': range(1, 6, 1)},
-        {'gamma': [i / 10.0 for i in range(0, 5)]},
-        {'subsample': [i / 10.0 for i in range(6, 10)]},
-        {'colsample_bytree': [i / 10.0 for i in range(6, 10)]},
-        {'n_estimators': [50, 100, 200, 500, 1000]},
-        {'learning_rate': [0.01, 0.05, 0.1, 0.2]},
-        {'scale_pos_weight': [1, 2, 3, 4, 5]},
-        {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]}
-    ]
-    for param_grid in param_grids:
-        for key, list_value in param_grid.items():
-            for value in list_value:
-                print(datetime.now())
-                param = param_staic
-                print('调整参数 %s: %s' % (key, str(value)))
-                param = param.update({key: value})
-                num_round = 500
-                print('<< 完成设置参数')
+    print('\n>> 开始优化参数')
+    train = lgb.Dataset(X_train, y_train)
+    valid = lgb.Dataset(X_test, y_test, reference=train)
 
-                # 训练模型(watchlist)
-                print(datetime.now())
-                print('>> 开始训练模型')
-                xgb.cv(param, dtrain, num_round, nfold=5, metrics='logloss', seed=0,
-                       callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
-                print('<< 完成训练模型')
+    parameters = {
+        'max_depth': [15, 20, 25, 30, 35],
+        'learning_rate': [0.01, 0.02, 0.05, 0.1, 0.15],
+        'feature_fraction': [0.6, 0.7, 0.8, 0.9, 0.95],
+        'bagging_fraction': [0.6, 0.7, 0.8, 0.9, 0.95],
+        'bagging_freq': [2, 4, 5, 6, 8],
+        'lambda_l1': [0, 0.1, 0.4, 0.5, 0.6],
+        'lambda_l2': [0, 10, 15, 35, 40],
+        'cat_smooth': [1, 10, 15, 20, 35]
+    }
+    gbm = lgb.LGBMClassifier(boosting_type='gbdt',
+                             objective='binary',
+                             metric='auc',
+                             verbose=0,
+                             learning_rate=0.01,
+                             num_leaves=35,
+                             feature_fraction=0.8,
+                             bagging_fraction=0.9,
+                             bagging_freq=8,
+                             lambda_l1=0.6,
+                             lambda_l2=0)
+    # 有了gridsearch我们便不需要fit函数
+    gsearch = GridSearchCV(gbm, param_grid=parameters, scoring='roc_auc', cv=3)
+    gsearch.fit(X_train, y_train)
+
+    print("Best score: %0.3f" % gsearch.best_score_)
+    print("Best parameters set:")
+    best_parameters = gsearch.best_estimator_.get_params()
+    for param_name in sorted(parameters.keys()):
+        print("\t%s: %r" % (param_name, best_parameters[param_name]))
 
 
 def model(df_train, df_test, drop_column):
@@ -264,16 +177,16 @@ def model(df_train, df_test, drop_column):
     xgboost模型训练测试
     """
 
-    dump_path = './xbg/bst.model'
+    dump_path = './lgb/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
-        print('>> 开始加载已有模型')
+        print('\n>> 开始加载已有模型')
         bst = xgb.Booster(model_file=dump_path)
     else:
         # 划分(X,y)
         print(datetime.now())
-        print('>> 开始划分X,y')
+        print('\n>> 开始划分X,y')
         X_train = df_train.drop(drop_column, axis=1).values
         y_train = df_train['label'].values
         X_test = df_test.drop(drop_column, axis=1).values
@@ -283,7 +196,8 @@ def model(df_train, df_test, drop_column):
         print('<< 完成划分X,y')
         # 设置参数(gridcv最佳)
         print(datetime.now())
-        print('>> 开始设置参数')
+        print('\n>> 开始设置参数')
+        weight = (len(y_train) - np.sum(y_train)) / (np.sum(y_train))
         param = {
             # 默认
             'silent': 0,
@@ -300,28 +214,28 @@ def model(df_train, df_test, drop_column):
             'eta': 0.05,
         }
         plst = list(param.items())
-        plst += [('eval_metric', 'logloss')]
+        plst += [('eval_metric', 'auc')]  # auc logloss
         num_round = 500
         evallist = [(dtest, 'eval'), (dtrain, 'train')]
         print('<< 完成设置参数')
 
         # 训练模型(watchlist)
         print(datetime.now())
-        print('>> 开始训练模型')
+        print('\n>> 开始训练模型')
         bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=50)
-        bst.save_model("./xbg/bst.model")
+        bst.save_model("./lgb/bst.model")
         print('<< 完成训练模型')
 
     # 划分(X,y)
     print(datetime.now())
-    print('>> 开始划分X,y')
+    print('\n>> 开始划分X,y')
     X_test = df_test.drop(drop_column, axis=1).values
     y_test = df_test['label'].values
-    dtest = xgb.DMatrix(X_test, label=y_test)
+    dtest = xgb.DMatrix(X_test)
     print('<< 完成划分X,y')
 
     # 测试模型
-    print('>> 开始测试模型')
+    print('\n>> 开始测试模型')
     y_probab = bst.predict(dtest)
     print('> 概率转换0,1')
     df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
@@ -331,18 +245,27 @@ def model(df_train, df_test, drop_column):
     df_pred.reset_index(drop=True, inplace=True)
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
-    df_pred.to_csv('./xbg/test_pred.csv', index=False)
+    # df_pred.to_csv('./lgb/test_pred.csv', index=False)
 
     # 计算得分
-    end_date = datetime.strptime('2018-4-1', '%Y-%m-%d')
-    df_real = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))[['user_id', 'cate', 'shop_id']]
-    df_real = df_real.drop_duplicates(['user_id', 'cate'])
+    print('\n>> 开始计算得分')
+    dump_path = cache_path + '/test_real.csv'
+    if os.path.exists(dump_path):
+        # 划分(X,y)
+        print(datetime.now())
+        df_real = pd.read_csv(dump_path)
+    else:
+        end_date = datetime.strptime('2018-4-1', '%Y-%m-%d')
+        df_real = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))[
+            ['user_id', 'cate', 'shop_id']]
+        df_real = df_real.drop_duplicates(['user_id', 'cate'])
+        df_real.to_csv(dump_path, index=False)
 
     df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
     print('前%s行[test] label=1：' % (str(df_real.shape[0])))
     report(df_real, df_pred.iloc[:df_real.shape[0]])
 
-    for amt in range(10000, 160000, 10000):
+    for amt in range(160000, 250000, 10000):
         print('前%s行 label=1：' % (str(amt)))
         report(df_real, df_pred.iloc[:amt])
     print('<< 完成测试模型')
@@ -352,7 +275,7 @@ def submit(df_sub, drop_column):
     """
     xgboost模型提交
     """
-    dump_path = './xbg/bst.model'
+    dump_path = './lgb/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
@@ -363,7 +286,7 @@ def submit(df_sub, drop_column):
         # 预测提交
         print('>> 开始预测提交')
         dsub = xgb.DMatrix(X_sub)
-        # dsub.save_binary('./xbg/dsub.buffer')
+        # dsub.save_binary('./lgb/dsub.buffer')
         bst = xgb.Booster(model_file=dump_path)
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
@@ -375,7 +298,7 @@ def submit(df_sub, drop_column):
         df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
 
         df_pred.ix[:10000, 'pred'] = 1
-        df_pred.to_csv('./xbg/sub_pred.csv', index=False)
+        df_pred.to_csv('./lgb/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['pred'] == 1]
         df_pred = df_pred[['user_id', 'cate', 'shop_id']]
@@ -401,16 +324,18 @@ def main():
     # 生成特征
     df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
+    # df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
+
+    # Onehot编码
 
     # 优化参数
-    # bst_param(df_train, df_test, drop_column)
+    bst_param(df_train, df_test, drop_column)
 
     # 构造模型
-    model(df_train, df_test, drop_column)
-    impt_feat(df_train, drop_column)
+    # model(df_train, df_test, drop_column)
+    # impt_feat(df_train, drop_column)
 
     # 生成提交结果
-    # df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
     # submit(df_sub, drop_column)
 
 
