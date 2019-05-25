@@ -284,11 +284,12 @@ def model(df_train, df_test, drop_column):
         # 设置参数(gridcv最佳)
         print(datetime.now())
         print('>> 开始设置参数')
+        weight = (np.sum(y_train)) / (len(y_train) - np.sum(y_train))
         param = {
             # 默认
             'silent': 0,
             'objective': 'binary:logistic',
-            'scale_pos_weight': 1,
+            'scale_pos_weight': weight,
             # 调整
             'learning_rate': 0.1,
             'n_estimators': 1000,
@@ -300,7 +301,7 @@ def model(df_train, df_test, drop_column):
             'eta': 0.05,
         }
         plst = list(param.items())
-        plst += [('eval_metric', 'logloss')]
+        plst += [('eval_metric', 'auc')]
         num_round = 500
         evallist = [(dtest, 'eval'), (dtrain, 'train')]
         print('<< 完成设置参数')
