@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from merg_us import gen_feat
+from grid_cv import *
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
@@ -201,10 +202,6 @@ def param_search(df_train, df_test, drop_column):
     print('\n>> 开始划分X,y')
     X_train = df_train.drop(drop_column, axis=1).values
     y_train = df_train['label'].values
-    X_test = df_test.drop(drop_column, axis=1).values
-    y_test = df_test['label'].values
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    dtest = xgb.DMatrix(X_test, label=y_test)
     print('<< 完成划分X,y')
 
     print(datetime.now())
@@ -225,7 +222,7 @@ def param_search(df_train, df_test, drop_column):
         'colsample_bytree': 0.8,
         'eta': 0.05,
     }
-    param_grids = {
+    param_grids = [
         {'max_depth': range(3, 10, 1)},
         {'min_child_weight': range(1, 6, 1)},
         {'gamma': [i / 10.0 for i in range(0, 5)]},
@@ -235,87 +232,9 @@ def param_search(df_train, df_test, drop_column):
         {'learning_rate': [0.01, 0.05, 0.1, 0.2]},
         {'scale_pos_weight': [1, 2, 3, 4, 5]},
         {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]},
-        {'eval_metric': ['logloss', 'auc']}
-    }
-    for param_grid in param_grids:
-        for key, list_value in param_grid.items():
-            print('\n调整参数 %s:' % (key))
-            for value in list_value:
-                print('参数 = %s' % (str(value)))
-                print(datetime.now())
-                param = param_static
-                param = param.update({key: value})
+    ]
+    gsearch1(X_train,y_train)
 
-                plst = list(param.items())
-                plst += [('eval_metric', 'logloss')]  # auc logloss
-                num_round = 1000
-                evallist = [(dtest, 'eval'), (dtrain, 'train')]
-
-                # 训练模型(watchlist)
-                bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=50)
-
-                X_test = df_test.drop(drop_column, axis=1).values
-                y_test = df_test['label'].values
-                dtest = xgb.DMatrix(X_test)
-
-                # 测试模型
-                y_probab = bst.predict(dtest)
-                df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
-                del df_train, df_test
-                df_pred.sort_values(by='probab', ascending=False, inplace=True)
-                df_pred.drop_duplicates(['user_id', 'cate'], keep='first', inplace=True)
-                df_pred.reset_index(drop=True, inplace=True)
-                product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
-                df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
-
-                # 计算得分
-                dump_path = cache_path + '/test_real.csv'
-                if os.path.exists(dump_path):
-                    # 划分(X,y)
-                    df_real = pd.read_csv(dump_path)
-                else:
-                    end_date = datetime.strptime('2018-4-1', '%Y-%m-%d')
-                    df_real = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))[
-                        ['user_id', 'cate', 'shop_id']]
-                    df_real = df_real.drop_duplicates(['user_id', 'cate'])
-                    df_real.to_csv(dump_path, index=False)
-
-                df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
-
-                highest_score = 0
-                highest_row = 0
-
-                for amt in range(0, 250000, 10000):
-                    real = df_real
-                    pred = df_pred
-                    # 所有购买用户品类
-                    all_2 = real[['user_id', 'cate']]
-                    # 所有预测购买用户品类
-                    all_pred_2 = pred[['user_id', 'cate']]
-                    # 计算所有用户品类购买评价指标
-                    intersect = pd.merge(all_2, all_pred_2, how='inner')
-                    pos = intersect.shape[0]
-                    neg = all_pred_2.shape[0] - pos
-                    all_2_acc = 1.0 * pos / (pos + neg)
-                    all_2_recall = 1.0 * pos / len(all_2)
-                    F11 = 3.0 * all_2_recall * all_2_acc / (2.0 * all_2_recall + all_2_acc)
-
-                    # 所有用户品类店铺对
-                    all_3 = real[['user_id', 'cate', 'shop_id']]
-                    # 所有预测用户品类店铺对
-                    all_pred_3 = pred[['user_id', 'cate', 'shop_id']]
-                    intersect = pd.merge(all_3, all_pred_3, how='inner')
-                    pos = intersect.shape[0]
-                    neg = all_pred_2.shape[0] - pos
-                    all_3_acc = 1.0 * pos / (pos + neg)
-                    all_3_recall = 1.0 * pos / len(all_3)
-                    F12 = 5.0 * all_3_acc * all_3_recall / (2.0 * all_3_recall + 3.0 * all_3_acc)
-                    score = 0.4 * F11 + 0.6 * F12
-                    if score > highest_score:
-                        highest_score = score
-                        highest_row = amt
-
-                print('最高得分：%s 对应行数：%s' % (str(highest_score), str(highest_row)))
 
 
 def model(df_train, df_test, drop_column):
