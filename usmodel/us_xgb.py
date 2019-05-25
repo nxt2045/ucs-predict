@@ -396,7 +396,7 @@ def main():
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
     drop_column = ['user_id', 'sku_id', 'label']
-    label_gap = 2  # [2,3,7]
+    label_gap = 2 # [2,3,7]
 
     # 生成特征
     # df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
