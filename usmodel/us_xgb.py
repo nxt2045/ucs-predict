@@ -103,11 +103,9 @@ def report(real, pred):
     print('F11=' + str(F11))
 
     # 所有用户品类店铺对
-    all_3 = real['user_id'].map(str) + '-' + real['cate'].map(str) + '-' + real['shop_id'].map(str)
-    all_3 = np.array(all_3)
+    all_3 = real[['user_id', 'cate', 'shop_id']]
     # 所有预测用户品类店铺对
-    all_pred_3 = pred['user_id'].map(str) + '-' + pred['cate'].map(str) + '-' + pred['shop_id'].map(str)
-    all_pred_3 = np.array(all_pred_3)
+    all_pred_3 = pred[['user_id', 'cate', 'shop_id']]
     pos, neg = 0, 0
     for pred_3 in all_pred_3:
         if pred_3 in all_3:
@@ -333,11 +331,11 @@ def model(df_train, df_test, drop_column):
     df_pred.reset_index(drop=True, inplace=True)
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
-    # df_pred.to_csv('./out/test_pred.csv', index=False)
+    df_pred.to_csv('./out/test_pred.csv', index=False)
 
     # 计算得分
     end_date = datetime.strptime('2018-4-1', '%Y-%m-%d')
-    df_real = feat_buy_plus(end_date, end_date + timedelta(days=7))[['user_id', 'cate', 'shop_id']]
+    df_real = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))[['user_id', 'cate', 'shop_id']]
     df_real = df_real.drop_duplicates(['user_id', 'cate'])
 
     df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
