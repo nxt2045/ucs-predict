@@ -273,7 +273,7 @@ def get_label(end_date, label_gap, mark):
         action = feat_action(end_date - timedelta(days=label_gap), end_date)[['user_id', 'sku_id']]
         pkey = action.drop_duplicates(['user_id', 'sku_id'])
         # 真实购买
-        buy = feat_buy(end_date - timedelta(days=label_gap), end_date)[['user_id', 'sku_id']]
+        buy = feat_buy(end_date, end_date + timedelta(days=7))[['user_id', 'sku_id']]
         buy = buy.drop_duplicates(['user_id', 'sku_id'])
         label_1 = pd.concat([buy.reset_index(drop=True), pd.DataFrame({'label': [1] * buy.shape[0]})], axis=1)
         label = pd.merge(pkey, label_1, on=['user_id', 'sku_id'], how='left')

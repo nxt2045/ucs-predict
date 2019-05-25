@@ -9,7 +9,9 @@
 
 import os
 import time
+from s_feat import feat_buy_plus
 from datetime import datetime
+from datetime import timedelta
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -75,58 +77,48 @@ def impt_feat(df_train, drop_column):
         f_score.to_csv('./out/impt_feat.csv', index=False)
 
 
-def report(df):
-    df = df[['user_id', 'cate', 'shop_id', 'pred', 'label']]
-    print('> report')
-    print(df.head())
-
-    real = df[df['label'] == 1]
+def report(real, pred):
     print('real')
-
     print(real.head())
-
-    pred = df[df['pred'] == 1]
     print('pred')
     print(pred.head())
 
     # 所有购买用户品类
-    all_set = real[['user_id', 'cate']]
-    # 所有用户品类店铺对
-    all_item_pair = real['user_id'].map(str) + '-' + real['cate'].map(str) + '-' + real['shop_id'].map(str)
-    all_item_pair = np.array(all_item_pair)
-
+    all_2 = real[['user_id', 'cate']]
     # 所有预测购买用户品类
-    all_pred_set = pred[['user_id', 'cate']]
-    # 所有预测用户品类店铺对
-    all_pred_item_pair = pred['user_id'].map(str) + '-' + pred['cate'].map(str) + '-' + pred['shop_id'].map(str)
-    all_pred_item_pair = np.array(all_pred_item_pair)
+    all_pred_2 = pred[['user_id', 'cate']]
 
     # 计算所有用户品类购买评价指标
     pos, neg = 0, 0
-    for pkey in all_pred_set:
-        if pkey in all_set:
+    for pred_2 in all_pred_2:
+        if pred_2 in all_2:
             pos += 1
         else:
             neg += 1
-    all_set_acc = 1.0 * pos / (pos + neg)
-    all_set_recall = 1.0 * pos / len(all_set)
-    print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_set_acc))
-    print('所有用户品类中预测购买用户品类的召回率' + str(all_set_recall))
-    F11 = 3.0 * all_set_recall * all_set_acc / (2.0 * all_set_recall + all_set_acc)
+    all_2_acc = 1.0 * pos / (pos + neg)
+    all_2_recall = 1.0 * pos / len(all_2)
+    print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_2_acc))
+    print('所有用户品类中预测购买用户品类的召回率' + str(all_2_recall))
+    F11 = 3.0 * all_2_recall * all_2_acc / (2.0 * all_2_recall + all_2_acc)
     print('F11=' + str(F11))
 
-
+    # 所有用户品类店铺对
+    all_3 = real['user_id'].map(str) + '-' + real['cate'].map(str) + '-' + real['shop_id'].map(str)
+    all_3 = np.array(all_3)
+    # 所有预测用户品类店铺对
+    all_pred_3 = pred['user_id'].map(str) + '-' + pred['cate'].map(str) + '-' + pred['shop_id'].map(str)
+    all_pred_3 = np.array(all_pred_3)
     pos, neg = 0, 0
-    for item_pair in all_pred_item_pair:
-        if item_pair in all_item_pair:
+    for pred_3 in all_pred_3:
+        if pred_3 in all_3:
             pos += 1
         else:
             neg += 1
-    all_pair_acc = 1.0 * pos / (pos + neg)
-    all_pair_recall = 1.0 * pos / len(all_item_pair)
-    print('所有用户品类中预测购买店铺的准确率为 ' + str(all_pair_acc))
-    print('所有用户品类中预测购买店铺的召回率' + str(all_pair_recall))
-    F12 = 5.0 * all_pair_acc * all_pair_recall / (2.0 * all_pair_recall + 3.0 * all_pair_acc)
+    all_3_acc = 1.0 * pos / (pos + neg)
+    all_3_recall = 1.0 * pos / len(all_3)
+    print('所有用户品类中预测购买店铺的准确率为 ' + str(all_3_acc))
+    print('所有用户品类中预测购买店铺的召回率' + str(all_3_recall))
+    F12 = 5.0 * all_3_acc * all_3_recall / (2.0 * all_3_recall + 3.0 * all_3_acc)
     print('F12=' + str(F12))
 
     score = 0.4 * F11 + 0.6 * F12
@@ -291,7 +283,6 @@ def model(df_train, df_test, drop_column):
         print('>> 开始加载已有模型')
         bst = xgb.Booster(model_file=dump_path)
     else:
-
         # 设置参数(gridcv最佳)
         print(datetime.now())
         print('>> 开始设置参数')
@@ -334,20 +325,20 @@ def model(df_train, df_test, drop_column):
     df_pred = df_pred.reset_index(drop=True)
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
+    df_pred.to_csv('./out/test_pred.csv', index=False)
 
-    df_same = df_pred
-    df_same.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
-    df_same.to_csv('./out/test_pred_same.csv', index=False)
-    print('前%s行[same] label=1：' % (str(int(np.sum(df_same['label'].values)))))
-    # report(df_same)
+    # 计算得分
+    end_date = datetime.strptime('2018-4-1', '%Y-%m-%d')
+    df_real = feat_buy_plus(end_date, end_date + timedelta(days=7))[['user_id', 'cate', 'shop_id']]
+    df_real = df_real.drop_duplicates(['user_id', 'cate'])
 
-    for i in range(10000, 160000, 10000):
-        df = df_pred
-        print('前%s行 label=1：' % (str(i)))
-        df.ix[:i, 'pred'] = 1
-        df.to_csv('./out/test_pred_%s.csv' % (str(i)), index=False)
-        # report(df)
+    df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
+    print('前%s行[test] label=1：' % (str(df_real.shape[0])))
+    report(df_real, df_pred.iloc[:df_real.shape[0]])
 
+    for amt in range(10000, 160000, 10000):
+        print('前%s行 label=1：' % (str(amt)))
+        report(df_real, df_pred.iloc[:amt])
     print('<< 完成测试模型')
 
 
@@ -381,7 +372,7 @@ def submit(df_sub, drop_column):
         df_pred.to_csv('./out/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['pred'] == 1]
-        df_pred = df_pred[['user_id','cate','shop_id']]
+        df_pred = df_pred[['user_id', 'cate', 'shop_id']]
         df_pred.to_csv(submit_path + '/us.csv', index=False)
         print('> 提交结果', df_pred.shape)
         print('<< 完成预测提交!')
@@ -399,22 +390,22 @@ def main():
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
     drop_column = ['user_id', 'sku_id', 'label']
-    label_gap = 3 # [2,3,7]
+    label_gap = 3  # [2,3,7]
 
     # 生成特征
-    # df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
-    # df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
+    df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
+    df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
     # param_search(df_train, df_test, drop_column)
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
-    # impt_feat(df_train, drop_column)
+    model(df_train, df_test, drop_column)
+    impt_feat(df_train, drop_column)
 
     # 生成提交结果
-    df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
-    submit(df_sub, drop_column)
+    # df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
+    # submit(df_sub, drop_column)
 
 
 if __name__ == "__main__":
