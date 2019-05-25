@@ -78,23 +78,23 @@ def impt_feat(df_train, drop_column):
 
 
 def report(real, pred):
-    print('real')
+    print('real:', real.shape)
     print(real.head())
-    print('pred')
+    print('pred:', pred.shape)
     print(pred.head())
 
     # 所有购买用户品类
     all_2 = real[['user_id', 'cate']]
+    print('all_2:', all_2.shape)
     # 所有预测购买用户品类
     all_pred_2 = pred[['user_id', 'cate']]
-
+    print('all_pred_2:', all_pred_2.shape)
     # 计算所有用户品类购买评价指标
-    pos, neg = 0, 0
-    for pred_2 in all_pred_2:
-        if pred_2 in all_2:
-            pos += 1
-        else:
-            neg += 1
+    intersect = pd.merge(all_2, all_pred_2, how='inner')
+    pos = intersect.shape[0]
+    neg = all_pred_2.shape[0] - pos
+    print('pos:', pos)
+    print('neg:', neg)
     all_2_acc = 1.0 * pos / (pos + neg)
     all_2_recall = 1.0 * pos / len(all_2)
     print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_2_acc))
@@ -104,14 +104,15 @@ def report(real, pred):
 
     # 所有用户品类店铺对
     all_3 = real[['user_id', 'cate', 'shop_id']]
+    print('all_3:', all_3.shape)
     # 所有预测用户品类店铺对
     all_pred_3 = pred[['user_id', 'cate', 'shop_id']]
-    pos, neg = 0, 0
-    for pred_3 in all_pred_3:
-        if pred_3 in all_3:
-            pos += 1
-        else:
-            neg += 1
+    print('all_pred_3:', all_pred_3.shape)
+    intersect = pd.merge(all_3, all_pred_3, how='inner')
+    pos = intersect.shape[0]
+    neg = all_pred_2.shape[0] - pos
+    print('pos:', pos)
+    print('neg:', neg)
     all_3_acc = 1.0 * pos / (pos + neg)
     all_3_recall = 1.0 * pos / len(all_3)
     print('所有用户品类中预测购买店铺的准确率为 ' + str(all_3_acc))
@@ -284,7 +285,7 @@ def model(df_train, df_test, drop_column):
         # 设置参数(gridcv最佳)
         print(datetime.now())
         print('>> 开始设置参数')
-        weight = (len(y_train) - np.sum(y_train))/(np.sum(y_train))
+        weight = (len(y_train) - np.sum(y_train)) / (np.sum(y_train))
         param = {
             # 默认
             'silent': 0,
@@ -332,12 +333,20 @@ def model(df_train, df_test, drop_column):
     df_pred.reset_index(drop=True, inplace=True)
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
-    df_pred.to_csv('./out/test_pred.csv', index=False)
+    # df_pred.to_csv('./out/test_pred.csv', index=False)
 
     # 计算得分
-    end_date = datetime.strptime('2018-4-1', '%Y-%m-%d')
-    df_real = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))[['user_id', 'cate', 'shop_id']]
-    df_real = df_real.drop_duplicates(['user_id', 'cate'])
+    dump_path = cache_path+'/test_real.csv'
+    if os.path.exists(dump_path):
+        # 划分(X,y)
+        print(datetime.now())
+        print('>> 开始加载已有模型')
+        df_real = pd.read_csv(dump_path)
+    else:
+        end_date = datetime.strptime('2018-4-1', '%Y-%m-%d')
+        df_real = feat_buy_plus(end_date + timedelta(days=1), end_date + timedelta(days=7))[['user_id', 'cate', 'shop_id']]
+        df_real = df_real.drop_duplicates(['user_id', 'cate'])
+        df_real.to_csv(dump_path,index=False)
 
     df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
     print('前%s行[test] label=1：' % (str(df_real.shape[0])))
