@@ -76,8 +76,6 @@ def impt_feat(df_train, drop_column):
 
 
 def report(df):
-    product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
-    df = pd.merge(df, product, on='sku_id', how='left')
     df = df[['user_id', 'cate', 'shop_id', 'pred', 'label']]
     print('> report')
     print(df.head())
@@ -334,6 +332,8 @@ def model(df_train, df_test, drop_column):
     df_pred = df_pred.sort_values(by='probab', ascending=False)
     df_pred = df_pred.drop_duplicates(['user_id', 'cate'], keep='first')
     df_pred = df_pred.reset_index(drop=True)
+    product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
+    df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
 
     df_same = df_pred
     df_same.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
