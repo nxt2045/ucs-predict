@@ -1,5 +1,390 @@
 ### train feat
 ```txt
+2019-05-25 11:40:58.994215
+
+>> 开始生成特征(X,y)
+end_date 2018-4-8
+2019-05-25 11:40:59.000138
+> 获取标签
+action_180405_180408
+buy_180405_180408
+真实购买 (85925, 2)
+可能购买 (1064948, 2)
+shape (1064948, 3)
+cols Index(['user_id', 'sku_id', 'label'], dtype='object')
+head
+   user_id  sku_id  label
+0        2  268259      0
+1        2   57634      0
+2        2   98543      0
+3        2  341714      0
+4        2  185628      0
+tail
+         user_id  sku_id  label
+1064943  1608705   10554      0
+1064944  1608705  238979      0
+1064945  1608705  101645      0
+1064946  1608705   50755      0
+1064947  1608707  100598      1
+2019-05-25 11:41:01.577255
+> 遍历特征 gap=1
+user_if_view_180408_180408
+user_if_buy_180408_180408
+user_if_follow_180408_180408
+user_if_remark_180408_180408
+user_if_cart_180408_180408
+user_action_amt_180408_180408
+user_view_amt_180408_180408
+user_buy_amt_180408_180408
+user_follow_amt_180408_180408
+user_remark_amt_180408_180408
+user_cart_amt_180408_180408
+user_action_day_180408_180408
+user_view_day_180408_180408
+user_buy_day_180408_180408
+user_follow_day_180408_180408
+user_remark_day_180408_180408
+user_cart_day_180408_180408
+sku_if_view_180408_180408
+sku_if_buy_180408_180408
+sku_if_follow_180408_180408
+sku_if_remark_180408_180408
+sku_if_cart_180408_180408
+sku_action_amt_180408_180408
+sku_view_amt_180408_180408
+sku_buy_amt_180408_180408
+sku_follow_amt_180408_180408
+sku_remark_amt_180408_180408
+sku_cart_amt_180408_180408
+sku_action_day_180408_180408
+sku_view_day_180408_180408
+sku_buy_day_180408_180408
+sku_follow_day_180408_180408
+sku_remark_day_180408_180408
+sku_cart_day_180408_180408
+sku_rebuy_rate_180408_180408
+user_sku_if_view_180408_180408
+user_sku_if_buy_180408_180408
+user_sku_if_follow_180408_180408
+user_sku_if_remark_180408_180408
+user_sku_if_cart_180408_180408
+user_sku_action_amt_180408_180408
+user_sku_view_amt_180408_180408
+user_sku_buy_amt_180408_180408
+user_sku_follow_amt_180408_180408
+user_sku_remark_amt_180408_180408
+user_sku_cart_amt_180408_180408
+user_sku_action_day_180408_180408
+user_sku_view_day_180408_180408
+user_sku_buy_day_180408_180408
+user_sku_follow_day_180408_180408
+user_sku_remark_day_180408_180408
+user_sku_cart_day_180408_180408
+user_sku_user_action_ratio_180408_180408
+2019-05-25 11:41:20.051861
+> 遍历特征 gap=2
+user_if_view_180407_180408
+user_if_buy_180407_180408
+user_if_follow_180407_180408
+user_if_remark_180407_180408
+user_if_cart_180407_180408
+user_action_amt_180407_180408
+user_view_amt_180407_180408
+user_buy_amt_180407_180408
+user_follow_amt_180407_180408
+user_remark_amt_180407_180408
+user_cart_amt_180407_180408
+user_action_day_180407_180408
+user_view_day_180407_180408
+user_buy_day_180407_180408
+user_follow_day_180407_180408
+user_remark_day_180407_180408
+user_cart_day_180407_180408
+sku_if_view_180407_180408
+sku_if_buy_180407_180408
+sku_if_follow_180407_180408
+sku_if_remark_180407_180408
+sku_if_cart_180407_180408
+sku_action_amt_180407_180408
+sku_view_amt_180407_180408
+sku_buy_amt_180407_180408
+sku_follow_amt_180407_180408
+sku_remark_amt_180407_180408
+sku_cart_amt_180407_180408
+sku_action_day_180407_180408
+sku_view_day_180407_180408
+sku_buy_day_180407_180408
+sku_follow_day_180407_180408
+sku_remark_day_180407_180408
+sku_cart_day_180407_180408
+sku_rebuy_rate_180407_180408
+user_sku_if_view_180407_180408
+user_sku_if_buy_180407_180408
+user_sku_if_follow_180407_180408
+user_sku_if_remark_180407_180408
+user_sku_if_cart_180407_180408
+user_sku_action_amt_180407_180408
+user_sku_view_amt_180407_180408
+user_sku_buy_amt_180407_180408
+user_sku_follow_amt_180407_180408
+user_sku_remark_amt_180407_180408
+user_sku_cart_amt_180407_180408
+user_sku_action_day_180407_180408
+user_sku_view_day_180407_180408
+user_sku_buy_day_180407_180408
+user_sku_follow_day_180407_180408
+user_sku_remark_day_180407_180408
+user_sku_cart_day_180407_180408
+user_sku_user_action_ratio_180407_180408
+2019-05-25 11:41:35.463661
+> 遍历特征 gap=3
+user_if_view_180406_180408
+user_if_buy_180406_180408
+user_if_follow_180406_180408
+user_if_remark_180406_180408
+user_if_cart_180406_180408
+user_action_amt_180406_180408
+user_view_amt_180406_180408
+user_buy_amt_180406_180408
+user_follow_amt_180406_180408
+user_remark_amt_180406_180408
+user_cart_amt_180406_180408
+user_action_day_180406_180408
+user_view_day_180406_180408
+user_buy_day_180406_180408
+user_follow_day_180406_180408
+user_remark_day_180406_180408
+user_cart_day_180406_180408
+sku_if_view_180406_180408
+sku_if_buy_180406_180408
+sku_if_follow_180406_180408
+sku_if_remark_180406_180408
+sku_if_cart_180406_180408
+sku_action_amt_180406_180408
+sku_view_amt_180406_180408
+sku_buy_amt_180406_180408
+sku_follow_amt_180406_180408
+sku_remark_amt_180406_180408
+sku_cart_amt_180406_180408
+sku_action_day_180406_180408
+sku_view_day_180406_180408
+sku_buy_day_180406_180408
+sku_follow_day_180406_180408
+sku_remark_day_180406_180408
+sku_cart_day_180406_180408
+sku_rebuy_rate_180406_180408
+user_sku_if_view_180406_180408
+user_sku_if_buy_180406_180408
+user_sku_if_follow_180406_180408
+user_sku_if_remark_180406_180408
+user_sku_if_cart_180406_180408
+user_sku_action_amt_180406_180408
+user_sku_view_amt_180406_180408
+user_sku_buy_amt_180406_180408
+user_sku_follow_amt_180406_180408
+user_sku_remark_amt_180406_180408
+user_sku_cart_amt_180406_180408
+user_sku_action_day_180406_180408
+user_sku_view_day_180406_180408
+user_sku_buy_day_180406_180408
+user_sku_follow_day_180406_180408
+user_sku_remark_day_180406_180408
+user_sku_cart_day_180406_180408
+user_sku_user_action_ratio_180406_180408
+2019-05-25 11:41:51.629448
+> 遍历特征 gap=7
+user_if_view_180402_180408
+user_if_buy_180402_180408
+user_if_follow_180402_180408
+user_if_remark_180402_180408
+user_if_cart_180402_180408
+user_action_amt_180402_180408
+user_view_amt_180402_180408
+user_buy_amt_180402_180408
+user_follow_amt_180402_180408
+user_remark_amt_180402_180408
+user_cart_amt_180402_180408
+user_action_day_180402_180408
+user_view_day_180402_180408
+user_buy_day_180402_180408
+user_follow_day_180402_180408
+user_remark_day_180402_180408
+user_cart_day_180402_180408
+sku_if_view_180402_180408
+sku_if_buy_180402_180408
+sku_if_follow_180402_180408
+sku_if_remark_180402_180408
+sku_if_cart_180402_180408
+sku_action_amt_180402_180408
+sku_view_amt_180402_180408
+sku_buy_amt_180402_180408
+sku_follow_amt_180402_180408
+sku_remark_amt_180402_180408
+sku_cart_amt_180402_180408
+sku_action_day_180402_180408
+sku_view_day_180402_180408
+sku_buy_day_180402_180408
+sku_follow_day_180402_180408
+sku_remark_day_180402_180408
+sku_cart_day_180402_180408
+sku_rebuy_rate_180402_180408
+user_sku_if_view_180402_180408
+user_sku_if_buy_180402_180408
+user_sku_if_follow_180402_180408
+user_sku_if_remark_180402_180408
+user_sku_if_cart_180402_180408
+user_sku_action_amt_180402_180408
+user_sku_view_amt_180402_180408
+user_sku_buy_amt_180402_180408
+user_sku_follow_amt_180402_180408
+user_sku_remark_amt_180402_180408
+user_sku_cart_amt_180402_180408
+user_sku_action_day_180402_180408
+user_sku_view_day_180402_180408
+user_sku_buy_day_180402_180408
+user_sku_follow_day_180402_180408
+user_sku_remark_day_180402_180408
+user_sku_cart_day_180402_180408
+user_sku_user_action_ratio_180402_180408
+2019-05-25 11:42:12.436826
+> 遍历特征 gap=14
+user_if_view_180326_180408
+user_if_buy_180326_180408
+user_if_follow_180326_180408
+user_if_remark_180326_180408
+user_if_cart_180326_180408
+user_action_amt_180326_180408
+user_view_amt_180326_180408
+user_buy_amt_180326_180408
+user_follow_amt_180326_180408
+user_remark_amt_180326_180408
+user_cart_amt_180326_180408
+user_action_day_180326_180408
+user_view_day_180326_180408
+user_buy_day_180326_180408
+user_follow_day_180326_180408
+user_remark_day_180326_180408
+user_cart_day_180326_180408
+sku_if_view_180326_180408
+sku_if_buy_180326_180408
+sku_if_follow_180326_180408
+sku_if_remark_180326_180408
+sku_if_cart_180326_180408
+sku_action_amt_180326_180408
+sku_view_amt_180326_180408
+sku_buy_amt_180326_180408
+sku_follow_amt_180326_180408
+sku_remark_amt_180326_180408
+sku_cart_amt_180326_180408
+sku_action_day_180326_180408
+sku_view_day_180326_180408
+sku_buy_day_180326_180408
+sku_follow_day_180326_180408
+sku_remark_day_180326_180408
+sku_cart_day_180326_180408
+sku_rebuy_rate_180326_180408
+user_sku_if_view_180326_180408
+user_sku_if_buy_180326_180408
+user_sku_if_follow_180326_180408
+user_sku_if_remark_180326_180408
+user_sku_if_cart_180326_180408
+user_sku_action_amt_180326_180408
+user_sku_view_amt_180326_180408
+user_sku_buy_amt_180326_180408
+user_sku_follow_amt_180326_180408
+user_sku_remark_amt_180326_180408
+user_sku_cart_amt_180326_180408
+user_sku_action_day_180326_180408
+user_sku_view_day_180326_180408
+user_sku_buy_day_180326_180408
+user_sku_follow_day_180326_180408
+user_sku_remark_day_180326_180408
+user_sku_cart_day_180326_180408
+user_sku_user_action_ratio_180326_180408
+2019-05-25 11:42:40.049011
+> 遍历全局特征
+user.csv
+user_action_amt_180310_180408
+user_view_amt_180310_180408
+user_buy_amt_180310_180408
+user_follow_amt_180310_180408
+user_remark_amt_180310_180408
+user_cart_amt_180310_180408
+user_action_day_180310_180408
+user_view_day_180310_180408
+user_buy_day_180310_180408
+user_follow_day_180310_180408
+user_remark_day_180310_180408
+user_cart_day_180310_180408
+user_action_ratio_180310_180408
+user_buy_rate_180310_180408
+user_first_hour_180310_180408
+user_last_hour_180310_180408
+user_last_amt_180310_180408
+sku_plus
+sku_action_amt_180310_180408
+sku_view_amt_180310_180408
+sku_buy_amt_180310_180408
+sku_follow_amt_180310_180408
+sku_remark_amt_180310_180408
+sku_cart_amt_180310_180408
+sku_action_day_180310_180408
+sku_view_day_180310_180408
+sku_buy_day_180310_180408
+sku_follow_day_180310_180408
+sku_remark_day_180310_180408
+sku_cart_day_180310_180408
+sku_action_ratio_180310_180408
+sku_buy_rate_180310_180408
+sku_first_hour_180310_180408
+sku_last_hour_180310_180408
+sku_last_amt_180310_180408
+user_sku_if_view_180310_180408
+user_sku_if_buy_180310_180408
+user_sku_if_follow_180310_180408
+user_sku_if_remark_180310_180408
+user_sku_if_cart_180310_180408
+user_sku_action_amt_180310_180408
+user_sku_view_amt_180310_180408
+user_sku_buy_amt_180310_180408
+user_sku_follow_amt_180310_180408
+user_sku_remark_amt_180310_180408
+user_sku_cart_amt_180310_180408
+user_sku_action_day_180310_180408
+user_sku_view_day_180310_180408
+view_180310_180408
+user_sku_buy_day_180310_180408
+buy_180310_180408
+user_sku_follow_day_180310_180408
+follow_180310_180408
+user_sku_remark_day_180310_180408
+remark_180310_180408
+user_sku_cart_day_180310_180408
+cart_180310_180408
+user_sku_action_ratio_180310_180408
+user_sku_user_action_ratio_180310_180408
+user_sku_first_hour_180310_180408
+user_sku_last_hour_180310_180408
+user_sku_last_amt_180310_180408
+>>开始保存特征(1064948, 3)
+feat (1064948, 3)
+cols Index(['user_id', 'sku_id', 'user_sku_last_amt'], dtype='object')
+head
+   user_id  sku_id  user_sku_last_amt
+0        2  268259                  1
+1        2   57634                  1
+2        2   98543                  1
+3        2  341714                  1
+4        2  185628                  1
+tail
+         user_id  sku_id  user_sku_last_amt
+1064943  1608705   10554                  1
+1064944  1608705  238979                  1
+1064945  1608705  101645                  1
+1064946  1608705   50755                  1
+1064947  1608707  100598                  2
+>> 完成生成特征(1064948, 3)
+2019-05-25 11:48:23.353281
 ```
 ### test feat
 ```txt

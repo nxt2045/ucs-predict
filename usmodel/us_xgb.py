@@ -161,22 +161,23 @@ def gridcv(df_train, drop_column):
     # 优化参数
     print(datetime.now())
     print('>> 开始优化参数')
-    xgb_model = XGBClassifier(objective='binary:logistic', seed=27)
-    param_list = [
+    xgb_model = XGBClassifier(objective='binary:logistic', learning_rate =0.01,)
+    param_grids = [
         {'max_depth': range(3, 10, 1)},
         {'min_child_weight': range(1, 6, 1)},
         {'gamma': [i / 10.0 for i in range(0, 5)]},
         {'subsample': [i / 10.0 for i in range(6, 10)]},
         {'colsample_bytree': [i / 10.0 for i in range(6, 10)]},
         {'n_estimators': [50, 100, 200, 500, 1000]},
-        {'learning_rate': [0.001, 0.01, 0.05, 0.1, 0.2]},
+        {'learning_rate': [0.01, 0.05, 0.1, 0.2]},
         {'scale_pos_weight': [1, 2, 3, 4, 5]},
         {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]}
     ]
+
     bst_param = {'silent': 0, 'nthread': 4}
-    for param_dict in param_list:
+    for param_grid in param_grids:
         print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_dict, scoring='roc_auc', cv=5, verbose=1)
+        clf = GridSearchCV(estimator=xgb_model, param_grid=param_grid, scoring='roc_auc', cv=5, verbose=1)
         clf.fit(X_train, y_train)
         bst_param.update(clf.best_params_)
         print(datetime.now())
@@ -216,20 +217,21 @@ def model(df_train, df_test, drop_column):
     dtest = xgb.DMatrix(X_test, label=y_test)
     param = {
         # 默认
-        'silent': 1,
+        'silent': 0,
         'objective': 'binary:logistic',
         'scale_pos_weight': 1,
-        'eval_metric': 'logloss',
         # 调整
         'learning_rate': 0.1,
         'n_estimators': 1000,
         'max_depth': 3,
         'min_child_weight': 5,
         'gamma': 0,
-        'subsample': 1.0,
+        'subsample': 0.8,
         'colsample_bytree': 0.8,
         'eta': 0.05,
     }
+    plst = list(param.items())
+    plst += [('eval_metric', 'logloss')]
     num_round = 500
     evallist = [(dtest, 'eval'), (dtrain, 'train')]
     print('<< 完成设置参数')
@@ -237,7 +239,7 @@ def model(df_train, df_test, drop_column):
     # 训练模型(watchlist)
     print(datetime.now())
     print('>> 开始训练模型')
-    bst = xgb.train(param, dtrain, num_round, evallist, early_stopping_rounds=20)
+    bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=100)
     bst.save_model("./out/bst.model")
     print('<< 完成训练模型')
 
