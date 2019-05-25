@@ -198,6 +198,70 @@ def gridcv(df_train, drop_column):
     print('<< 完成优化参数')
 
 
+def param_search(df_train, df_test, drop_column):
+    """ 构造
+     xgboost模型训练测试
+     """
+    # 划分(X,y)
+    print(datetime.now())
+    print('>> 开始划分X,y')
+    X_train = df_train.drop(drop_column, axis=1).values
+    y_train = df_train['label'].values
+    X_test = df_test.drop(drop_column, axis=1).values
+    y_test = df_test['label'].values
+    print('>> 开始获取特征')
+    print('<< 完成划分数据')
+
+    # 设置参数(gridcv最佳)
+    print(datetime.now())
+    print('>> 开始设置参数')
+    dtrain = xgb.DMatrix(X_train, label=y_train)
+    dtest = xgb.DMatrix(X_test, label=y_test)
+    param_staic = {
+        # 默认
+        'silent': 1,
+        'objective': 'binary:logistic',
+        'scale_pos_weight': 1,
+        'eval_metric': 'logloss',
+        # 调整
+        'learning_rate': 0.1,
+        'n_estimators': 1000,
+        'max_depth': 3,
+        'min_child_weight': 5,
+        'gamma': 0,
+        'subsample': 0.8,
+        'colsample_bytree': 0.8,
+        'eta': 0.05,
+    }
+    param_grids = [
+        {'max_depth': range(3, 10, 1)},
+        {'min_child_weight': range(1, 6, 1)},
+        {'gamma': [i / 10.0 for i in range(0, 5)]},
+        {'subsample': [i / 10.0 for i in range(6, 10)]},
+        {'colsample_bytree': [i / 10.0 for i in range(6, 10)]},
+        {'n_estimators': [50, 100, 200, 500, 1000]},
+        {'learning_rate': [0.01, 0.05, 0.1, 0.2]},
+        {'scale_pos_weight': [1, 2, 3, 4, 5]},
+        {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]}
+    ]
+    for param_grid in param_grids:
+        for key, list_value in param_grid.items():
+            for value in list_value:
+                print(datetime.now())
+                param = param_staic
+                print('调整参数 %s: %s' % (key, str(value)))
+                param = param.update({key: value})
+                num_round = 500
+                print('<< 完成设置参数')
+
+                # 训练模型(watchlist)
+                print(datetime.now())
+                print('>> 开始训练模型')
+                xgb.cv(param, dtrain, num_round, nfold=5, metrics='logloss', seed=0,
+                       callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
+                print('<< 完成训练模型')
+
+
 def model(df_train, df_test, drop_column):
     """ 构造
     xgboost模型训练测试
@@ -322,7 +386,7 @@ def main():
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
-    # gridcv(df_train, drop_column)
+    # param_search(df_train, df_test, drop_column)
 
     # 构造模型
     model(df_train, df_test, drop_column)
