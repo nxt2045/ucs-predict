@@ -76,8 +76,10 @@ def impt_feat(df_train, drop_column):
 
 
 def report(df):
-    product = pd.read_csv(product_path, na_filter=False)
+    product = pd.read_csv(product_path, na_filter=False)[['sku_id','shop_id']]
     df = pd.merge(df, product, on='sku_id', how='left')
+    df = df[['']]
+    print(df.head())
 
     real = df[df['label'] == 1]
     pred = df[df['pred'] == 1]
