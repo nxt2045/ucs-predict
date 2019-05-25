@@ -370,15 +370,16 @@ def submit(df_sub, drop_column):
         bst = xgb.Booster(model_file=dump_path)
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
-        df_pred = pd.concat([df_sub, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})])
+        df_pred = pd.concat([df_sub, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
         df_pred = df_pred.sort_values(by='probab', ascending=False)
-        df_pred.ix[:160000, 'label'] = 1
+        df_pred = df_pred.drop_duplicates(['user_id', 'cate'], keep='first')
+        df_pred = df_pred.reset_index(drop=True)
+        df_pred.ix[:10000, 'pred'] = 1
         df_pred.to_csv('./out/sub_pred.csv', index=False)
         # 格式化提交
-        df_pred = df_pred[df_pred['label'] == 1]
-        df_pred = df_pred[drop_column]
-        df_pred = df_pred.drop(['label'], axis=1)
-        df_pred.to_csv(submit_path + '/user.csv', index=False)
+        df_pred = df_pred[df_pred['pred'] == 1]
+        df_pred = df_pred[['user_id','cate','shop_id']]
+        df_pred.to_csv(submit_path + '/us.csv', index=False)
         print('> 提交结果', df_pred.shape)
         print('<< 完成预测提交!')
     else:
@@ -398,8 +399,8 @@ def main():
     label_gap = 2  # [2,3,7]
 
     # 生成特征
-    df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
-    df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
+    # df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
+    # df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
     # param_search(df_train, df_test, drop_column)
@@ -410,7 +411,7 @@ def main():
 
     # 生成提交结果
     df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
-    # submit(df_sub, drop_column)
+    submit(df_sub, drop_column)
 
 
 if __name__ == "__main__":
