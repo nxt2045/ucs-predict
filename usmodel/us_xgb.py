@@ -213,9 +213,9 @@ def param_search(df_train, df_test, drop_column):
     print('>> 开始设置参数')
     dtrain = xgb.DMatrix(X_train, label=y_train)
     dtest = xgb.DMatrix(X_test, label=y_test)
-    param_staic = {
+    param_static = {
         # 默认
-        'silent': 1,
+        'silent': 0,
         'objective': 'binary:logistic',
         'scale_pos_weight': 1,
         'eval_metric': 'logloss',
@@ -244,7 +244,7 @@ def param_search(df_train, df_test, drop_column):
         for key, list_value in param_grid.items():
             for value in list_value:
                 print(datetime.now())
-                param = param_staic
+                param = param_static
                 print('调整参数 %s: %s' % (key, str(value)))
                 param = param.update({key: value})
                 num_round = 500
@@ -288,7 +288,7 @@ def model(df_train, df_test, drop_column):
             # 默认
             'silent': 0,
             'objective': 'binary:logistic',
-            'scale_pos_weight': weight,
+            'scale_pos_weight': 1,
             # 调整
             'learning_rate': 0.1,
             'n_estimators': 1000,
@@ -300,7 +300,7 @@ def model(df_train, df_test, drop_column):
             'eta': 0.05,
         }
         plst = list(param.items())
-        plst += [('eval_metric', 'auc')]
+        plst += [('eval_metric', 'auc')] # auc logloss
         num_round = 500
         evallist = [(dtest, 'eval'), (dtrain, 'train')]
         print('<< 完成设置参数')
@@ -351,7 +351,7 @@ def model(df_train, df_test, drop_column):
     print('前%s行[test] label=1：' % (str(df_real.shape[0])))
     report(df_real, df_pred.iloc[:df_real.shape[0]])
 
-    for amt in range(10000, 160000, 10000):
+    for amt in range(160000, 250000, 10000):
         print('前%s行 label=1：' % (str(amt)))
         report(df_real, df_pred.iloc[:amt])
     print('<< 完成测试模型')
