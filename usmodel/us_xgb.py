@@ -76,8 +76,10 @@ def impt_feat(df_train, drop_column):
 
 
 def report(df):
-    product = pd.read_csv(product_path, na_filter=False)
+    product = pd.read_csv(product_path, na_filter=False)[['sku_id','shop_id']]
     df = pd.merge(df, product, on='sku_id', how='left')
+    df = df[['']]
+    print(df.head())
 
     real = df[df['label'] == 1]
     pred = df[df['pred'] == 1]
@@ -323,8 +325,8 @@ def main():
     # gridcv(df_train, drop_column)
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
-    # impt_feat(df_train, drop_column)
+    model(df_train, df_test, drop_column)
+    impt_feat(df_train, drop_column)
 
     # 生成提交结果
     df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
