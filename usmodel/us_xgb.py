@@ -114,6 +114,9 @@ def report(df):
     all_set_recall = 1.0 * pos / len(all_set)
     print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_set_acc))
     print('所有用户品类中预测购买用户品类的召回率' + str(all_set_recall))
+    F11 = 3.0 * all_set_recall * all_set_acc / (2.0 * all_set_recall + all_set_acc)
+    print('F11=' + str(F11))
+
 
     pos, neg = 0, 0
     for item_pair in all_pred_item_pair:
@@ -125,11 +128,10 @@ def report(df):
     all_pair_recall = 1.0 * pos / len(all_item_pair)
     print('所有用户品类中预测购买店铺的准确率为 ' + str(all_pair_acc))
     print('所有用户品类中预测购买店铺的召回率' + str(all_pair_recall))
-    F11 = 6.0 * all_set_recall * all_set_acc / (5.0 * all_set_recall + all_set_acc)
-    F12 = 5.0 * all_pair_acc * all_pair_recall / (2.0 * all_pair_recall + 3 * all_pair_acc)
-    score = 0.4 * F11 + 0.6 * F12
-    print('F11=' + str(F11))
+    F12 = 5.0 * all_pair_acc * all_pair_recall / (2.0 * all_pair_recall + 3.0 * all_pair_acc)
     print('F12=' + str(F12))
+
+    score = 0.4 * F11 + 0.6 * F12
     print('score=' + str(score))
 
 
