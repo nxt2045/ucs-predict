@@ -16,7 +16,6 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from merg_us import gen_feat
-from grid_cv import *
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
@@ -123,79 +122,12 @@ def report(real, pred):
     print('score=' + str(score))
 
 
-def f11_score(real, pred):
-    # 计算所有用户购买评价指标
-    precision = metrics.precision_score(real, pred)
-    recall = metrics.recall_score(real, pred)
-    print('准确率: ' + str(precision))
-    print('召回率: ' + str(recall))
-    F11 = 3.0 * precision * recall / (2.0 * precision + recall)
-    print('F11=' + str(F11))
-    return F11
+def bst_param(df_train, drop_column):
+    import xgboost as xgb
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import roc_auc_score
 
-
-def f12_score(real, pred):
-    # 计算所有用户购买评价指标
-    precision = metrics.precision_score(real, pred)
-    recall = metrics.recall_score(real, pred)
-    print('准确率: ' + str(precision))
-    print('召回率: ' + str(recall))
-    F11 = 3.0 * precision * recall / (2.0 * precision + recall)
-    print('F11=' + str(F11))
-    return F11
-
-
-def gridcv(df_train, drop_column):
-    """ 参数
-    xgboost参数优化
-    """
-    # TODO: Success but Warning
-    # 划分(X,y)
-    print(datetime.now())
-    print('>> 开始划分X,y')
-    X_train = df_train.drop(drop_column, axis=1).values
-    y_train = df_train['label'].values
-    print('<< 完成划分数据')
-
-    # 优化参数
-    print(datetime.now())
-    print('>> 开始优化参数')
-    xgb_model = XGBClassifier(objective='binary:logistic', learning_rate=0.01, )
-    param_grids = [
-        {'max_depth': range(3, 10, 1)},
-        {'min_child_weight': range(1, 6, 1)},
-        {'gamma': [i / 10.0 for i in range(0, 5)]},
-        {'subsample': [i / 10.0 for i in range(6, 10)]},
-        {'colsample_bytree': [i / 10.0 for i in range(6, 10)]},
-        {'n_estimators': [50, 100, 200, 500, 1000]},
-        {'learning_rate': [0.01, 0.05, 0.1, 0.2]},
-        {'scale_pos_weight': [1, 2, 3, 4, 5]},
-        {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]}
-    ]
-
-    bst_param = {'silent': 0, 'nthread': 4}
-    for param_grid in param_grids:
-        print(datetime.now())
-        clf = GridSearchCV(estimator=xgb_model, param_grid=param_grid, scoring='roc_auc', cv=5, verbose=1)
-        clf.fit(X_train, y_train)
-        bst_param.update(clf.best_params_)
-        print(datetime.now())
-        print("最佳参数:", clf.best_params_)
-        print("最佳得分:", clf.best_score_)
-        print("搜索得分:")
-        means = clf.cv_results_['mean_test_score']
-        stds = clf.cv_results_['std_test_score']
-        for mean, std, params in zip(means, stds, clf.cv_results_['params']):
-            print("%0.3f (+/-%0.03f) for %r"
-                  % (mean, std * 2, params))
-    print("最佳参数组合:")
-    print(bst_param)
-    df = pd.DataFrame(bst_param)
-    df.to_csv('./out/bst_param.csv')
-    print('<< 完成优化参数')
-
-
-def param_search(df_train, df_test, drop_column):
     """ 构造
      xgboost模型训练测试
      """
@@ -206,34 +138,47 @@ def param_search(df_train, df_test, drop_column):
 
     print(datetime.now())
     print('\n>> 开始优化参数')
-    param_static = {
-        # 默认
-        'silent': 0,
-        'objective': 'binary:logistic',
-        'scale_pos_weight': 1,
-        'eval_metric': 'logloss',
-        # 调整
-        'learning_rate': 0.1,
-        'n_estimators': 1000,
-        'max_depth': 3,
-        'min_child_weight': 5,
-        'gamma': 0,
-        'subsample': 0.8,
-        'colsample_bytree': 0.8,
-        'eta': 0.05,
+
+    parameters = {
+        'max_depth': list(range(2, 10, 2)),
+        'learning_rate': [0.01, 0.02, 0.05, 0.1, 0.15],
+        'n_estimators': [100, 500, 1000, 2000, 3000, 5000],
+        'min_child_weight': list(range(0, 10, 2)),
+        'gamma': [0, 0.1, 0.2, 0.3, 0.4],
+        'max_delta_step': [0, 0.2, 0.6, 1, 2],
+        'subsample': [0.6, 0.7, 0.8, 0.9],
+        'colsample_bytree': [0.5, 0.6, 0.7, 0.8, 0.9],
+        'reg_alpha': [0, 0.25, 0.5, 0.75, 1],
+        'reg_lambda': [0.2, 0.4, 0.6, 0.8, 1],
+        'scale_pos_weight': [1, 10, 50, 100]
     }
-    param_grids = [
-        {'max_depth': range(3, 10, 1)},
-        {'min_child_weight': range(1, 6, 1)},
-        {'gamma': [i / 10.0 for i in range(0, 5)]},
-        {'subsample': [i / 10.0 for i in range(6, 10)]},
-        {'colsample_bytree': [i / 10.0 for i in range(6, 10)]},
-        {'n_estimators': [50, 100, 200, 500, 1000]},
-        {'learning_rate': [0.01, 0.05, 0.1, 0.2]},
-        {'scale_pos_weight': [1, 2, 3, 4, 5]},
-        {'reg_alpha': [1e-5, 1e-2, 0.1, 1, 100]},
-    ]
-    gsearch1(X_train, y_train)
+
+    xlf = xgb.XGBClassifier(max_depth=3,
+                            learning_rate=0.1,
+                            n_estimators=200,
+                            silent=True,
+                            objective='binary:logistic',
+                            nthread=-1,
+                            gamma=0,
+                            min_child_weight=5,
+                            max_delta_step=0,
+                            subsample=0.85,
+                            colsample_bytree=0.7,
+                            colsample_bylevel=1,
+                            reg_alpha=0,
+                            reg_lambda=1,
+                            scale_pos_weight=1,
+                            seed=1440)
+
+    # 有了gridsearch我们便不需要fit函数
+    gsearch = GridSearchCV(xlf, param_grid=parameters, n_jobs=-1, scoring='roc_auc', cv=3)
+    gsearch.fit(X_train, y_train)
+
+    print("Best score: %0.3f" % gsearch.best_score_)
+    print("Best parameters set:")
+    best_parameters = gsearch.best_estimator_.get_params()
+    for param_name in sorted(parameters.keys()):
+        print("\t%s: %r" % (param_name, best_parameters[param_name]))
 
 
 def model(df_train, df_test, drop_column):
@@ -388,16 +333,19 @@ def main():
     # 生成特征
     df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
+    df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
+
+    # Onehot编码
+    df_train, df_test, df_sub = trans_feat(df_train, df_test, df_sub, drop_column)
 
     # 优化参数
-    param_search(df_train, df_test, drop_column)
+    # bst_param(df_train, df_test, drop_column)
 
     # 构造模型
     # model(df_train, df_test, drop_column)
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
-    # df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
     # submit(df_sub, drop_column)
 
 

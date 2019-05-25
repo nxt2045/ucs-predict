@@ -412,7 +412,7 @@ def main():
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
-    # param_search(df_train, df_test, drop_column)
+    # bst_param(df_train, df_test, drop_column)
 
     # 构造模型
     model(df_train, df_test, drop_column)

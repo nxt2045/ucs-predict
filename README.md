@@ -89,6 +89,7 @@ https://zhuanlan.zhihu.com/p/26177617
 ```
 - xgboost 调参    
 ```txt   
+https://blog.csdn.net/mmc2015/article/details/51019894
 https://xgboost.readthedocs.io/en/latest/parameter.html#general-parameters 
 https://wuhuhu800.github.io/2018/02/28/xgboost_parameters/
 https://blog.csdn.net/han_xiaoyang/article/details/52665396
