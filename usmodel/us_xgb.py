@@ -140,10 +140,10 @@ def bst_param(df_train, drop_column):
     print('\n>> 开始优化参数')
 
     parameters = {
-        'max_depth': list(range(2, 10, 2)),
-        'learning_rate': [0.01, 0.02, 0.05, 0.1, 0.15],
-        'n_estimators': [100, 500, 1000, 2000, 3000, 5000],
-        'min_child_weight': list(range(0, 10, 2)),
+        'max_depth': list(range(3, 7, 2)),
+        'learning_rate': [0.01, 0.02, 0.05, 0.1, 0.2],
+        'n_estimators': [100, 500, 1000, 2000],
+        'min_child_weight': list(range(0, 8, 2)),
         'gamma': [0, 0.1, 0.2, 0.3, 0.4],
         'max_delta_step': [0, 0.2, 0.6, 1, 2],
         'subsample': [0.6, 0.7, 0.8, 0.9],
