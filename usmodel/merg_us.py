@@ -69,6 +69,7 @@ def gen_feat(end_date, time_gap, mark):
     else:
         label = get_label(end_date, mark)
         feat = extract_feat(end_date, time_gap, label)
+        print('>>开始保存特征%s' % (str(feat.shape)))
         feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
@@ -230,7 +231,7 @@ def get_label(end_date, mark):
     if mark == 'submit':
         action = feat_action(end_date - timedelta(days=3), end_date)[['user_id', 'sku_id']]
         pkey = action.drop_duplicates(['user_id', 'sku_id'])
-        label = pd.concat([pkey, pd.DataFrame({'label': [-1] * pkey.shape[0]})], axis=1)
+        label = pd.concat([pkey.reset_index(drop=True), pd.DataFrame({'label': [-1] * pkey.shape[0]})], axis=1)
     else:
         # 可能购买
         action = feat_action(end_date - timedelta(days=3), end_date)[['user_id','sku_id']]
@@ -238,7 +239,7 @@ def get_label(end_date, mark):
         # 真实购买
         buy = feat_buy(end_date - timedelta(days=3), end_date)[['user_id','sku_id']]
         buy = buy.drop_duplicates(['user_id','sku_id'])
-        label_1 = pd.concat([buy, pd.DataFrame({'label': [1] * buy.shape[0]})], axis=1)
+        label_1 = pd.concat([buy.reset_index(drop=True), pd.DataFrame({'label': [1] * buy.shape[0]})], axis=1)
         label = pd.merge(pkey, label_1, on=['user_id','sku_id'], how='left')
         label.fillna(0, inplace=True)
         print('真实购买', buy.shape)
