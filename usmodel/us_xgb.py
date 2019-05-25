@@ -76,11 +76,20 @@ def impt_feat(df_train, drop_column):
 
 
 def report(df):
-    product = pd.read_csv(product_path, na_filter=False)
+    product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df = pd.merge(df, product, on='sku_id', how='left')
+    df = df[['user_id', 'cate', 'shop_id', 'pred', 'label']]
+    print('> report')
+    print(df.head())
 
     real = df[df['label'] == 1]
+    print('real')
+
+    print(real.head())
+
     pred = df[df['pred'] == 1]
+    print('pred')
+    print(pred.head())
 
     # 所有购买用户品类
     all_set = real[['user_id', 'cate']]
@@ -271,41 +280,48 @@ def model(df_train, df_test, drop_column):
     y_train = df_train['label'].values
     X_test = df_test.drop(drop_column, axis=1).values
     y_test = df_test['label'].values
-    print('>> 开始获取特征')
-    print('<< 完成划分数据')
-
-    # 设置参数(gridcv最佳)
-    print(datetime.now())
-    print('>> 开始设置参数')
     dtrain = xgb.DMatrix(X_train, label=y_train)
     dtest = xgb.DMatrix(X_test, label=y_test)
-    param = {
-        # 默认
-        'silent': 0,
-        'objective': 'binary:logistic',
-        'scale_pos_weight': 1,
-        # 调整
-        'learning_rate': 0.1,
-        'n_estimators': 1000,
-        'max_depth': 3,
-        'min_child_weight': 5,
-        'gamma': 0,
-        'subsample': 0.8,
-        'colsample_bytree': 0.8,
-        'eta': 0.05,
-    }
-    plst = list(param.items())
-    plst += [('eval_metric', 'logloss')]
-    num_round = 500
-    evallist = [(dtest, 'eval'), (dtrain, 'train')]
-    print('<< 完成设置参数')
+    print('<< 完成划分X,y')
 
-    # 训练模型(watchlist)
-    print(datetime.now())
-    print('>> 开始训练模型')
-    bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=100)
-    bst.save_model("./out/bst.model")
-    print('<< 完成训练模型')
+    dump_path = './out/bst.model'
+    if os.path.exists(dump_path):
+        # 划分(X,y)
+        print(datetime.now())
+        print('>> 开始加载已有模型')
+        bst = xgb.Booster(model_file=dump_path)
+    else:
+
+        # 设置参数(gridcv最佳)
+        print(datetime.now())
+        print('>> 开始设置参数')
+        param = {
+            # 默认
+            'silent': 0,
+            'objective': 'binary:logistic',
+            'scale_pos_weight': 1,
+            # 调整
+            'learning_rate': 0.1,
+            'n_estimators': 1000,
+            'max_depth': 3,
+            'min_child_weight': 5,
+            'gamma': 0,
+            'subsample': 0.8,
+            'colsample_bytree': 0.8,
+            'eta': 0.05,
+        }
+        plst = list(param.items())
+        plst += [('eval_metric', 'logloss')]
+        num_round = 500
+        evallist = [(dtest, 'eval'), (dtrain, 'train')]
+        print('<< 完成设置参数')
+
+        # 训练模型(watchlist)
+        print(datetime.now())
+        print('>> 开始训练模型')
+        bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=50)
+        bst.save_model("./out/bst.model")
+        print('<< 完成训练模型')
 
     # 测试模型
     print(datetime.now())
@@ -337,7 +353,7 @@ def submit(df_sub, drop_column):
     """
     xgboost模型提交
     """
-    dump_path = './out/bst.jcate'
+    dump_path = './out/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
