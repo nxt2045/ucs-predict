@@ -70,7 +70,7 @@ def gen_feat(end_date, time_gap, mark):
         label = get_label(end_date, mark)
         feat = extract_feat(end_date, time_gap, label)
         print('>>开始保存特征%s' % (str(feat.shape)))
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
     print("feat", feat.shape)
@@ -128,6 +128,7 @@ def extract_feat(end_date, time_gap, label):
         feat = pd.merge(feat, feat_sku_cart_amt(start_date, end_date), on='sku_id', how='left')
         # 商品其他
         feat = pd.merge(feat, feat_sku_action_day(start_date, end_date), on='sku_id', how='left')
+        feat = pd.merge(feat, feat_sku_rebuy_rate(start_date, end_date), on='sku_id', how='left')
         # GR: 用户商品
         # 用户商品是否
         feat = pd.merge(feat, feat_user_sku_if_view(start_date, end_date), on=['user_id','sku_id'], how='left')
