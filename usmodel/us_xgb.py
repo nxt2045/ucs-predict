@@ -95,13 +95,13 @@ def report(df):
     # 所有购买用户品类
     all_set = real[['user_id', 'cate']]
     # 所有用户品类店铺对
-    all_item_pair = real['user_id'].map(str) + '-' + real['cate'].map(str) + '-' + real['sku_id'].map(str)
+    all_item_pair = real['user_id'].map(str) + '-' + real['cate'].map(str) + '-' + real['shop_id'].map(str)
     all_item_pair = np.array(all_item_pair)
 
     # 所有预测购买用户品类
     all_pred_set = pred[['user_id', 'cate']]
     # 所有预测用户品类店铺对
-    all_pred_item_pair = pred['user_id'].map(str) + '-' + pred['cate'].map(str) + '-' + pred['sku_id'].map(str)
+    all_pred_item_pair = pred['user_id'].map(str) + '-' + pred['cate'].map(str) + '-' + pred['shop_id'].map(str)
     all_pred_item_pair = np.array(all_pred_item_pair)
 
     # 计算所有用户品类购买评价指标
