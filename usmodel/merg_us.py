@@ -70,7 +70,7 @@ def gen_feat(end_date, time_gap,label_gap, mark):
         label = get_label(end_date, label_gap,mark)
         feat = extract_feat(end_date, time_gap, label)
         print('>>开始保存特征%s' % (str(feat.shape)))
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
     print("feat", feat.shape)
