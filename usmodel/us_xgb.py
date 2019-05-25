@@ -377,7 +377,7 @@ def main():
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
     drop_column = ['user_id', 'sku_id', 'label']
-    label_gap = 3  # [2,3,7]
+    label_gap = 2  # [2,3,7]
 
     # 生成特征
     df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
@@ -387,8 +387,8 @@ def main():
     # param_search(df_train, df_test, drop_column)
 
     # 构造模型
-    model(df_train, df_test, drop_column)
-    impt_feat(df_train, drop_column)
+    # model(df_train, df_test, drop_column)
+    # impt_feat(df_train, drop_column)
 
     # 生成提交结果
     df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
