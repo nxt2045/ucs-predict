@@ -55,7 +55,7 @@ cache_path = '../cache'
 
 
 # %% 特征融合
-def gen_feat(end_date, time_gap,label_gap, mark):
+def gen_feat(end_date, time_gap, label_gap, mark):
     """ 主调用
     调用 label-extract-map
     """
@@ -63,12 +63,13 @@ def gen_feat(end_date, time_gap,label_gap, mark):
     print('\n>> 开始生成特征(X,y)')
     print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    dump_path = cache_path + '/feat_us_%s_%s_%s.csv' % (str(label_gap),mark,end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/feat_us_%s_%s_%s.csv' % (str(label_gap), mark, end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path)
     else:
-        label = get_label(end_date, label_gap,mark)
+        label = get_label(end_date, label_gap, mark)
         feat = extract_feat(end_date, time_gap, label)
+        print(datetime.now())
         print('>>开始保存特征%s' % (str(feat.shape)))
         # feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
@@ -79,6 +80,7 @@ def gen_feat(end_date, time_gap,label_gap, mark):
     print(feat.head())
     print("tail")
     print(feat.tail())
+    print(datetime.now())
     print('>> 完成生成特征%s' % (str(feat.shape)))
     return feat
 
@@ -141,30 +143,30 @@ def extract_feat(end_date, time_gap, label):
 
         # GR: 用户商品
         # 用户商品是否
-        feat = pd.merge(feat, feat_user_sku_if_view(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_if_buy(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_if_follow(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_if_remark(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_if_cart(start_date, end_date), on=['user_id','sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_if_view(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_if_buy(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_if_follow(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_if_remark(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_if_cart(start_date, end_date), on=['user_id', 'sku_id'], how='left')
         # 用户商品数量
-        feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
         # 用户商品天数
-        feat = pd.merge(feat, feat_user_sku_action_day(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_view_day(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_buy_day(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_follow_day(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_remark_day(start_date, end_date), on=['user_id','sku_id'], how='left')
-        feat = pd.merge(feat, feat_user_sku_cart_day(start_date, end_date), on=['user_id','sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_action_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_view_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_buy_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_follow_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_remark_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+        feat = pd.merge(feat, feat_user_sku_cart_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
         # 用户商品其他
         feat = pd.merge(feat, feat_user_sku_user_action_ratio(start_date, end_date), on=['user_id', 'sku_id'],
                         how='left')
         # 最后调整
-        feat.drop(['user_id','sku_id'], axis=1, inplace=True)
+        feat.drop(['user_id', 'sku_id'], axis=1, inplace=True)
         feat.fillna(0, inplace=True)
         feat = feat.astype(int)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
@@ -232,12 +234,12 @@ def extract_feat(end_date, time_gap, label):
     feat = pd.merge(feat, feat_user_sku_if_remark(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     feat = pd.merge(feat, feat_user_sku_if_cart(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     # 用户商品数量
-    feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_action_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_view_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_buy_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_follow_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_remark_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_cart_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     # 用户商品天数
     feat = pd.merge(feat, feat_user_sku_action_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     feat = pd.merge(feat, feat_user_sku_view_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
@@ -246,17 +248,17 @@ def extract_feat(end_date, time_gap, label):
     feat = pd.merge(feat, feat_user_sku_remark_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     feat = pd.merge(feat, feat_user_sku_cart_day(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     # 用户商品其他
-    feat = pd.merge(feat, feat_user_sku_action_ratio(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_user_action_ratio(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_first_hour(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_last_hour(start_date, end_date), on=['user_id','sku_id'], how='left')
-    feat = pd.merge(feat, feat_user_sku_last_amt(start_date, end_date), on=['user_id','sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_action_ratio(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_user_action_ratio(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_first_hour(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_last_hour(start_date, end_date), on=['user_id', 'sku_id'], how='left')
+    feat = pd.merge(feat, feat_user_sku_last_amt(start_date, end_date), on=['user_id', 'sku_id'], how='left')
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
     return feat
 
 
-def get_label(end_date, label_gap,mark):
+def get_label(end_date, label_gap, mark):
     """生成某一结束时间对应的特征label
     label：预测label,提交集=-1
     """
@@ -268,13 +270,13 @@ def get_label(end_date, label_gap,mark):
         label = pd.concat([pkey.reset_index(drop=True), pd.DataFrame({'label': [-1] * pkey.shape[0]})], axis=1)
     else:
         # 可能购买
-        action = feat_action(end_date - timedelta(days=label_gap), end_date)[['user_id','sku_id']]
-        pkey = action.drop_duplicates(['user_id','sku_id'])
+        action = feat_action(end_date - timedelta(days=label_gap), end_date)[['user_id', 'sku_id']]
+        pkey = action.drop_duplicates(['user_id', 'sku_id'])
         # 真实购买
-        buy = feat_buy(end_date - timedelta(days=label_gap), end_date)[['user_id','sku_id']]
-        buy = buy.drop_duplicates(['user_id','sku_id'])
+        buy = feat_buy(end_date - timedelta(days=label_gap), end_date)[['user_id', 'sku_id']]
+        buy = buy.drop_duplicates(['user_id', 'sku_id'])
         label_1 = pd.concat([buy.reset_index(drop=True), pd.DataFrame({'label': [1] * buy.shape[0]})], axis=1)
-        label = pd.merge(pkey, label_1, on=['user_id','sku_id'], how='left')
+        label = pd.merge(pkey, label_1, on=['user_id', 'sku_id'], how='left')
         label.fillna(0, inplace=True)
         print('真实购买', buy.shape)
         print('可能购买', pkey.shape)
@@ -298,58 +300,58 @@ def map_feat(feat):
     # qcut_feat(feat)
     # TODO: 自定义函数
     dicts = {
-        '2_user_view_amt': [min(0,min(feat['2_user_view_amt'].values)) - 1,
+        '2_user_view_amt': [min(0, min(feat['2_user_view_amt'].values)) - 1,
                             1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 17, 23,
                             max(342, max(feat['2_user_view_amt'].values)) + 1],
-        '3_user_view_amt': [min(0,min(feat['3_user_view_amt'].values)) - 1,
+        '3_user_view_amt': [min(0, min(feat['3_user_view_amt'].values)) - 1,
                             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 20,
                             29, max(679, max(feat['3_user_view_amt'].values)) + 1],
-        '7_user_view_amt': [min(0,min(feat['7_user_view_amt'].values)) - 1,
+        '7_user_view_amt': [min(0, min(feat['7_user_view_amt'].values)) - 1,
                             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 17,
                             20, 26, 40, max(1648, max(feat['7_user_view_amt'].values)) + 1],
-        '7_user_follow_amt': [min(0,min(feat['7_user_follow_amt'].values)) - 1,
+        '7_user_follow_amt': [min(0, min(feat['7_user_follow_amt'].values)) - 1,
                               1, 3, 4, 5, 7,
                               max(175, max(feat['7_user_follow_amt'].values)) + 1],
-        '14_user_view_amt': [min(0,min(feat['14_user_view_amt'].values)) - 1,
+        '14_user_view_amt': [min(0, min(feat['14_user_view_amt'].values)) - 1,
                              1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 18, 21, 25,
                              33, 51, max(2411, max(feat['14_user_view_amt'].values)) + 1],
-        '14_user_buy_amt': [min(0,min(feat['14_user_buy_amt'].values)) - 1,
+        '14_user_buy_amt': [min(0, min(feat['14_user_buy_amt'].values)) - 1,
                             1, 2, 3,
                             max(38, max(feat['14_user_buy_amt'].values)) + 1],
-        '14_user_follow_amt': [min(0,min(feat['14_user_follow_amt'].values)) - 1,
+        '14_user_follow_amt': [min(0, min(feat['14_user_follow_amt'].values)) - 1,
                                1, 2, 3, 4, 5, 8,
                                max(215, max(feat['14_user_follow_amt'].values)) + 1],
-        '14_user_remark_amt': [min(0,min(feat['14_user_remark_amt'].values)) - 1,
+        '14_user_remark_amt': [min(0, min(feat['14_user_remark_amt'].values)) - 1,
                                1, 2, 3, 4, 5,
                                max(67, max(feat['14_user_remark_amt'].values)) + 1],
-        'user_reg_month': [min(0,min(feat['user_reg_month'].values)) - 1,
+        'user_reg_month': [min(0, min(feat['user_reg_month'].values)) - 1,
                            1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60,
                            max(180, max(feat['user_reg_month'].values)) + 1],
-        'user_view_amt': [min(0,min(feat['user_view_amt'].values)) - 1,
+        'user_view_amt': [min(0, min(feat['user_view_amt'].values)) - 1,
                           1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 16, 18, 21, 24, 29, 35, 44, 59, 94,
                           max(11644, max(feat['user_view_amt'].values)) + 1],
-        'user_buy_amt': [min(0,min(feat['user_buy_amt'].values)) - 1,
+        'user_buy_amt': [min(0, min(feat['user_buy_amt'].values)) - 1,
                          1, 2, 3, 4, 5, 6, 8,
                          max(237, max(feat['user_buy_amt'].values)) + 1],
-        'user_follow_amt': [min(0,min(feat['user_follow_amt'].values)) - 1,
+        'user_follow_amt': [min(0, min(feat['user_follow_amt'].values)) - 1,
                             1, 2, 3, 4, 5, 6, 8, 12,
                             max(559, max(feat['user_follow_amt'].values)) + 1],
-        'user_remark_amt': [min(0,min(feat['user_remark_amt'].values)) - 1,
+        'user_remark_amt': [min(0, min(feat['user_remark_amt'].values)) - 1,
                             1, 2, 3, 4, 5, 6, 8,
                             max(125, max(feat['user_remark_amt'].values)) + 1],
-        'user_cart_amt': [min(0,min(feat['user_cart_amt'].values)) - 1,
+        'user_cart_amt': [min(0, min(feat['user_cart_amt'].values)) - 1,
                           1, 2, 3, 4, 5, 6, 8, 10, 14,
                           max(319, max(feat['user_cart_amt'].values)) + 1],
-        'user_buy/view': [min(-13800,min(feat['user_buy/view'].values)) - 1,
+        'user_buy/view': [min(-13800, min(feat['user_buy/view'].values)) - 1,
                           -200, -100, 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 20, 25, 28, 33, 50, 100,
                           max(1666, max(feat['user_buy/view'].values)) + 1],
-        'user_buy/follow': [min(-23700,min(feat['user_buy/follow'].values)) - 1,
+        'user_buy/follow': [min(-23700, min(feat['user_buy/follow'].values)) - 1,
                             -600, -500, -400, -300, -200, -100, 0, 1, 27, 33, 50, 66, 100, 157, 200, 300,
                             max(9180, max(feat['user_buy/follow'].values)) + 1],
-        'user_buy/remark': [min(-23700,min(feat['user_buy/remark'].values)) - 1,
+        'user_buy/remark': [min(-23700, min(feat['user_buy/remark'].values)) - 1,
                             -500, -400, -300, -200, -100, 0, 1, 11, 25, 33, 37, 50, 66, 100, 150, 200,
                             max(7400, max(feat['user_buy/remark'].values)) + 1],
-        'user_buy/cart': [min(-13800,min(feat['user_buy/cart'].values)) - 1,
+        'user_buy/cart': [min(-13800, min(feat['user_buy/cart'].values)) - 1,
                           -600, -400, -300, -200, -100, 0, 6, 16, 25, 33, 50, 66, 100, 166, 200, 300,
                           max(17700, max(feat['user_buy/cart'].values)) + 1],
     }
