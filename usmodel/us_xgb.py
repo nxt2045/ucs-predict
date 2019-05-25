@@ -178,7 +178,7 @@ def bst_param(df_train, drop_column):
                             seed=1440)
 
     # 有了gridsearch我们便不需要fit函数
-    gsearch = GridSearchCV(xlf, param_grid=parameters, n_jobs=-1, scoring='roc_auc', cv=3)
+    gsearch = GridSearchCV(xlf, param_grid=parameters, scoring='roc_auc', cv=3)
     gsearch.fit(X_train, y_train)
 
     print("Best score: %0.3f" % gsearch.best_score_)
