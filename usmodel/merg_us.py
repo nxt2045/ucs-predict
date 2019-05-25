@@ -138,7 +138,9 @@ def extract_feat(end_date, time_gap, label):
         feat = pd.merge(feat, feat_sku_follow_day(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_remark_day(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_cart_day(start_date, end_date), on='sku_id', how='left')
-
+        # 商品其他
+        feat = pd.merge(feat, feat_sku_rebuy_rate(start_date, end_date), on='sku_id', how='left')
+        
         # GR: 用户商品
         # 用户商品是否
         feat = pd.merge(feat, feat_user_sku_if_view(start_date, end_date), on=['user_id','sku_id'], how='left')
@@ -165,7 +167,7 @@ def extract_feat(end_date, time_gap, label):
                         how='left')
         # 最后调整
         feat.drop(['user_id','sku_id'], axis=1, inplace=True)
-        feat = feat.fillna(0)
+        feat.fillna(0, inplace=True)
         feat = feat.astype(int)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
         feat_concat.append(feat)
@@ -218,7 +220,6 @@ def extract_feat(end_date, time_gap, label):
     # 商品其他
     feat = pd.merge(feat, feat_sku_action_ratio(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_buy_rate(start_date, end_date), on='sku_id', how='left')
-    feat = pd.merge(feat, feat_sku_rebuy_rate(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_first_hour(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_last_hour(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_last_amt(start_date, end_date), on='sku_id', how='left')
