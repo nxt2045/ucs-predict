@@ -265,16 +265,6 @@ def model(df_train, df_test, drop_column):
     """ 构造
     xgboost模型训练测试
     """
-    # 划分(X,y)
-    print(datetime.now())
-    print('>> 开始划分X,y')
-    X_train = df_train.drop(drop_column, axis=1).values
-    y_train = df_train['label'].values
-    X_test = df_test.drop(drop_column, axis=1).values
-    y_test = df_test['label'].values
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    dtest = xgb.DMatrix(X_test, label=y_test)
-    print('<< 完成划分X,y')
 
     dump_path = './out/bst.model'
     if os.path.exists(dump_path):
@@ -283,6 +273,16 @@ def model(df_train, df_test, drop_column):
         print('>> 开始加载已有模型')
         bst = xgb.Booster(model_file=dump_path)
     else:
+        # 划分(X,y)
+        print(datetime.now())
+        print('>> 开始划分X,y')
+        X_train = df_train.drop(drop_column, axis=1).values
+        y_train = df_train['label'].values
+        X_test = df_test.drop(drop_column, axis=1).values
+        y_test = df_test['label'].values
+        dtrain = xgb.DMatrix(X_train, label=y_train)
+        dtest = xgb.DMatrix(X_test, label=y_test)
+        print('<< 完成划分X,y')
         # 设置参数(gridcv最佳)
         print(datetime.now())
         print('>> 开始设置参数')
@@ -314,15 +314,23 @@ def model(df_train, df_test, drop_column):
         bst.save_model("./out/bst.model")
         print('<< 完成训练模型')
 
-    # 测试模型
+    # 划分(X,y)
     print(datetime.now())
+    print('>> 开始划分X,y')
+    X_test = df_test.drop(drop_column, axis=1).values
+    y_test = df_test['label'].values
+    dtest = xgb.DMatrix(X_test, label=y_test)
+    print('<< 完成划分X,y')
+
+    # 测试模型
     print('>> 开始测试模型')
     y_probab = bst.predict(dtest)
     print('> 概率转换0,1')
     df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
-    df_pred = df_pred.sort_values(by='probab', ascending=False)
-    df_pred = df_pred.drop_duplicates(['user_id', 'cate'], keep='first')
-    df_pred = df_pred.reset_index(drop=True)
+    del df_train, df_test
+    df_pred.sort_values(by='probab', ascending=False, inplace=True)
+    df_pred.drop_duplicates(['user_id', 'cate'], keep='first', inplace=True)
+    df_pred.reset_index(drop=True, inplace=True)
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
     df_pred.to_csv('./out/test_pred.csv', index=False)
