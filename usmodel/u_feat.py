@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/9/2019
 # @Author  : xiaotong niu
-# @File    : user_feat.py
+# @File    : u_feat.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
@@ -45,7 +45,7 @@ action_path = clean_path + "/action.csv"
 product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
-cache_path = '../cache'
+cache_path = '../cache/u'
 
 
 # TODO: (user_id,action_time) pkey
@@ -396,7 +396,7 @@ def feat_user_buy_rate(start_date, end_date):
     return feat
 
 
-# 最早行为时差(小时)
+# 用户最早行为时差(小时)
 def feat_user_first_hour(start_date, end_date):
     print('user_first_hour_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_first_hour_%s_%s.csv' % (end_date.strftime('%y%m%d'),
@@ -415,7 +415,7 @@ def feat_user_first_hour(start_date, end_date):
     return feat
 
 
-# 最晚行为时差(小时)
+# 用户最晚行为时差(小时)
 def feat_user_last_hour(start_date, end_date):
     print('user_last_hour_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_last_hour_%s_%s.csv' % (end_date.strftime('%y%m%d'),
@@ -434,7 +434,7 @@ def feat_user_last_hour(start_date, end_date):
     return feat
 
 
-# 最晚行为次数(天)
+# 用户最晚行为次数(天)
 def feat_user_last_amt(start_date, end_date):
     print('user_last_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_last_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),
@@ -444,12 +444,30 @@ def feat_user_last_amt(start_date, end_date):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         action = feat_action(start_date, end_date)[['user_id', 'action_time']]
-        action['action_date'] = [i.date for i in action['action_time']]
-        action.drop('action_time', axis=1, inplace=True)
-        action.sort_values(['user_id', 'action_date'], inplace=True)
+        action.sort_values(['user_id', 'action_time'], inplace=True)
+        action['action_time'] = action['action_time'].values.astype('datetime64[D]')
         sub_action = action.groupby('user_id').first().reset_index()
-        action = action[action['action_date'].isin(sub_action['action_date'])]
+        action = pd.merge(sub_action, action, on=['user_id', 'action_time'], how='left')
         feat = action.groupby('user_id').size().reset_index(name='user_last_amt')
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户行为天数
+def feat_user_action_day(start_date, end_date):
+    print('user_action_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_action_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                start_date.strftime('%y%m%d'),
+                                                                end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_action(start_date, end_date)[['user_id', 'action_time']]
+        action.sort_values(['user_id', 'action_time'], inplace=True)
+        action['action_time'] = action['action_time'].values.astype('datetime64[D]')
+        action = action.drop_duplicates(['user_id', 'action_time'])
+        feat = action.groupby('user_id').size().reset_index(name='user_action_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -458,4 +476,3 @@ def feat_user_last_amt(start_date, end_date):
 if __name__ == "__main__":
     end_date = datetime.strptime(train_end_date, '%Y-%m-%d')
     start_date = datetime.strptime(train_start_date, '%Y-%m-%d')
-    feat_user_last_amt(start_date, end_date)

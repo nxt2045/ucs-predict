@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
 # @Author  : xiaotong niu
-# @File    : user_xgb.py
+# @File    : us_xgb.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
@@ -13,7 +13,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from merg_user import gen_feat
+from merg_us import gen_feat
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
@@ -75,7 +75,67 @@ def impt_feat(df_train, drop_column):
         f_score.to_csv('./out/impt_feat.csv', index=False)
 
 
+def report(df):
+    product = pd.read_csv(product_path, na_filter=False)
+    df = pd.merge(df, product, on='sku_id', how='left')
+
+    real = df[df['label'] == 1]
+    pred = df[df['pred'] == 1]
+
+    # 所有购买用户品类
+    all_set = real[['user_id', 'cate']]
+    # 所有用户品类店铺对
+    all_item_pair = real['user_id'].map(str) + '-' + real['cate'].map(str) + '-' + real['sku_id'].map(str)
+    all_item_pair = np.array(all_item_pair)
+
+    # 所有预测购买用户品类
+    all_pred_set = pred[['user_id', 'cate']]
+    # 所有预测用户品类店铺对
+    all_pred_item_pair = pred['user_id'].map(str) + '-' + pred['cate'].map(str) + '-' + pred['sku_id'].map(str)
+    all_pred_item_pair = np.array(all_pred_item_pair)
+
+    # 计算所有用户品类购买评价指标
+    pos, neg = 0, 0
+    for pkey in all_pred_set:
+        if pkey in all_set:
+            pos += 1
+        else:
+            neg += 1
+    all_set_acc = 1.0 * pos / (pos + neg)
+    all_set_recall = 1.0 * pos / len(all_set)
+    print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_set_acc))
+    print('所有用户品类中预测购买用户品类的召回率' + str(all_set_recall))
+
+    pos, neg = 0, 0
+    for item_pair in all_pred_item_pair:
+        if item_pair in all_item_pair:
+            pos += 1
+        else:
+            neg += 1
+    all_pair_acc = 1.0 * pos / (pos + neg)
+    all_pair_recall = 1.0 * pos / len(all_item_pair)
+    print('所有用户品类中预测购买店铺的准确率为 ' + str(all_pair_acc))
+    print('所有用户品类中预测购买店铺的召回率' + str(all_pair_recall))
+    F11 = 6.0 * all_set_recall * all_set_acc / (5.0 * all_set_recall + all_set_acc)
+    F12 = 5.0 * all_pair_acc * all_pair_recall / (2.0 * all_pair_recall + 3 * all_pair_acc)
+    score = 0.4 * F11 + 0.6 * F12
+    print('F11=' + str(F11))
+    print('F12=' + str(F12))
+    print('score=' + str(score))
+
+
 def f11_score(real, pred):
+    # 计算所有用户购买评价指标
+    precision = metrics.precision_score(real, pred)
+    recall = metrics.recall_score(real, pred)
+    print('准确率: ' + str(precision))
+    print('召回率: ' + str(recall))
+    F11 = 3.0 * precision * recall / (2.0 * precision + recall)
+    print('F11=' + str(F11))
+    return F11
+
+
+def f12_score(real, pred):
     # 计算所有用户购买评价指标
     precision = metrics.precision_score(real, pred)
     recall = metrics.recall_score(real, pred)
@@ -190,10 +250,22 @@ def model(df_train, df_test, drop_column):
     print('> 概率转换0,1')
     df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
     df_pred = df_pred.sort_values(by='probab', ascending=False)
-    df_pred.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
-    print('> 保存结果')
-    df_pred.to_csv('./out/test_pred.csv', index=False)
-    f11_score(df_pred['label'], df_pred['pred'])
+    df_pred = df_pred.drop_duplicates(['user_id', 'cate'], keep='first')
+    df_pred = df_pred.reset_index(drop=True)
+
+    df_same = df_pred
+    df_same.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
+    df_same.to_csv('./out/test_pred_same.csv', index=False)
+    print('前%s行[same] label=1：' % (str(int(np.sum(df_same['label'].values)))))
+    report(df_same)
+
+    for i in range(10000, 160000, 10000):
+        df = df_pred
+        print('前%s行 label=1：' % (str(i)))
+        df.ix[:i, 'pred'] = 1
+        df.to_csv('./out/test_pred_%s.csv' % (str(i)), index=False)
+        report(df)
+
     print('<< 完成测试模型')
 
 
@@ -240,7 +312,7 @@ def main():
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
-    drop_column = ['user_id', 'label']
+    drop_column = ['user_id', 'sku_id', 'label']
 
     # 生成特征
     print(datetime.now())
@@ -255,7 +327,7 @@ def main():
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
-    # df_sub = gen_feat(sub_end_date, time_gap, 'submit')
+    df_sub = gen_feat(sub_end_date, time_gap, 'submit')
     # submit(df_sub, drop_column)
 
 

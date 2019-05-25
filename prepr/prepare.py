@@ -29,10 +29,10 @@ plt.rcParams['figure.figsize'] = (12, 8)
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
-train_start_date = "2018-02-23"
-train_end_date = "2018-04-15"
-sub_start_date = "2018-04-16"
-sub_end_date = "2018-04-22"
+train_start_date = "2018-03-10"
+train_end_date = "2018-04-08"
+sub_start_date = "2018-04-17"
+sub_end_date = "2018-04-15"
 
 # 文件列表
 ori_list = ['jdata_action.csv', 'jdata_user.csv', 'jdata_product.csv', 'jdata_shop.csv', 'jdata_comment.csv']
@@ -162,12 +162,13 @@ def clean_product():
     product = product[product['sku_id'].isin(action['sku_id'])]
 
     product = product.drop_duplicates('sku_id')
+    product['product_reg_day'] = product['market_time'].apply(map_day)
     product['product_reg_month'] = product['market_time'].apply(map_month)
-
     product['product_reg_cate'] = product['product_reg_month'].apply(map_cate)
+    product['product_reg_year'] = product['market_time'].apply(map_year)
     product = product.drop('market_time', axis=1)
 
-    product = product.sort_values(by=['shop_id', 'cate', 'brand', 'product_reg_cate'])
+    product = product.sort_values(by=['shop_id', 'cate', 'brand'])
     print('after:', product.shape)
     product.to_csv(clean_path + "/product.csv", index=False)
 
@@ -230,7 +231,7 @@ def clean_action():
 if __name__ == "__main__":
     # fill_NaN()
     # clean_data()
-    clean_shop()
+    clean_product()
     # clean_user()
 
 """log
