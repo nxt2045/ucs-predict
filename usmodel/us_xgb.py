@@ -339,14 +339,14 @@ def model(df_train, df_test, drop_column):
     df_same.ix[:int(np.sum(df_test['label'].values)), 'pred'] = 1
     df_same.to_csv('./out/test_pred_same.csv', index=False)
     print('前%s行[same] label=1：' % (str(int(np.sum(df_same['label'].values)))))
-    report(df_same)
+    # report(df_same)
 
     for i in range(10000, 160000, 10000):
         df = df_pred
         print('前%s行 label=1：' % (str(i)))
         df.ix[:i, 'pred'] = 1
         df.to_csv('./out/test_pred_%s.csv' % (str(i)), index=False)
-        report(df)
+        # report(df)
 
     print('<< 完成测试模型')
 
@@ -374,6 +374,9 @@ def submit(df_sub, drop_column):
         df_pred = df_pred.sort_values(by='probab', ascending=False)
         df_pred = df_pred.drop_duplicates(['user_id', 'cate'], keep='first')
         df_pred = df_pred.reset_index(drop=True)
+        product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
+        df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
+
         df_pred.ix[:10000, 'pred'] = 1
         df_pred.to_csv('./out/sub_pred.csv', index=False)
         # 格式化提交
