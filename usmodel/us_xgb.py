@@ -53,7 +53,7 @@ cache_path = '../cache'
 def impt_feat(df_train, drop_column):
     """ back 重要性
     """
-    dump_path = './xbg/bst.model'
+    dump_path = './out/bst.model'
     if os.path.exists(dump_path):
         # 获取特征
         print(datetime.now())
@@ -71,7 +71,7 @@ def impt_feat(df_train, drop_column):
         f_name = pd.DataFrame({'f_name': f_name})
         f_score = pd.concat([f_id, f_name, f_pro], axis=1)
         f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
-        f_score.to_csv('./xbg/impt_feat.csv', index=False)
+        f_score.to_csv('./out/impt_feat.csv', index=False)
 
 
 def report(real, pred):
@@ -122,7 +122,6 @@ def report(real, pred):
 
 
 def bst_param(df_train, drop_column):
-
     """ 构造
      xgboost模型训练测试
      """
@@ -134,31 +133,44 @@ def bst_param(df_train, drop_column):
     print(datetime.now())
     print('\n>> 开始优化参数')
 
-    parameters = {
+    param1 = {
         'max_depth': list(range(3, 7, 2)),
-        'learning_rate': [0.01, 0.02, 0.05, 0.1, 0.2],
-        'n_estimators': [100, 500, 1000, 2000],
         'min_child_weight': list(range(0, 8, 2)),
+    }
+    param2 = {
         'gamma': [0, 0.1, 0.2, 0.3, 0.4],
-        'max_delta_step': [0, 0.2, 0.6, 1, 2],
+    }
+    param3 = {
         'subsample': [0.6, 0.7, 0.8, 0.9],
         'colsample_bytree': [0.5, 0.6, 0.7, 0.8, 0.9],
+    }
+    param4 = {
         'reg_alpha': [0, 0.25, 0.5, 0.75, 1],
         'reg_lambda': [0.2, 0.4, 0.6, 0.8, 1],
+    }
+    param5 = {
         'scale_pos_weight': [1, 10, 50, 100]
     }
+    param6 = {
+        'learning_rate': [0.01, 0.02, 0.05, 0.1, 0.2],
+    }
+    param7 = {
+        'n_estimators': [100, 500, 1000, 2000],
+    }
+
+    parameters = param1
 
     xlf = xgb.XGBClassifier(max_depth=3,
                             learning_rate=0.1,
-                            n_estimators=200,
+                            n_estimators=500,
                             silent=True,
                             objective='binary:logistic',
                             nthread=-1,
                             gamma=0,
                             min_child_weight=5,
                             max_delta_step=0,
-                            subsample=0.85,
-                            colsample_bytree=0.7,
+                            subsample=0.8,
+                            colsample_bytree=0.8,
                             colsample_bylevel=1,
                             reg_alpha=0,
                             reg_lambda=1,
@@ -181,7 +193,7 @@ def model(df_train, df_test, drop_column):
     xgboost模型训练测试
     """
 
-    dump_path = './xbg/bst.model'
+    dump_path = './out/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
@@ -227,7 +239,7 @@ def model(df_train, df_test, drop_column):
         print(datetime.now())
         print('\n>> 开始训练模型')
         bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=50)
-        bst.save_model("./xbg/bst.model")
+        bst.save_model("./out/bst.model")
         print('<< 完成训练模型')
 
     # 划分(X,y)
@@ -249,7 +261,7 @@ def model(df_train, df_test, drop_column):
     df_pred.reset_index(drop=True, inplace=True)
     product = pd.read_csv(product_path, na_filter=False)[['sku_id', 'shop_id']]
     df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
-    # df_pred.to_csv('./xbg/test_pred.csv', index=False)
+    # df_pred.to_csv('./out/test_pred.csv', index=False)
 
     # 计算得分
     print('\n>> 开始计算得分')
@@ -279,7 +291,7 @@ def submit(df_sub, drop_column):
     """
     xgboost模型提交
     """
-    dump_path = './xbg/bst.model'
+    dump_path = './out/bst.model'
     if os.path.exists(dump_path):
         # 划分(X,y)
         print(datetime.now())
@@ -290,7 +302,7 @@ def submit(df_sub, drop_column):
         # 预测提交
         print('>> 开始预测提交')
         dsub = xgb.DMatrix(X_sub)
-        # dsub.save_binary('./xbg/dsub.buffer')
+        # dsub.save_binary('./out/dsub.buffer')
         bst = xgb.Booster(model_file=dump_path)
         y_probab = bst.predict(dsub)
         print('> 概率转换0,1')
@@ -302,7 +314,7 @@ def submit(df_sub, drop_column):
         df_pred = pd.merge(df_pred, product, on='sku_id', how='left')
 
         df_pred.ix[:10000, 'pred'] = 1
-        df_pred.to_csv('./xbg/sub_pred.csv', index=False)
+        df_pred.to_csv('./out/sub_pred.csv', index=False)
         # 格式化提交
         df_pred = df_pred[df_pred['pred'] == 1]
         df_pred = df_pred[['user_id', 'cate', 'shop_id']]
@@ -330,10 +342,8 @@ def main():
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
     df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
 
-    # Onehot编码
-
     # 优化参数
-    bst_param(df_train, df_test, drop_column)
+    bst_param(df_train, drop_column)
 
     # 构造模型
     # model(df_train, df_test, drop_column)
