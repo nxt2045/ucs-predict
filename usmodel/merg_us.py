@@ -55,7 +55,7 @@ cache_path = '../cache'
 
 
 # %% 特征融合
-def gen_feat(end_date, time_gap, mark):
+def gen_feat(end_date, time_gap,label_gap, mark):
     """ 主调用
     调用 label-extract-map
     """
@@ -63,14 +63,14 @@ def gen_feat(end_date, time_gap, mark):
     print('\n>> 开始生成特征(X,y)')
     print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    dump_path = cache_path + '/feat_us_%s.csv' % (end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/feat_us_%s_%s_%s.csv' % (str(label_gap),mark,end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path)
     else:
-        label = get_label(end_date, mark)
+        label = get_label(end_date, label_gap,mark)
         feat = extract_feat(end_date, time_gap, label)
         print('>>开始保存特征%s' % (str(feat.shape)))
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
     print("feat", feat.shape)
@@ -257,22 +257,22 @@ def extract_feat(end_date, time_gap, label):
     return feat
 
 
-def get_label(end_date, mark):
+def get_label(end_date, label_gap,mark):
     """生成某一结束时间对应的特征label
     label：预测label,提交集=-1
     """
     print(datetime.now())
     print('> 获取标签')
     if mark == 'submit':
-        action = feat_action(end_date - timedelta(days=3), end_date)[['user_id', 'sku_id']]
+        action = feat_action(end_date - timedelta(days=label_gap), end_date)[['user_id', 'sku_id']]
         pkey = action.drop_duplicates(['user_id', 'sku_id'])
         label = pd.concat([pkey.reset_index(drop=True), pd.DataFrame({'label': [-1] * pkey.shape[0]})], axis=1)
     else:
         # 可能购买
-        action = feat_action(end_date - timedelta(days=3), end_date)[['user_id','sku_id']]
+        action = feat_action(end_date - timedelta(days=label_gap), end_date)[['user_id','sku_id']]
         pkey = action.drop_duplicates(['user_id','sku_id'])
         # 真实购买
-        buy = feat_buy(end_date - timedelta(days=3), end_date)[['user_id','sku_id']]
+        buy = feat_buy(end_date - timedelta(days=label_gap), end_date)[['user_id','sku_id']]
         buy = buy.drop_duplicates(['user_id','sku_id'])
         label_1 = pd.concat([buy.reset_index(drop=True), pd.DataFrame({'label': [1] * buy.shape[0]})], axis=1)
         label = pd.merge(pkey, label_1, on=['user_id','sku_id'], how='left')

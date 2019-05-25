@@ -161,8 +161,6 @@ def gridcv(df_train, drop_column):
     # 优化参数
     print(datetime.now())
     print('>> 开始优化参数')
-    # F11_score = metrics.make_scorer(f11_score, greater_is_better=True, needs_proba=True)
-    # scoring = {'F11': F11_score}
     xgb_model = XGBClassifier(objective='binary:logistic', seed=27)
     param_list = [
         {'max_depth': range(3, 10, 1)},
@@ -313,10 +311,11 @@ def main():
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
     drop_column = ['user_id', 'sku_id', 'label']
+    label_gap = 3  # [2,3,7]
 
     # 生成特征
-    df_train = gen_feat(train_end_date, time_gap, 'train')
-    df_test = gen_feat(test_end_date, time_gap, 'test')
+    df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
+    df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
     # gridcv(df_train, drop_column)
@@ -326,7 +325,7 @@ def main():
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
-    df_sub = gen_feat(sub_end_date, time_gap, 'submit')
+    df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
     # submit(df_sub, drop_column)
 
 
