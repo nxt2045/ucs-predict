@@ -267,7 +267,7 @@ def main():
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
-    drop_column = ['user_id', 'sku_id', 'label']
+    drop_column = ['user_id', 'sku_id', 'shop_id','label']
     label_gap = 3  # [2,3,7]
 
     # 生成特征
@@ -275,6 +275,7 @@ def main():
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
+    # bst_param(df_train, drop_column)
 
     # 构造模型
     model(df_train, df_test, drop_column)

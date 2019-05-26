@@ -47,7 +47,7 @@ action_path = clean_path + "/action.csv"
 product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
-cache_path = '../cache/us'
+cache_path = '../cache/usku'
 
 
 # %% 特征提取
@@ -499,4 +499,18 @@ def feat_user_sku_cart_day(start_date, end_date):
         feat = cart.groupby(['user_id', 'sku_id']).size().reset_index(name='user_sku_cart_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# GR: 特殊
+# 用户关注或加购，但是不购买，且加购或关注天数距离最后日期小于 10 天的记为 1，否则记为 0
+def feat_user_sku_10_not_buy(start_date, end_date):
+    print('user_sku_10_not_buy%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_sku_10_not_buy%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = feat_action(end_date - timedelta(days=10 - 1), end_date)[['user_id', 'sku_id']]
+
     return feat

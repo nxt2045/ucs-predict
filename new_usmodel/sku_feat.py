@@ -45,8 +45,9 @@ user_path = clean_path + "/user.csv"
 action_path = clean_path + "/action.csv"
 product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
+comment_path = clean_path + "/comment.csv"
 submit_path = '../submit'
-cache_path = '../cache/s'
+cache_path = '../cache/sku'
 
 
 # %% 特征提取
@@ -141,7 +142,7 @@ def feat_cart_plus(start_date, end_date):
 # 商品信息
 def feat_sku():
     print('product.csv')
-    feat = pd.read_csv(product_path, na_filter=False)
+    feat = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate', 'shop_id'])
     return feat
 
 
@@ -154,9 +155,12 @@ def feat_sku_plus():
         product = pd.read_csv(product_path, na_filter=False)
         shop = pd.read_csv(shop_path, na_filter=False)
         feat = pd.merge(product, shop, on='shop_id', how='left')
-        feat = feat.drop(['vender_id', 'shop_id'], axis=1)
+        feat = feat.drop(['vender_id'], axis=1)
         feat.to_csv(dump_path, index=False)
     return feat
+
+
+# 品类系列
 
 
 # GR: 是否系列
@@ -342,6 +346,27 @@ def feat_sku_cart_amt(start_date, end_date):
     else:
         action = feat_cart(start_date, end_date)
         feat = action.groupby('sku_id').size().reset_index(name='sku_cart_amt')
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 商品历史评论数量
+def feat_sku_comment_amt(start_date, end_date):
+    print('sku_comment_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/sku_comment_amt_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = pd.read_csv(comment_path, na_filter=False, parse_dates='dt', skip_blank_lines=True)
+        action = action[
+            (start_date <= action['action_time']) & (action['action_time'] <= end_date)]
+        print(action.head())
+        feat = action.groupby('sku_id').sum().reset_index()
+        print(feat.head())
+        feat['good/bad'] = feat['good_comments']/feat['bad_comments']
+        print(feat.head())
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
@@ -603,7 +628,7 @@ def feat_sku_rebuy_rate(start_date, end_date):
         feat = pd.merge(feat, df2, on='sku_id', how='left')
         feat.fillna(0, inplace=True)
         feat.ix[feat['all_user_amt'] == 0, 'all_user_amt'] = -1
-        feat['sku_rebuy_rate'] = (feat['all_rebuy_user_amt'] / feat['all_user_amt'])*100
+        feat['sku_rebuy_rate'] = (feat['all_rebuy_user_amt'] / feat['all_user_amt']) * 100
         feat = feat[['sku_id', 'sku_rebuy_rate']]
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
