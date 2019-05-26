@@ -142,7 +142,7 @@ def feat_cart_plus(start_date, end_date):
 # 商品信息
 def feat_sku():
     print('product.csv')
-    feat = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate', 'shop_id'])
+    feat = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate', 'brand','shop_id'])
     return feat
 
 

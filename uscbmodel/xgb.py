@@ -278,7 +278,7 @@ def main():
     # bst_param(df_train, drop_column)
 
     # 构造模型
-    model(df_train, df_test, drop_column)
+    # model(df_train, df_test, drop_column)
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
