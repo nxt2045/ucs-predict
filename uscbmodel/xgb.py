@@ -173,6 +173,7 @@ def model(df_train, df_test, drop_column):
         print('\n>> 开始训练模型')
         bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=50)
         bst.save_model("./out/bst.model")
+        del dtest, dtrain
         print('<< 完成训练模型')
 
     # 划分(X,y)
@@ -186,6 +187,7 @@ def model(df_train, df_test, drop_column):
     # 测试模型
     print('\n>> 开始测试模型')
     y_probab = bst.predict(dtest)
+    del dtest
     print('> 概率转换0,1')
     df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
     del df_train, df_test
@@ -278,8 +280,8 @@ def main():
     # bst_param(df_train, drop_column)
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
-    # impt_feat(df_train, drop_column)
+    model(df_train, df_test, drop_column)
+    impt_feat(df_train, drop_column)
 
     # 生成提交结果
     df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
