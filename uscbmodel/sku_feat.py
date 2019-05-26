@@ -359,16 +359,16 @@ def feat_sku_comment_amt(start_date, end_date):
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-        action = pd.read_csv(comment_path, na_filter=False, parse_dates='dt', skip_blank_lines=True)
-        action = action[
-            (start_date <= action['action_time']) & (action['action_time'] <= end_date)]
-        print(action.head())
-        feat = action.groupby('sku_id').sum().reset_index()
+        comment = pd.read_csv(comment_path, na_filter=False, parse_dates=['dt'], skip_blank_lines=True)
+        comment = comment[
+            (start_date <= comment['dt']) & (comment['dt'] <= end_date)]
+        print(comment.head())
+        feat = comment.groupby('sku_id').sum().reset_index()
         print(feat.head())
         feat['good/bad'] = feat['good_comments']/feat['bad_comments']
         print(feat.head())
         feat = feat.astype(int)
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -636,6 +636,6 @@ def feat_sku_rebuy_rate(start_date, end_date):
 
 
 if __name__ == "__main__":
-    end_date = datetime.strptime(data_end_date, '%Y-%m-%d')
-    start_date = datetime.strptime(data_start_date, '%Y-%m-%d')
-    action = feat_buy_plus(start_date, end_date)
+    end_date = datetime.strptime(train_end_date, '%Y-%m-%d')
+    start_date = datetime.strptime(train_start_date, '%Y-%m-%d')
+    action = feat_sku_comment_amt(start_date, end_date)

@@ -1,9 +1,8 @@
-
 # coding: utf-8
 
 # In[1]:
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 import time
 from datetime import datetime
@@ -13,7 +12,7 @@ import os
 import math
 import numpy as np
 from sklearn import preprocessing
-from  sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 action_1_path = "./data/JData_Action_201602.csv"
@@ -22,6 +21,7 @@ action_3_path = "./data/JData_Action_201604.csv"
 comment_path = "./data/JData_Comment.csv"
 product_path = "./data/JData_Product.csv"
 user_path = "./data/JData_User.csv"
+
 
 def convert_age(age_str):
     if age_str == u'-1':
@@ -112,10 +112,13 @@ def get_actions(start_date, end_date):
         actions.to_csv(dump_path, index=False)
     return actions
 
+
 # 评论数据
 comment_date = ["2016-02-01", "2016-02-08", "2016-02-15", "2016-02-22", "2016-02-29", "2016-03-07", "2016-03-14",
                 "2016-03-21", "2016-03-28",
                 "2016-04-04", "2016-04-11", "2016-04-15"]
+
+
 def get_comments_product_feat(start_date, end_date):
     dump_path = './cache/comments_accumulate_%s_%s.csv' % (start_date, end_date)
     if os.path.exists(dump_path):
@@ -146,24 +149,20 @@ def get_day_chaju(x, end_date):
     x = datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
     return (end_date - x).days
+
+
 print("US model  finish  part_0")
 
 
 # In[ ]:
 
 
-
-
 # In[2]:
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 
-#from basic_feat0518 import *
-
-
-
-
+# from basic_feat0518 import *
 
 
 # top k 天的行为次数总和(滑窗处理)
@@ -333,7 +332,8 @@ def get_action_user_feat2(start_date, end_date):
     actions.columns = ['user_id'] + ['u_feat2_' + str(i) for i in range(1, actions.shape[1])]
     return actions
 
-#print get_action_user_feat2('2016-02-01','2016-04-11')
+
+# print get_action_user_feat2('2016-02-01','2016-04-11')
 
 
 # 用户平均访问间隔
@@ -557,11 +557,11 @@ def get_action_user_feat12(start_date, end_date):
             lambda x: (datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(x, '%Y-%m-%d')).days)
         result = None
         for i in (2, 3, 7, 14, 28):  # 层级个数
-            print ('i%s' % i)
+            print('i%s' % i)
             actions['level%s' % i] = actions['day'].map(lambda x: x // i)
             a = set(actions['level%s' % i].tolist())
             for j in (1, 2, 3, 4, 5, 6):  # type
-                print ('j%s' % j)
+                print('j%s' % j)
                 df = actions[actions['type'] == j][['user_id', 'level%s' % i, 'time']]
                 df = df.groupby(['user_id', 'level%s' % i]).count()
                 df = df.unstack()
@@ -777,7 +777,8 @@ def get_action_user_feat16(start_date, end_date):
     actions.columns = ['user_id'] + ['u_feat16_' + str(i) for i in range(1, actions.shape[1])]
     return actions
 
-#get_action_u0509_feat_17  =======>>>无
+
+# get_action_u0509_feat_17  =======>>>无
 
 # 最近k天用户访问P集合的商品数/用户访问总体的商品数（k小于7天，不除总体的商品数，反之，除）
 def get_action_u0509_feat_18(start_date, end_date, n):
@@ -912,7 +913,7 @@ def get_action_u0509_feat_21(start_date, end_date, n):
         actions_gouwuche_1.columns = ['user_id', str(n) + 'gouwuche_add']
 
         actions_gouwuche = actions_gouwuche[actions_gouwuche['cate'] == 8]
-        actions_gouwuche_2=actions_gouwuche[['user_id', 'type']]
+        actions_gouwuche_2 = actions_gouwuche[['user_id', 'type']]
         actions_gouwuche_2 = actions_gouwuche_2.groupby('user_id').count().reset_index()
         actions_gouwuche_2.columns = ['user_id', str(n) + 'gouwuche_add_cate_8']
 
@@ -922,7 +923,7 @@ def get_action_u0509_feat_21(start_date, end_date, n):
         actions_guanzhu_1.columns = ['user_id', str(n) + 'guanzhu_add']
 
         actions_guanzhu = actions_guanzhu[actions_guanzhu['cate'] == 8]
-        actions_guanzhu_2=actions_guanzhu[['user_id', 'type']]
+        actions_guanzhu_2 = actions_guanzhu[['user_id', 'type']]
         actions_guanzhu_2 = actions_guanzhu_2.groupby('user_id').count().reset_index()
         actions_guanzhu_2.columns = ['user_id', str(n) + 'guanzhu_add_cate_8']
 
@@ -1003,9 +1004,10 @@ def get_action_user_feat5(start_date, end_date):
     actions.columns = ['user_id'] + ['u_feat5_' + str(i) for i in range(1, actions.shape[1])]
     return actions
 
+
 # top  k 用户总购买/加购/关注/点击/浏览品牌数
 def get_action_u0509_feat_23(start_date, end_date, k):
-    dump_path = './cache/u0515_feat5_%s_%s_%s.csv' % (start_date, end_date,k)
+    dump_path = './cache/u0515_feat5_%s_%s_%s.csv' % (start_date, end_date, k)
     if os.path.exists(dump_path):
         actions = pd.read_csv(dump_path)
     else:
@@ -1019,7 +1021,7 @@ def get_action_u0509_feat_23(start_date, end_date, k):
 
 # 点击模块
 def get_action_u0509_feat_24(start_date, end_date, n):
-    dump_path='./cache/user_feat0509_1_31_%s_%s_%s.csv'%(start_date,end_date,n)
+    dump_path = './cache/user_feat0509_1_31_%s_%s_%s.csv' % (start_date, end_date, n)
     if os.path.exists(dump_path):
         actions = pd.read_csv(dump_path)
     else:
@@ -1082,15 +1084,14 @@ def get_action_u0509_feat_25(start_date, end_date):
         actions['cate8_rate'] = actions['cate8'] / actions['sum']
         actions['sum_other_cate_rate'] = actions['sum_other_cate'] / actions['sum']
         del actions['sum']
-        actions=actions[['user_id','cate8_rate','sum_other_cate_rate']]
+        actions = actions[['user_id', 'cate8_rate', 'sum_other_cate_rate']]
         actions.to_csv(dump_path, index=False)
-    actions.columns=['user_id']+['u_feat25_' + str(i) for i in range(1, actions.shape[1])]
+    actions.columns = ['user_id'] + ['u_feat25_' + str(i) for i in range(1, actions.shape[1])]
     return actions
 
 
-
 # 用户层级特征(注意：'get_action_u0509_feat_27'调用'get_action_u0509_feat_26')
-#def get_action_user_feat_six_xingwei(start_date, end_date, n)
+# def get_action_user_feat_six_xingwei(start_date, end_date, n)
 def get_action_u0509_feat_26(start_date, end_date, n):
     dump_path = './cache/user_six_action_%s_%s_%s_int.csv' % (start_date, end_date, n)
     if os.path.exists(dump_path):
@@ -1138,7 +1139,8 @@ def get_action_u0509_feat_26(start_date, end_date, n):
                                      range(1, actions.shape[1])]
     return actions
 
-#def deal_user_six_deal(start_date, end_date, n):
+
+# def deal_user_six_deal(start_date, end_date, n):
 def get_action_u0509_feat_27(start_date, end_date, n):
     dump_path = './cache/deal_user_six_action_%s_%s_%s_int.csv' % (start_date, end_date, n)
     if os.path.exists(dump_path):
@@ -1159,29 +1161,23 @@ def get_action_u0509_feat_27(start_date, end_date, n):
             for k in range(j, all_col, 6):
                 temp["zl_" + str(j)] = temp["zl_" + str(j)] + temp[k].map(lambda x: x * ((k // 6 + 1) ** (-0.67)))
             temp["zl_" + str(j)] = temp["zl_" + str(j)].map(lambda x: (x - np.min(temp["zl_" + str(j)])) / (
-                np.max(temp["zl_" + str(j)]) - np.min(temp["zl_" + str(j)])))
+                    np.max(temp["zl_" + str(j)]) - np.min(temp["zl_" + str(j)])))
         temp = temp[columns]
         temp.to_csv(dump_path, index=False)
         return temp
-    
-
-
 
 
 print("US model  finish  part_1")
 
 
-
 # In[ ]:
-
-
 
 
 # In[3]:
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 
-#from basic_feat0518 import *
+# from basic_feat0518 import *
 
 
 # top k 天的行为次数总和(滑窗处理)
@@ -1202,11 +1198,12 @@ def get_action_p0509_feat(start_date, end_date, k):
         df = pd.DataFrame(df)
 
         actions = pd.concat([actions[['sku_id']], df], axis=1)
-        actions.columns=['sku_id']+['p0509_' + str(k) + '_' + str(i) for i in range(1, actions.shape[1])]
+        actions.columns = ['sku_id'] + ['p0509_' + str(k) + '_' + str(i) for i in range(1, actions.shape[1])]
         actions.to_csv(dump_path, index=False)
     return actions
 
-#print get_action_p0509_feat('2016-02-01','2016-04-11',1)
+
+# print get_action_p0509_feat('2016-02-01','2016-04-11',1)
 
 # 商品的行为转化率
 def get_action_product_feat_1(start_date, end_date):
@@ -1230,6 +1227,7 @@ def get_action_product_feat_1(start_date, end_date):
         actions.to_csv(dump_path, index=False)
     actions.columns = ['sku_id'] + ['p_feat1_' + str(i) for i in range(1, actions.shape[1])]
     return actions
+
 
 # 商品购买/加入购物车/关注前访问天数
 def get_action_p0509_feat_2(start_date, end_date):
@@ -1349,7 +1347,6 @@ def get_action_p0509_feat_2(start_date, end_date):
     return actions
 
 
-
 # 商品平均访问间隔
 def get_action_p0509_feat_6(start_date, end_date):
     dump_path = './cache/product_feat7_%s_%s.csv' % (start_date, end_date)
@@ -1367,6 +1364,7 @@ def get_action_p0509_feat_6(start_date, end_date):
     actions.columns = ['sku_id'] + ['p_feat6_' + str(i) for i in range(1, actions.shape[1])]
     return actions
 
+
 # 商品六种行为平均访问间隔
 def get_action_p0509_feat_6_six(start_date, end_date):
     dump_path = './cache/product_feat7_six_%s_%s.csv' % (start_date, end_date)
@@ -1383,7 +1381,6 @@ def get_action_p0509_feat_6_six(start_date, end_date):
         actions.to_csv(dump_path, index=False)
     actions.columns = ['sku_id'] + ['p_feat6_six_' + str(i) for i in range(1, actions.shape[1])]
     return actions
-
 
 
 # 最近K天
@@ -1422,7 +1419,6 @@ def get_action_p0509_feat_8(start_date, end_date):
     return actions
 
 
-
 # 商品的重复购买率
 def get_action_p0509_feat_8_2(start_date, end_date):
     dump_path = './cache/product_feat8_%s_%s.csv' % (start_date, end_date)
@@ -1448,8 +1444,6 @@ def get_action_p0509_feat_8_2(start_date, end_date):
     return actions
 
 
-
-
 # 获取货物最近一次行为的时间距离当前时间的差距
 def get_action_p0509_feat_9(start_date, end_date):
     dump_path = './cache/product_feat9_2_%s_%s.csv' % (start_date, end_date)
@@ -1468,7 +1462,6 @@ def get_action_p0509_feat_9(start_date, end_date):
         actions.to_csv(dump_path, index=False)
     actions.columns = ['sku_id'] + ['p_feat9_' + str(i) for i in range(1, actions.shape[1])]
     return actions
-
 
 
 # 获取货品最后一次行为的次数并且进行归一化
@@ -1501,7 +1494,6 @@ def get_action_product_feat_10(start_date, end_date):
     return actions
 
 
-
 # 获取物品该层级最后一层的各种行为的统计数量
 def get_action_product_feat_11(start_date, end_date, n):
     dump_path = './cache/product_feat11_%s_%s_%s.csv' % (start_date, end_date, n)
@@ -1527,7 +1519,7 @@ def get_action_product_feat_11(start_date, end_date, n):
     return actions
 
 
-#(hcq)用户2/3/7/14/28层级行为次数
+# (hcq)用户2/3/7/14/28层级行为次数
 def get_action_product_feat_12(start_date, end_date):
     dump_path = './cache/p0509_feat12_%s_%s.csv' % (start_date, end_date)
     if os.path.exists(dump_path):
@@ -1540,11 +1532,11 @@ def get_action_product_feat_12(start_date, end_date):
             lambda x: (datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(x, '%Y-%m-%d')).days)
         result = None
         for i in (2, 3, 7, 14, 28):  # 层级个数
-            print ('i%s' % i)
+            print('i%s' % i)
             actions['level%s' % i] = actions['day'].map(lambda x: x // i)
             a = set(actions['level%s' % i].tolist())
             for j in (1, 2, 3, 4, 5, 6):  # type
-                print ('j%s' % j)
+                print('j%s' % j)
                 df = actions[actions['type'] == j][['sku_id', 'level%s' % i, 'time']]
                 df = df.groupby(['sku_id', 'level%s' % i]).count()
                 df = df.unstack()
@@ -1582,9 +1574,6 @@ def get_action_product_feat_12(start_date, end_date):
     return actions
 
 
-
-
-
 # 层级天数
 def get_action_product_feat_13(start_date, end_date, n):
     dump_path = './cache/sku_feat13_%s_%s_%s.csv' % (start_date, end_date, n)
@@ -1609,7 +1598,8 @@ def get_action_product_feat_13(start_date, end_date, n):
     actions.columns = ['sku_id'] + ['p_feat13_' + str(n) + '_' + str(i) for i in range(1, actions.shape[1])]
     return actions
 
-#用户每隔5天购买购买次数
+
+# 用户每隔5天购买购买次数
 def get_action_product_feat_14(start_date, end_date):
     dump_path = './cache/sku_feat14_%s_%s.csv' % (start_date, end_date)
     if os.path.exists(dump_path):
@@ -1789,7 +1779,8 @@ def get_action_p0509_feat_17(start_date, end_date):
     actions.columns = ['sku_id'] + ['p_feat17_' + str(i) for i in range(1, actions.shape[1])]
     return actions
 
-#get_action_p0509_feat_18
+
+# get_action_p0509_feat_18
 
 # 商品点击到购买的时间间隔
 def get_action_p0509_feat_19(start_date, end_date):
@@ -1824,7 +1815,7 @@ def get_action_p0509_feat_19(start_date, end_date):
         sku_id = actions[['sku_id']]
         del actions['sku_id']
         actions = actions.fillna(0)
-        actions=actions.astype('float')
+        actions = actions.astype('float')
         columns = actions.columns
         min_max_scale = preprocessing.MinMaxScaler()
         actions = min_max_scale.fit_transform(actions.values)
@@ -1832,8 +1823,6 @@ def get_action_p0509_feat_19(start_date, end_date):
         actions.to_csv(dump_path, index=False)
     actions.columns = ['sku_id'] + ['p_feat19_' + str(i) for i in range(1, actions.shape[1])]
     return actions
-
-
 
 
 # 获取某商品某段时间内加入购物车的数量以及关注的数量
@@ -1852,7 +1841,7 @@ def get_action_p0509_feat_21(start_date, end_date, n):
         actions_gouwuche_1.columns = ['sku_id', str(n) + 'gouwuche_add']
 
         actions_gouwuche = actions_gouwuche[actions_gouwuche['cate'] == 8]
-        actions_gouwuche_2=actions_gouwuche[['sku_id', 'type']]
+        actions_gouwuche_2 = actions_gouwuche[['sku_id', 'type']]
 
         actions_gouwuche_2 = actions_gouwuche_2.groupby('sku_id').count().reset_index()
         actions_gouwuche_2.columns = ['sku_id', str(n) + 'gouwuche_add_cate_8']
@@ -1863,7 +1852,7 @@ def get_action_p0509_feat_21(start_date, end_date, n):
         actions_guanzhu_1.columns = ['sku_id', str(n) + 'guanzhu_add']
 
         actions_guanzhu = actions_guanzhu[actions_guanzhu['cate'] == 8]
-        actions_guanzhu_2=actions_guanzhu[['sku_id', 'type']]
+        actions_guanzhu_2 = actions_guanzhu[['sku_id', 'type']]
         actions_guanzhu_2 = actions_guanzhu_2.groupby('sku_id').count().reset_index()
         actions_guanzhu_2.columns = ['sku_id', str(n) + 'guanzhu_add_cate_8']
 
@@ -1875,16 +1864,13 @@ def get_action_p0509_feat_21(start_date, end_date, n):
         sku_id = actions[['sku_id']]
         del actions['sku_id']
         actions = actions.fillna(0)
-        actions=actions.astype('float')
+        actions = actions.astype('float')
         columns = actions.columns
         min_max_scale = preprocessing.MinMaxScaler()
         actions = min_max_scale.fit_transform(actions.values)
         actions = pd.concat([sku_id, pd.DataFrame(actions, columns=columns)], axis=1)
         actions.to_csv(dump_path, index=False)
     return actions
-
-
-
 
 
 # 商品总购买/加购/关注/点击/浏览品牌数
@@ -1927,7 +1913,6 @@ def get_action_p0509_feat_23(start_date, end_date, k):
         actions.to_csv(dump_path, index=False)
     actions.columns = ['sku_id'] + ['p0509_feat_23_' + str(k) + '_' + str(i) for i in range(1, actions.shape[1])]
     return actions
-
 
 
 # 点击模块
@@ -1975,7 +1960,6 @@ def get_action_p0509_feat_24(start_date, end_date, n):
     return actions
 
 
-
 # 获取每个商品的被购买的六种行为get_action_sku_feat_six_xingwei
 def get_action_p0509_feat_26(start_date, end_date, n):
     dump_path = './cache/sku_six_action_%s_%s_%s_int.csv' % (start_date, end_date, n)
@@ -2016,7 +2000,8 @@ def get_action_p0509_feat_26(start_date, end_date, n):
         df.to_csv(dump_path, index=False)
         return df
 
-#deal_sku_six_deal
+
+# deal_sku_six_deal
 def get_action_p0509_feat_27(start_date, end_date, n):
     dump_path = './cache/deal_sku_six_action_%s_%s_%s_int.csv' % (start_date, end_date, n)
     if os.path.exists(dump_path):
@@ -2043,11 +2028,10 @@ def get_action_p0509_feat_27(start_date, end_date, n):
                     lambda x: x * ((k // 6 + 1) ** (-0.67)))
             # print(sku_temp["zl_"+str(j)].head(1))
             sku_temp["zl_" + str(j)] = sku_temp["zl_" + str(j)].map(lambda x: (x - np.min(sku_temp["zl_" + str(j)])) / (
-                np.max(sku_temp["zl_" + str(j)]) - np.min(sku_temp["zl_" + str(j)])))
+                    np.max(sku_temp["zl_" + str(j)]) - np.min(sku_temp["zl_" + str(j)])))
         sku_temp = sku_temp[columns]
         sku_temp.to_csv(dump_path, index=False)
         return sku_temp
-
 
 
 # 商品的六种行为的频率
@@ -2082,19 +2066,19 @@ def get_action_p0509_feat_28(start_date, end_date):
         actions.to_csv(dump_path, index=False)
     actions.columns = ['sku_id'] + ['p_feat_28_' + str(i) for i in range(1, actions.shape[1])]
     return actions
+
+
 print("US model  finish  part_2")
 
 
 # In[ ]:
 
 
-
-
 # In[4]:
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 
-#from basic_feat0518 import *
+# from basic_feat0518 import *
 
 # 所有行为的总和
 def get_action_feat(start_date, end_date):
@@ -2110,6 +2094,7 @@ def get_action_feat(start_date, end_date):
         del actions['type']
         actions.to_csv(dump_path, index=False)
     return actions
+
 
 # 行为按时间衰减
 def get_accumulate_action_feat(start_date, end_date):
@@ -2152,6 +2137,7 @@ def get_accumulate_action_feat(start_date, end_date):
         actions = actions.groupby(['user_id', 'sku_id', 'cate', 'brand'], as_index=False).sum()
         actions.to_csv(dump_path, index=False)
     return actions
+
 
 # U-B对浏览次数/用户总浏览次数
 # U_B对行为1，2，4，5进行 浏览次数/用户总浏览次数（或者物品的浏览次数）
@@ -2340,16 +2326,16 @@ def get_action_U_P_feat7(start_date, end_date):
         result = None
         columns = []
         for i in (2, 3, 7, 14, 28):  # 层级个数
-            print ('i%s' % i)
+            print('i%s' % i)
             actions['level%s' % i] = actions['day'].map(lambda x: x // i)
             for j in (1, 2, 3, 4, 5, 6):  # type
-                print ('j%s' % j)
+                print('j%s' % j)
                 df = actions[actions['type'] == j][['user_id', 'sku_id', 'level%s' % i, 'time']]
                 df = df.groupby(['user_id', 'sku_id', 'level%s' % i]).count()
                 df = df.unstack()
                 df = df.reset_index()
                 df.columns = ['user_id', 'sku_id'] + list(range(df.shape[1] - 2))
-                print (df.head())
+                print(df.head())
                 if result is None:
                     result = df
                 else:
@@ -2490,7 +2476,6 @@ def get_action_U_P_feat16(start_date, end_date):
     return actions
 
 
-
 # 点击模块
 def get_action_U_P_feat_0509_feat_24(start_date, end_date, n):
     dump_path = './cache/get_action_U_P_feat_0509_feat_24_%s_%s_%s.csv' % (start_date, end_date, n)
@@ -2500,18 +2485,19 @@ def get_action_U_P_feat_0509_feat_24(start_date, end_date, n):
         start_days = datetime.strptime(end_date, '%Y-%m-%d') - timedelta(days=n)
         start_days = datetime.strftime(start_days, '%Y-%m-%d')
         actions = get_actions(start_days, end_date)
-        actions = actions[actions['type'] == 6][['user_id','sku_id','model_id']]
+        actions = actions[actions['type'] == 6][['user_id', 'sku_id', 'model_id']]
 
-        actions_click_sum = actions[['user_id','sku_id', 'model_id']].groupby(['user_id','sku_id']).count().reset_index()
-        actions_click_sum.columns = ['user_id','sku_id', str(n) + 'click_sum_all']
+        actions_click_sum = actions[['user_id', 'sku_id', 'model_id']].groupby(
+            ['user_id', 'sku_id']).count().reset_index()
+        actions_click_sum.columns = ['user_id', 'sku_id', str(n) + 'click_sum_all']
         actions[str(n) + 'p_click14_history'] = actions['model_id'].map(lambda x: int(x == 14))
         actions[str(n) + 'p_click21_history'] = actions['model_id'].map(lambda x: int(x == 21))
         actions[str(n) + 'p_click28_history'] = actions['model_id'].map(lambda x: int(x == 28))
         actions[str(n) + 'p_click110_history'] = actions['model_id'].map(lambda x: int(x == 110))
         actions[str(n) + 'p_click210_history'] = actions['model_id'].map(lambda x: int(x == 210))
-        actions = actions.groupby(['user_id','sku_id']).sum().reset_index().drop('model_id', axis=1)
+        actions = actions.groupby(['user_id', 'sku_id']).sum().reset_index().drop('model_id', axis=1)
 
-        actions = pd.merge(actions, actions_click_sum, how='left', on=['user_id','sku_id'])
+        actions = pd.merge(actions, actions_click_sum, how='left', on=['user_id', 'sku_id'])
 
         actions[str(n) + 'p_click14/click_sum_history'] = actions[str(n) + 'p_click14_history'] / actions[
             str(n) + 'click_sum_all']
@@ -2524,7 +2510,7 @@ def get_action_U_P_feat_0509_feat_24(start_date, end_date, n):
         actions[str(n) + 'p_click210/click_sum_history'] = actions[str(n) + 'p_click210_history'] / actions[
             str(n) + 'click_sum_all']
 
-        sku_id = actions[['user_id','sku_id']]
+        sku_id = actions[['user_id', 'sku_id']]
         del actions['sku_id']
         actions = actions.fillna(0)
         columns = actions.columns
@@ -2532,18 +2518,9 @@ def get_action_U_P_feat_0509_feat_24(start_date, end_date, n):
         actions = min_max_scale.fit_transform(actions.values)
         actions = pd.concat([sku_id, pd.DataFrame(actions, columns=columns)], axis=1)
         actions.to_csv(dump_path, index=False)
-    actions.columns = ['user_id','sku_id'] + ['p0509_feat_24_' + str(n) + '_' + str(i) for i in range(1, actions.shape[1]-1)]
+    actions.columns = ['user_id', 'sku_id'] + ['p0509_feat_24_' + str(n) + '_' + str(i) for i in
+                                               range(1, actions.shape[1] - 1)]
     return actions
-
-
-
-
-
-
-
-
-
-
 
 
 # def sku_tongji_info():
@@ -2557,8 +2534,6 @@ print("US model  finish  part_3")
 
 
 # In[ ]:
-
-
 
 
 # In[5]:
@@ -2575,263 +2550,43 @@ def get_labels(start_date, end_date):
         actions = pd.read_csv(dump_path)
     else:
         actions = get_actions(start_date, end_date)
-        actions = actions[(actions['type'] == 4)&(actions['cate']==8)]
-        actions =actions[['user_id','sku_id']].drop_duplicates(['user_id','sku_id']).reset_index()
+        actions = actions[(actions['type'] == 4) & (actions['cate'] == 8)]
+        actions = actions[['user_id', 'sku_id']].drop_duplicates(['user_id', 'sku_id']).reset_index()
         actions['label'] = 1
         actions = actions[['user_id', 'sku_id', 'label']]
-#         actions.to_csv(dump_path, index=False)
+    #         actions.to_csv(dump_path, index=False)
     return actions
+
 
 # 训练集
 def make_train_set(train_start_date, train_end_date, test_start_date, test_end_date):
-    dump_path = './cache1/buUStrain_set_%s_%s_%s_%s.csv' % (train_start_date, train_end_date, test_start_date, test_end_date)
+    dump_path = './cache1/buUStrain_set_%s_%s_%s_%s.csv' % (
+    train_start_date, train_end_date, test_start_date, test_end_date)
     if os.path.exists(dump_path):
         actions = pd.read_csv(dump_path)
     else:
-        print ('================>>>train feature starting')
+        print('================>>>train feature starting')
         start_days = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=10)
         start_days = str(start_days.strftime('%Y-%m-%d'))
         actions = get_actions(start_days, train_end_date)
         actions = actions[actions['cate'] == 8][['user_id', 'sku_id']].drop_duplicates(['user_id', 'sku_id'])
-        print (actions.shape)
+        print(actions.shape)
         actions = pd.merge(actions, get_basic_user_feat(), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         start_days = "2016-02-01"
-        print ('================>>>merge user feature')
-#       for i in (1,2,3,5,7,10,15,21,30):
-        for i in(1,2,3,7,14,28):
-#             start_day1=datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
-#             start_day1 = start_day1.strftime('%Y-%m-%d')
-            print('=======>>>>train user_feat')
-            actions=pd.merge(actions,get_user_feat(train_start_date, train_end_date, i),on='user_id',how='left')
-            print('=======>>>>train user_feat11')
-            actions = pd.merge(actions, get_action_user_feat11(train_start_date, train_end_date, i), on='user_id', how='left')
-            print('=======>>>>train user_feat13')
-            actions = pd.merge(actions, get_action_user_feat13(train_start_date, train_end_date, i), on='user_id', how='left')
-            print('=======>>>>train u0509_feat_18')
-            actions = pd.merge(actions, get_action_u0509_feat_18(train_start_date, train_end_date, i), on='user_id', how='left')
-            print('=======>>>>train u0509_feat_21')
-            actions = pd.merge(actions, get_action_u0509_feat_21(train_start_date, train_end_date, i), on='user_id', how='left')
-            print('=======>>>>train u0509_feat_22')
-            actions = pd.merge(actions, get_action_u0509_feat_22(train_start_date, train_end_date, i), on='user_id',how='left')
-            print('=======>>>>train u0509_feat_23')
-            actions = pd.merge(actions, get_action_u0509_feat_23(train_start_date, train_end_date, i), on='user_id',how='left')
-            print('=======>>>>train u0509_feat_24')
-            if(i<=10):
-                actions = pd.merge(actions, get_action_u0509_feat_24(train_start_date, train_end_date, i), on='user_id',how='left')
-                print('=======>>>>train u0509_feat_27')
-            actions = pd.merge(actions, get_action_u0509_feat_27(train_start_date, train_end_date, i), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat1')
-        actions = pd.merge(actions, get_action_user_feat1(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat2')
-        actions = pd.merge(actions, get_action_user_feat2(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat6')
-        actions = pd.merge(actions, get_action_user_feat6(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat6_six')
-        actions = pd.merge(actions, get_action_user_feat6_six(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat7')
-        actions = pd.merge(actions, get_action_user_feat7(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat8')
-        actions = pd.merge(actions, get_action_user_feat8(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat8_2')
-        actions = pd.merge(actions, get_action_user_feat8_2(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat9')
-        actions = pd.merge(actions, get_action_user_feat9(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat10')
-        actions = pd.merge(actions, get_action_user_feat10(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat12')
-#         actions = pd.merge(actions, get_action_user_feat12(start_days, train_end_date), on='user_id', how='left')
-#         print (actions.shape)
-        print('=======>>>>train user_feat14')
-        actions = pd.merge(actions, get_action_user_feat14(train_start_date, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat15')
-        actions = pd.merge(actions, get_action_user_feat15(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train user_feat16')
-        actions = pd.merge(actions, get_action_user_feat16(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train u0509_feat_19')
-        actions = pd.merge(actions, get_action_u0509_feat_19(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train u0509_feat_20')
-        actions = pd.merge(actions, get_action_u0509_feat_20(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train u0509_feat_25')
-        actions = pd.merge(actions, get_action_u0509_feat_25(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
-
-
-        print ('================>>>merge product feature')
-        actions = pd.merge(actions, get_basic_product_feat(), on='sku_id', how='left')
-        print (actions.shape)
-        actions = pd.merge(actions, get_comments_product_feat(train_start_date, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-#        for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
-
-        
-
-        for i in(1,2,3,7,14,28):
-            
-            print('=======>>>>train p0509_feat')
-            actions = pd.merge(actions, get_action_p0509_feat(train_start_date, train_end_date, i), on='sku_id', how='left')
-            print('=======>>>>train product_feat_11')
-            actions = pd.merge(actions, get_action_product_feat_11(train_start_date, train_end_date, i), on='sku_id', how='left')
-            print('=======>>>>train product_feat_13')
-            actions = pd.merge(actions, get_action_product_feat_13(train_start_date, train_end_date, i), on='sku_id', how='left')
-            print('=======>>>>train p0509_feat_21')
-            actions = pd.merge(actions, get_action_p0509_feat_21(train_start_date, train_end_date, i), on='sku_id', how='left')
-            print('=======>>>>train p0509_feat_23')
-            actions = pd.merge(actions, get_action_p0509_feat_23(train_start_date, train_end_date, i), on='sku_id', how='left')
-            print('=======>>>>train p0509_feat24')
-            if(i<=10):
-                actions = pd.merge(actions, get_action_p0509_feat_24(train_start_date, train_end_date, i), on='sku_id', how='left')
-                print('=======>>>>train p0509_feat27')
-            actions = pd.merge(actions, get_action_p0509_feat_27(train_start_date, train_end_date, i), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train product_feat_1')
-        actions = pd.merge(actions, get_action_product_feat_1(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat2')
-        actions = pd.merge(actions, get_action_p0509_feat_2(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat6')
-        actions = pd.merge(actions, get_action_p0509_feat_6(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat_6_six')
-        actions = pd.merge(actions, get_action_p0509_feat_6_six(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat8')
-        actions = pd.merge(actions, get_action_p0509_feat_8(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat8_2')
-        actions = pd.merge(actions, get_action_p0509_feat_8_2(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat9')
-        actions = pd.merge(actions, get_action_p0509_feat_9(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat10')
-        actions = pd.merge(actions, get_action_product_feat_10(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-#         print('=======>>>>train p0509_feat12')
-#         actions = pd.merge(actions, get_action_product_feat_12(start_days, train_end_date), on='sku_id', how='left')
-#         print (actions.shape)
-        print('=======>>>>train product_feat_14')
-        actions = pd.merge(actions, get_action_product_feat_14(train_start_date, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat15')
-        actions = pd.merge(actions, get_action_p0509_feat_15(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train product_feat_16')
-        actions = pd.merge(actions, get_action_product_feat_16(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat17')
-        actions = pd.merge(actions, get_action_p0509_feat_17(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat19')
-        actions = pd.merge(actions, get_action_p0509_feat_19(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat23')
-
-        print('=======>>>>train p0509_feat28')
-        actions = pd.merge(actions, get_action_p0509_feat_28(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-
-        print ('================>>>merge user_sku feature')
-        print ('train get_accumulate_action_feat')
-        actions = pd.merge(actions, get_accumulate_action_feat(train_start_date, train_end_date), how='left', on=['user_id', 'sku_id'])
-        print ('train U_P_feat1')
-        
-        actions = pd.merge(actions, get_action_U_P_feat1(start_days, train_end_date), how="left",on=['user_id', 'sku_id'])
-        print(actions.shape)
-        print ('train U_P_feat3')
-        for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
-            start_days_2 = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
-            start_days_2 = start_days_2.strftime('%Y-%m-%d')
-            actions = pd.merge(actions, get_action_feat(start_days_2, train_end_date), how='left',on=['user_id', 'sku_id'])
-        actions.columns=['user_id','sku_id']+['action_feat'+str(i) for i in range(1,actions.shape[1]-1)]
-    
-        for i in(1,2,3,7,14,28):
-            actions = pd.merge(actions, get_action_U_P_feat3(i, start_days, train_end_date), on=['user_id', 'sku_id'],
-                               how='left')
-            actions=pd.merge(actions, get_action_U_P_feat6( train_start_date, train_end_date,i), on=['user_id', 'sku_id'],
-                               how='left')
-            actions=pd.merge(actions, get_action_U_P_feat9( train_start_date, train_end_date,i), on=['user_id', 'sku_id'],
-                               how='left')
-            if(i<=10):
-                actions=pd.merge(actions, get_action_U_P_feat_0509_feat_24( train_start_date, train_end_date,i), on=['user_id', 'sku_id'],
-                               how='left')
- 
-        print ('train U_P_feat4')
-        actions = pd.merge(actions, get_action_U_P_feat4(start_days, train_end_date), how="left",
-                           on=['user_id', 'sku_id'])
-        print(actions.shape)
-        print ('train U_P_feat5')
-        actions = pd.merge(actions, get_action_U_P_feat5(start_days, train_end_date), how="left",
-                           on=['user_id', 'sku_id'])
-        print(actions.shape)
-#         print ('train U_P_feat7')
-#         actions = pd.merge(actions, get_action_U_P_feat7(train_start_date, train_end_date), how="left",
-#                                     on=['user_id', 'sku_id'])
-#         print(actions.shape)
-        print ('train U_P_feat8')
-        actions = pd.merge(actions, get_action_U_P_feat8(start_days, train_end_date), how="left",
-                           on=['user_id', 'sku_id'])
-        print(actions.shape)
-        print ('train U_P_feat14')
-        actions = pd.merge(actions, get_action_U_P_feat14(train_start_date, train_end_date), how="left",
-                           on=['user_id', 'sku_id'])
-        print ('train U_P_feat16')
-        actions = pd.merge(actions, get_action_U_P_feat16(train_start_date, train_end_date), how="left",
-                           on=['user_id', 'sku_id'])
-
-        print(actions.shape)
-        print("train get_labels")
-        actions=pd.merge(actions,get_labels(test_start_date, test_end_date),how='left',on=['user_id','sku_id'])
-        print(actions.shape)
-        actions = actions.fillna(0)
-        
-#         actions.to_csv(dump_path,index=False)
-    return actions
-
-
-# 测试集
-def make_test_set(train_start_date, train_end_date):
-    dump_path = './cache1/buUStest_set_%s_%s.csv' % (train_start_date, train_end_date)
-    if os.path.exists(dump_path):
-        actions = pd.read_csv(dump_path)
-    else:
-        print ('================>>>train feature starting')
-        start_days = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=10)
-        start_days = str(start_days.strftime('%Y-%m-%d'))
-        actions = get_actions(start_days, train_end_date)
-        actions = actions[actions['cate'] == 8][['user_id', 'sku_id']].drop_duplicates(['user_id', 'sku_id'])
-        print (actions.shape)
-        actions = pd.merge(actions, get_basic_user_feat(), on='user_id', how='left')
-        print (actions.shape)
-        start_days = "2016-02-01"
-        print ('================>>>merge user feature')
-    # for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
-#        for i in (1, 2, 3, 7, 14, 28):
-        for i in(1,2,3,7,14,28):
-            start_day1 = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
-            start_day1 = start_day1.strftime('%Y-%m-%d')
+        print('================>>>merge user feature')
+        #       for i in (1,2,3,5,7,10,15,21,30):
+        for i in (1, 2, 3, 7, 14, 28):
+            #             start_day1=datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
+            #             start_day1 = start_day1.strftime('%Y-%m-%d')
             print('=======>>>>train user_feat')
             actions = pd.merge(actions, get_user_feat(train_start_date, train_end_date, i), on='user_id', how='left')
             print('=======>>>>train user_feat11')
-            actions = pd.merge(actions, get_action_user_feat11(train_start_date, train_end_date, i), on='user_id', how='left')
+            actions = pd.merge(actions, get_action_user_feat11(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
             print('=======>>>>train user_feat13')
-            actions = pd.merge(actions, get_action_user_feat13(train_start_date, train_end_date, i), on='user_id', how='left')
+            actions = pd.merge(actions, get_action_user_feat13(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
             print('=======>>>>train u0509_feat_18')
             actions = pd.merge(actions, get_action_u0509_feat_18(train_start_date, train_end_date, i), on='user_id',
                                how='left')
@@ -2845,75 +2600,75 @@ def make_test_set(train_start_date, train_end_date):
             actions = pd.merge(actions, get_action_u0509_feat_23(train_start_date, train_end_date, i), on='user_id',
                                how='left')
             print('=======>>>>train u0509_feat_24')
-            if(i<=10):
+            if (i <= 10):
                 actions = pd.merge(actions, get_action_u0509_feat_24(train_start_date, train_end_date, i), on='user_id',
                                    how='left')
                 print('=======>>>>train u0509_feat_27')
             actions = pd.merge(actions, get_action_u0509_feat_27(train_start_date, train_end_date, i), on='user_id',
                                how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat1')
         actions = pd.merge(actions, get_action_user_feat1(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat2')
         actions = pd.merge(actions, get_action_user_feat2(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat6')
         actions = pd.merge(actions, get_action_user_feat6(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat6_six')
         actions = pd.merge(actions, get_action_user_feat6_six(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat7')
         actions = pd.merge(actions, get_action_user_feat7(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat8')
         actions = pd.merge(actions, get_action_user_feat8(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat8_2')
         actions = pd.merge(actions, get_action_user_feat8_2(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat9')
         actions = pd.merge(actions, get_action_user_feat9(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat10')
         actions = pd.merge(actions, get_action_user_feat10(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat12')
-#         actions = pd.merge(actions, get_action_user_feat12(start_days, train_end_date), on='user_id', how='left')
-#         print (actions.shape)
+        #         actions = pd.merge(actions, get_action_user_feat12(start_days, train_end_date), on='user_id', how='left')
+        #         print (actions.shape)
         print('=======>>>>train user_feat14')
         actions = pd.merge(actions, get_action_user_feat14(train_start_date, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat15')
         actions = pd.merge(actions, get_action_user_feat15(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train user_feat16')
         actions = pd.merge(actions, get_action_user_feat16(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train u0509_feat_19')
         actions = pd.merge(actions, get_action_u0509_feat_19(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train u0509_feat_20')
         actions = pd.merge(actions, get_action_u0509_feat_20(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train u0509_feat_25')
         actions = pd.merge(actions, get_action_u0509_feat_25(start_days, train_end_date), on='user_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
 
-        print ('================>>>merge product feature')
+        print('================>>>merge product feature')
         actions = pd.merge(actions, get_basic_product_feat(), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         actions = pd.merge(actions, get_comments_product_feat(train_start_date, train_end_date), on='sku_id',
                            how='left')
-        print (actions.shape)
-#         for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
-        for i in(1,2,3,7,14,28):
-        
-            start_day1 = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
-            start_day1 = start_day1.strftime('%Y-%m-%d')
+        print(actions.shape)
+        #        for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
+
+        for i in (1, 2, 3, 7, 14, 28):
+
             print('=======>>>>train p0509_feat')
-            actions = pd.merge(actions, get_action_p0509_feat(train_start_date, train_end_date, i), on='sku_id', how='left')
+            actions = pd.merge(actions, get_action_p0509_feat(train_start_date, train_end_date, i), on='sku_id',
+                               how='left')
             print('=======>>>>train product_feat_11')
             actions = pd.merge(actions, get_action_product_feat_11(train_start_date, train_end_date, i), on='sku_id',
                                how='left')
@@ -2927,115 +2682,364 @@ def make_test_set(train_start_date, train_end_date):
             actions = pd.merge(actions, get_action_p0509_feat_23(train_start_date, train_end_date, i), on='sku_id',
                                how='left')
             print('=======>>>>train p0509_feat24')
-            if(i<=10):
+            if (i <= 10):
                 actions = pd.merge(actions, get_action_p0509_feat_24(train_start_date, train_end_date, i), on='sku_id',
+                                   how='left')
+                print('=======>>>>train p0509_feat27')
+            actions = pd.merge(actions, get_action_p0509_feat_27(train_start_date, train_end_date, i), on='sku_id',
                                how='left')
-            print('=======>>>>train p0509_feat27')
-            actions = pd.merge(actions, get_action_p0509_feat_27(train_start_date, train_end_date,i), on='sku_id',
-                               how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train product_feat_1')
         actions = pd.merge(actions, get_action_product_feat_1(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat2')
         actions = pd.merge(actions, get_action_p0509_feat_2(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat6')
         actions = pd.merge(actions, get_action_p0509_feat_6(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat_6_six')
         actions = pd.merge(actions, get_action_p0509_feat_6_six(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat8')
         actions = pd.merge(actions, get_action_p0509_feat_8(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat8_2')
         actions = pd.merge(actions, get_action_p0509_feat_8_2(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat9')
         actions = pd.merge(actions, get_action_p0509_feat_9(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat10')
         actions = pd.merge(actions, get_action_product_feat_10(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
-        print('=======>>>>train p0509_feat12')
-#         actions = pd.merge(actions, get_action_product_feat_12(start_days, train_end_date), on='sku_id', how='left')
-#         print (actions.shape)
+        print(actions.shape)
+        #         print('=======>>>>train p0509_feat12')
+        #         actions = pd.merge(actions, get_action_product_feat_12(start_days, train_end_date), on='sku_id', how='left')
+        #         print (actions.shape)
         print('=======>>>>train product_feat_14')
         actions = pd.merge(actions, get_action_product_feat_14(train_start_date, train_end_date), on='sku_id',
                            how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat15')
         actions = pd.merge(actions, get_action_p0509_feat_15(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train product_feat_16')
         actions = pd.merge(actions, get_action_product_feat_16(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat17')
         actions = pd.merge(actions, get_action_p0509_feat_17(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat19')
         actions = pd.merge(actions, get_action_p0509_feat_19(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
         print('=======>>>>train p0509_feat23')
 
         print('=======>>>>train p0509_feat28')
         actions = pd.merge(actions, get_action_p0509_feat_28(start_days, train_end_date), on='sku_id', how='left')
-        print (actions.shape)
+        print(actions.shape)
 
-        print ('================>>>merge user_sku feature')
-        print ('train get_accumulate_action_feat')
-        
+        print('================>>>merge user_sku feature')
+        print('train get_accumulate_action_feat')
         actions = pd.merge(actions, get_accumulate_action_feat(train_start_date, train_end_date), how='left',
                            on=['user_id', 'sku_id'])
-        print ('train U_P_feat1')
+        print('train U_P_feat1')
+
         actions = pd.merge(actions, get_action_U_P_feat1(start_days, train_end_date), how="left",
                            on=['user_id', 'sku_id'])
         print(actions.shape)
-        print ('train U_P_feat3')
+        print('train U_P_feat3')
         for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
             start_days_2 = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
             start_days_2 = start_days_2.strftime('%Y-%m-%d')
-            actions = pd.merge(actions, get_action_feat(start_days_2, train_end_date), how='left',on=['user_id', 'sku_id'])
-        actions.columns=['user_id','sku_id']+['action_feat'+str(i) for i in range(1,actions.shape[1]-1)]
-    
-        for i in(1,2,3,7,14,28):
+            actions = pd.merge(actions, get_action_feat(start_days_2, train_end_date), how='left',
+                               on=['user_id', 'sku_id'])
+        actions.columns = ['user_id', 'sku_id'] + ['action_feat' + str(i) for i in range(1, actions.shape[1] - 1)]
+
+        for i in (1, 2, 3, 7, 14, 28):
             actions = pd.merge(actions, get_action_U_P_feat3(i, start_days, train_end_date), on=['user_id', 'sku_id'],
                                how='left')
-            actions=pd.merge(actions, get_action_U_P_feat6( train_start_date, train_end_date,i), on=['user_id', 'sku_id'],
+            actions = pd.merge(actions, get_action_U_P_feat6(train_start_date, train_end_date, i),
+                               on=['user_id', 'sku_id'],
                                how='left')
-            actions=pd.merge(actions, get_action_U_P_feat9( train_start_date, train_end_date,i), on=['user_id', 'sku_id'],
+            actions = pd.merge(actions, get_action_U_P_feat9(train_start_date, train_end_date, i),
+                               on=['user_id', 'sku_id'],
                                how='left')
-            if(i<=10):
-                actions=pd.merge(actions, get_action_U_P_feat_0509_feat_24( train_start_date, train_end_date,i), on=['user_id', 'sku_id'],
-                               how='left')
-            
-        print ('train U_P_feat4')
+            if (i <= 10):
+                actions = pd.merge(actions, get_action_U_P_feat_0509_feat_24(train_start_date, train_end_date, i),
+                                   on=['user_id', 'sku_id'],
+                                   how='left')
+
+        print('train U_P_feat4')
         actions = pd.merge(actions, get_action_U_P_feat4(start_days, train_end_date), how="left",
                            on=['user_id', 'sku_id'])
         print(actions.shape)
-        print ('train U_P_feat5')
+        print('train U_P_feat5')
         actions = pd.merge(actions, get_action_U_P_feat5(start_days, train_end_date), how="left",
                            on=['user_id', 'sku_id'])
         print(actions.shape)
-        print ('train U_P_feat7')
-#         actions = pd.merge(actions, get_action_U_P_feat7(train_start_date, train_end_date), how="left",
-#                            on=['user_id', 'sku_id'])
-        print(actions.shape)
-        print ('train U_P_feat8')
+        #         print ('train U_P_feat7')
+        #         actions = pd.merge(actions, get_action_U_P_feat7(train_start_date, train_end_date), how="left",
+        #                                     on=['user_id', 'sku_id'])
+        #         print(actions.shape)
+        print('train U_P_feat8')
         actions = pd.merge(actions, get_action_U_P_feat8(start_days, train_end_date), how="left",
                            on=['user_id', 'sku_id'])
         print(actions.shape)
-        print ('train U_P_feat14')
+        print('train U_P_feat14')
         actions = pd.merge(actions, get_action_U_P_feat14(train_start_date, train_end_date), how="left",
                            on=['user_id', 'sku_id'])
-        print ('train U_P_feat16')
+        print('train U_P_feat16')
         actions = pd.merge(actions, get_action_U_P_feat16(train_start_date, train_end_date), how="left",
                            on=['user_id', 'sku_id'])
 
         print(actions.shape)
-        actions= actions.fillna(0)
-#         actions.to_csv(dump_path, index=False)
+        print("train get_labels")
+        actions = pd.merge(actions, get_labels(test_start_date, test_end_date), how='left', on=['user_id', 'sku_id'])
+        print(actions.shape)
+        actions = actions.fillna(0)
+
+    #         actions.to_csv(dump_path,index=False)
+    return actions
+
+
+# 测试集
+def make_test_set(train_start_date, train_end_date):
+    dump_path = './cache1/buUStest_set_%s_%s.csv' % (train_start_date, train_end_date)
+    if os.path.exists(dump_path):
+        actions = pd.read_csv(dump_path)
+    else:
+        print('================>>>train feature starting')
+        start_days = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=10)
+        start_days = str(start_days.strftime('%Y-%m-%d'))
+        actions = get_actions(start_days, train_end_date)
+        actions = actions[actions['cate'] == 8][['user_id', 'sku_id']].drop_duplicates(['user_id', 'sku_id'])
+        print(actions.shape)
+        actions = pd.merge(actions, get_basic_user_feat(), on='user_id', how='left')
+        print(actions.shape)
+        start_days = "2016-02-01"
+        print('================>>>merge user feature')
+        # for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
+        #        for i in (1, 2, 3, 7, 14, 28):
+        for i in (1, 2, 3, 7, 14, 28):
+            start_day1 = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
+            start_day1 = start_day1.strftime('%Y-%m-%d')
+            print('=======>>>>train user_feat')
+            actions = pd.merge(actions, get_user_feat(train_start_date, train_end_date, i), on='user_id', how='left')
+            print('=======>>>>train user_feat11')
+            actions = pd.merge(actions, get_action_user_feat11(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
+            print('=======>>>>train user_feat13')
+            actions = pd.merge(actions, get_action_user_feat13(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
+            print('=======>>>>train u0509_feat_18')
+            actions = pd.merge(actions, get_action_u0509_feat_18(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
+            print('=======>>>>train u0509_feat_21')
+            actions = pd.merge(actions, get_action_u0509_feat_21(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
+            print('=======>>>>train u0509_feat_22')
+            actions = pd.merge(actions, get_action_u0509_feat_22(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
+            print('=======>>>>train u0509_feat_23')
+            actions = pd.merge(actions, get_action_u0509_feat_23(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
+            print('=======>>>>train u0509_feat_24')
+            if (i <= 10):
+                actions = pd.merge(actions, get_action_u0509_feat_24(train_start_date, train_end_date, i), on='user_id',
+                                   how='left')
+                print('=======>>>>train u0509_feat_27')
+            actions = pd.merge(actions, get_action_u0509_feat_27(train_start_date, train_end_date, i), on='user_id',
+                               how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat1')
+        actions = pd.merge(actions, get_action_user_feat1(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat2')
+        actions = pd.merge(actions, get_action_user_feat2(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat6')
+        actions = pd.merge(actions, get_action_user_feat6(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat6_six')
+        actions = pd.merge(actions, get_action_user_feat6_six(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat7')
+        actions = pd.merge(actions, get_action_user_feat7(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat8')
+        actions = pd.merge(actions, get_action_user_feat8(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat8_2')
+        actions = pd.merge(actions, get_action_user_feat8_2(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat9')
+        actions = pd.merge(actions, get_action_user_feat9(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat10')
+        actions = pd.merge(actions, get_action_user_feat10(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat12')
+        #         actions = pd.merge(actions, get_action_user_feat12(start_days, train_end_date), on='user_id', how='left')
+        #         print (actions.shape)
+        print('=======>>>>train user_feat14')
+        actions = pd.merge(actions, get_action_user_feat14(train_start_date, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat15')
+        actions = pd.merge(actions, get_action_user_feat15(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train user_feat16')
+        actions = pd.merge(actions, get_action_user_feat16(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train u0509_feat_19')
+        actions = pd.merge(actions, get_action_u0509_feat_19(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train u0509_feat_20')
+        actions = pd.merge(actions, get_action_u0509_feat_20(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train u0509_feat_25')
+        actions = pd.merge(actions, get_action_u0509_feat_25(start_days, train_end_date), on='user_id', how='left')
+        print(actions.shape)
+
+        print('================>>>merge product feature')
+        actions = pd.merge(actions, get_basic_product_feat(), on='sku_id', how='left')
+        print(actions.shape)
+        actions = pd.merge(actions, get_comments_product_feat(train_start_date, train_end_date), on='sku_id',
+                           how='left')
+        print(actions.shape)
+        #         for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
+        for i in (1, 2, 3, 7, 14, 28):
+
+            start_day1 = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
+            start_day1 = start_day1.strftime('%Y-%m-%d')
+            print('=======>>>>train p0509_feat')
+            actions = pd.merge(actions, get_action_p0509_feat(train_start_date, train_end_date, i), on='sku_id',
+                               how='left')
+            print('=======>>>>train product_feat_11')
+            actions = pd.merge(actions, get_action_product_feat_11(train_start_date, train_end_date, i), on='sku_id',
+                               how='left')
+            print('=======>>>>train product_feat_13')
+            actions = pd.merge(actions, get_action_product_feat_13(train_start_date, train_end_date, i), on='sku_id',
+                               how='left')
+            print('=======>>>>train p0509_feat_21')
+            actions = pd.merge(actions, get_action_p0509_feat_21(train_start_date, train_end_date, i), on='sku_id',
+                               how='left')
+            print('=======>>>>train p0509_feat_23')
+            actions = pd.merge(actions, get_action_p0509_feat_23(train_start_date, train_end_date, i), on='sku_id',
+                               how='left')
+            print('=======>>>>train p0509_feat24')
+            if (i <= 10):
+                actions = pd.merge(actions, get_action_p0509_feat_24(train_start_date, train_end_date, i), on='sku_id',
+                                   how='left')
+            print('=======>>>>train p0509_feat27')
+            actions = pd.merge(actions, get_action_p0509_feat_27(train_start_date, train_end_date, i), on='sku_id',
+                               how='left')
+        print(actions.shape)
+        print('=======>>>>train product_feat_1')
+        actions = pd.merge(actions, get_action_product_feat_1(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat2')
+        actions = pd.merge(actions, get_action_p0509_feat_2(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat6')
+        actions = pd.merge(actions, get_action_p0509_feat_6(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat_6_six')
+        actions = pd.merge(actions, get_action_p0509_feat_6_six(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat8')
+        actions = pd.merge(actions, get_action_p0509_feat_8(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat8_2')
+        actions = pd.merge(actions, get_action_p0509_feat_8_2(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat9')
+        actions = pd.merge(actions, get_action_p0509_feat_9(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat10')
+        actions = pd.merge(actions, get_action_product_feat_10(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat12')
+        #         actions = pd.merge(actions, get_action_product_feat_12(start_days, train_end_date), on='sku_id', how='left')
+        #         print (actions.shape)
+        print('=======>>>>train product_feat_14')
+        actions = pd.merge(actions, get_action_product_feat_14(train_start_date, train_end_date), on='sku_id',
+                           how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat15')
+        actions = pd.merge(actions, get_action_p0509_feat_15(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train product_feat_16')
+        actions = pd.merge(actions, get_action_product_feat_16(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat17')
+        actions = pd.merge(actions, get_action_p0509_feat_17(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat19')
+        actions = pd.merge(actions, get_action_p0509_feat_19(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+        print('=======>>>>train p0509_feat23')
+
+        print('=======>>>>train p0509_feat28')
+        actions = pd.merge(actions, get_action_p0509_feat_28(start_days, train_end_date), on='sku_id', how='left')
+        print(actions.shape)
+
+        print('================>>>merge user_sku feature')
+        print('train get_accumulate_action_feat')
+
+        actions = pd.merge(actions, get_accumulate_action_feat(train_start_date, train_end_date), how='left',
+                           on=['user_id', 'sku_id'])
+        print('train U_P_feat1')
+        actions = pd.merge(actions, get_action_U_P_feat1(start_days, train_end_date), how="left",
+                           on=['user_id', 'sku_id'])
+        print(actions.shape)
+        print('train U_P_feat3')
+        for i in (1, 2, 3, 5, 7, 10, 15, 21, 30):
+            start_days_2 = datetime.strptime(train_end_date, '%Y-%m-%d') - timedelta(days=i)
+            start_days_2 = start_days_2.strftime('%Y-%m-%d')
+            actions = pd.merge(actions, get_action_feat(start_days_2, train_end_date), how='left',
+                               on=['user_id', 'sku_id'])
+        actions.columns = ['user_id', 'sku_id'] + ['action_feat' + str(i) for i in range(1, actions.shape[1] - 1)]
+
+        for i in (1, 2, 3, 7, 14, 28):
+            actions = pd.merge(actions, get_action_U_P_feat3(i, start_days, train_end_date), on=['user_id', 'sku_id'],
+                               how='left')
+            actions = pd.merge(actions, get_action_U_P_feat6(train_start_date, train_end_date, i),
+                               on=['user_id', 'sku_id'],
+                               how='left')
+            actions = pd.merge(actions, get_action_U_P_feat9(train_start_date, train_end_date, i),
+                               on=['user_id', 'sku_id'],
+                               how='left')
+            if (i <= 10):
+                actions = pd.merge(actions, get_action_U_P_feat_0509_feat_24(train_start_date, train_end_date, i),
+                                   on=['user_id', 'sku_id'],
+                                   how='left')
+
+        print('train U_P_feat4')
+        actions = pd.merge(actions, get_action_U_P_feat4(start_days, train_end_date), how="left",
+                           on=['user_id', 'sku_id'])
+        print(actions.shape)
+        print('train U_P_feat5')
+        actions = pd.merge(actions, get_action_U_P_feat5(start_days, train_end_date), how="left",
+                           on=['user_id', 'sku_id'])
+        print(actions.shape)
+        print('train U_P_feat7')
+        #         actions = pd.merge(actions, get_action_U_P_feat7(train_start_date, train_end_date), how="left",
+        #                            on=['user_id', 'sku_id'])
+        print(actions.shape)
+        print('train U_P_feat8')
+        actions = pd.merge(actions, get_action_U_P_feat8(start_days, train_end_date), how="left",
+                           on=['user_id', 'sku_id'])
+        print(actions.shape)
+        print('train U_P_feat14')
+        actions = pd.merge(actions, get_action_U_P_feat14(train_start_date, train_end_date), how="left",
+                           on=['user_id', 'sku_id'])
+        print('train U_P_feat16')
+        actions = pd.merge(actions, get_action_U_P_feat16(train_start_date, train_end_date), how="left",
+                           on=['user_id', 'sku_id'])
+
+        print(actions.shape)
+        actions = actions.fillna(0)
+    #         actions.to_csv(dump_path, index=False)
     return actions
 
 
@@ -3047,94 +3051,78 @@ test_end_date = '2016-04-16'
 sub_start_date = '2016-03-15'
 sub_end_date = '2016-04-16'
 
-
-print ('=====================>>>>>>>>生成训练数据集')
+print('=====================>>>>>>>>生成训练数据集')
 actions = make_train_set(train_start_date, train_end_date, test_start_date, test_end_date)
 
-#训练集划分
-train,test=train_test_split(actions.values,test_size=0.2,random_state=0)
-train=pd.DataFrame(train,columns=actions.columns)
-test=pd.DataFrame(test,columns=actions.columns)
+# 训练集划分
+train, test = train_test_split(actions.values, test_size=0.2, random_state=0)
+train = pd.DataFrame(train, columns=actions.columns)
+test = pd.DataFrame(test, columns=actions.columns)
 
-X_train=train.drop(['user_id','sku_id','label'],axis=1)
-X_test=test.drop(['user_id','sku_id','label'],axis=1)
-y_train=train[['label']]
-y_test=test[['label']]
-train_index=train[['user_id','sku_id']].copy()
-test_index=test[['user_id','sku_id']].copy()
+X_train = train.drop(['user_id', 'sku_id', 'label'], axis=1)
+X_test = test.drop(['user_id', 'sku_id', 'label'], axis=1)
+y_train = train[['label']]
+y_test = test[['label']]
+train_index = train[['user_id', 'sku_id']].copy()
+test_index = test[['user_id', 'sku_id']].copy()
 
-
-
-#生成测试集
-print ('=====================>>>>>>>>生成测试数据集')
+# 生成测试集
+print('=====================>>>>>>>>生成测试数据集')
 sub_test_data = make_test_set(sub_start_date, sub_end_date)
-sub_trainning_data=sub_test_data.drop(['user_id','sku_id'],axis=1)
-sub_user_index=sub_test_data[['user_id','sku_id']].copy()
+sub_trainning_data = sub_test_data.drop(['user_id', 'sku_id'], axis=1)
+sub_user_index = sub_test_data[['user_id', 'sku_id']].copy()
 print("US model  finish  part_4")
 
-
-
-
 # In[ ]:
-
-
 
 
 # In[6]:
 
-#from gen_data0518 import *
+# from gen_data0518 import *
 import xgboost as xgb
 
-print ('start running ....')
+print('start running ....')
 
-dtrain = xgb.DMatrix(X_train,label=y_train)
-dtest = xgb.DMatrix(X_test,label=y_test)
-param = {'learning_rate' : 0.1,
-        'n_estimators': 1000,
-        'max_depth': 3,
-        'min_child_weight': 5,
-        'gamma': 0,
-        'subsample': 0.8,
-        'colsample_bytree': 0.8,
-        'eta': 0.05,
-        'silent': 1,
-        'objective':
-        'binary:logistic',
-        'scale_pos_weight':1}
+dtrain = xgb.DMatrix(X_train, label=y_train)
+dtest = xgb.DMatrix(X_test, label=y_test)
+param = {'learning_rate': 0.1,
+         'n_estimators': 1000,
+         'max_depth': 3,
+         'min_child_weight': 5,
+         'gamma': 0,
+         'subsample': 0.8,
+         'colsample_bytree': 0.8,
+         'eta': 0.05,
+         'silent': 1,
+         'objective':
+             'binary:logistic',
+         'scale_pos_weight': 1}
 
-num_round =150
+num_round = 150
 plst = list(param.items())
 plst += [('eval_metric', 'logloss')]
 evallist = [(dtest, 'eval'), (dtrain, 'train')]
-bst=xgb.train(plst,dtrain,num_round,evallist,early_stopping_rounds=100)
+bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=100)
 
-
-
-#预测测试集
-#============================================>>>>
-print ('==========>>>predict test data label')
+# 预测测试集
+# ============================================>>>>
+print('==========>>>predict test data label')
 sub_trainning_data_1 = xgb.DMatrix(sub_trainning_data)
 y = bst.predict(sub_trainning_data_1)
 sub_user_index['label'] = y
-print ('==========>>>finish test data label')
-P=get_basic_product_feat()[['sku_id']]
-P['sku_label']=1
-pred=pd.merge(sub_user_index,P,on='sku_id',how='left')
-pred=pred[pred['sku_label']==1][['user_id','sku_id','label']]
+print('==========>>>finish test data label')
+P = get_basic_product_feat()[['sku_id']]
+P['sku_label'] = 1
+pred = pd.merge(sub_user_index, P, on='sku_id', how='left')
+pred = pred[pred['sku_label'] == 1][['user_id', 'sku_id', 'label']]
 
-pred.sort_values(by=['user_id','label'],ascending=[0,0],inplace=True)
+pred.sort_values(by=['user_id', 'label'], ascending=[0, 0], inplace=True)
 pred = pred.groupby('user_id').first().reset_index()
-result=pred.sort_values(by=['label'],ascending=[0])
+result = pred.sort_values(by=['label'], ascending=[0])
 
-result['user_id']=result['user_id'].astype('int')
+result['user_id'] = result['user_id'].astype('int')
 
-
-result.to_csv('./sub/USModel.csv',index=False,index_label=False )
+result.to_csv('./sub/USModel.csv', index=False, index_label=False)
 print("finish")
 
-
-
 # In[ ]:
-
-
-

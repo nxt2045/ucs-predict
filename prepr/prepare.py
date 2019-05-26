@@ -93,6 +93,7 @@ def clean_data():
     clean_shop()
     print('<< 数据处理完成!')
 
+
 def map_day(x):
     if x < datetime.strptime(sub_start_date, '%Y-%m-%d'):
         d = datetime.strptime(sub_start_date, '%Y-%m-%d') - x
@@ -100,6 +101,7 @@ def map_day(x):
     else:
         d = -1
     return d
+
 
 def map_month(x):
     if x < datetime.strptime(sub_start_date, '%Y-%m-%d'):
@@ -109,6 +111,7 @@ def map_month(x):
         d = -1
     return d
 
+
 def map_year(x):
     if x < datetime.strptime(sub_start_date, '%Y-%m-%d'):
         d = datetime.strptime(sub_start_date, '%Y-%m-%d') - x
@@ -116,6 +119,8 @@ def map_year(x):
     else:
         d = -1
     return d
+
+
 def map_cate(d):
     if d < 0:
         d = -1

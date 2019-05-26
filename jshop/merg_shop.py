@@ -142,7 +142,7 @@ def get_label(end_date, mark):
     print(datetime.now())
     print('> 开始生成标签')
     if mark == 'submit':
-        user = pd.read_csv(submit_path+'/user.csv',na_filter=False)
+        user = pd.read_csv(submit_path + '/user.csv', na_filter=False)
         cate = pd.DataFrame({'cate': list(range(1, 82)), 'key': [1] * 81})
         user_cate = pd.merge(pd.DataFrame({'user_id': user['user_id'].values, 'key': [1] * user.shape[0]}), cate,
                              how='left', on='key')

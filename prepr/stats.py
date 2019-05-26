@@ -197,7 +197,3 @@ def split_action_type():
     action = pd.read_csv(fill_path + "/jdata_action.csv", na_filter=False)
     buy = action[action['type'] == 2]
     buy.to_csv('./csv/buy.csv', index=False)
-
-
-
-

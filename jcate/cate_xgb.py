@@ -49,16 +49,14 @@ submit_path = '../submit'
 cache_path = '../cache'
 
 
-
-
 # %% xgboost模型
 def impt_feat(feat_cols, bst):
     """ feat 重要性
     """
     f_score = bst.get_fscore()
-    f_id = pd.DataFrame({'f_id':list(f_score.keys())})
-    f_name = pd.DataFrame({'f_name':feat_cols})
-    f_pro = pd.DataFrame({'f_pro':list(f_score.values())})
+    f_id = pd.DataFrame({'f_id': list(f_score.keys())})
+    f_name = pd.DataFrame({'f_name': feat_cols})
+    f_pro = pd.DataFrame({'f_pro': list(f_score.values())})
     f_score = pd.concat([f_id, f_name, f_pro], axis=1)
     f_score.sort_values(by=['f_pro'], ascending=[0], inplace=True)
     f_score.to_csv('./output/impt_feat.csv', index=False)
@@ -73,7 +71,6 @@ def f11_score(real, pred):
     F11 = 3.0 * precision * recall / (2.0 * precision + recall)
     print('F11=' + str(F11))
     return F11
-
 
 
 def gridcv(df_train, drop_column):
@@ -142,9 +139,9 @@ def train(df_train, drop_column):
     print(datetime.now())
     print('>> 开始训练模型')
     # TODO: 'eval_metric'不确定是'auc'，正在尝试默认值得分
-    bst_param = {'silent': 0,  'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200, 'eval_metric': 'auc',
+    bst_param = {'silent': 0, 'nthread': -1, 'learning_rate': 0.1, 'n_estimators': 200, 'eval_metric': 'auc',
                  'max_depth': 5, 'min_child_weight': 2, 'gamma': 0, 'subsample': 0.8, 'colsample_bytree': 0.8,
-                 'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27,'tree_method':'exact'}
+                 'objective': 'binary:logistic', 'scale_pos_weight': 1, 'seed': 27, 'tree_method': 'exact'}
     dtrain = xgb.DMatrix(X_train, label=y_train)
     # dtrain.save_binary('./output/dtrain.buffer')
     num_rounds = 1000  # 迭代次数
@@ -153,7 +150,6 @@ def train(df_train, drop_column):
     impt_feat(feat_cols, bst)
     print(datetime.now())
     print('<< 完成训练模型')
-
 
 
 def test(df_test, drop_column):
@@ -182,6 +178,7 @@ def test(df_test, drop_column):
         print('<< 完成测试模型')
     else:
         print('<< 没有训练模型')
+
 
 def submit(df_sub, drop_column):
     """
