@@ -17,7 +17,7 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 
-from merg_us import gen_feat
+from merg import gen_feat
 from sku_feat import feat_buy_plus
 
 # %% 配置

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
 # @Author  : xiaotong niu
-# @File    : merg_us.py
+# @File    : merg.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
@@ -12,13 +12,13 @@ import logging
 from datetime import timedelta
 from datetime import datetime
 from user_feat import *
+from sku_feat import *
 from cate_feat import *
 from shop_feat import *
-from sku_feat import *
 from usku_feat import *
 from ucate_feat import *
 from ushop_feat import *
-
+from ubrand_feat import *
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
