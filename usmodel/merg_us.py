@@ -68,7 +68,7 @@ def gen_feat(end_date, time_gap, label_gap, mark):
     print('\n>> 开始生成特征(X,y)')
     print('end_date', end_date)
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    dump_path = cache_path + '/feat_uscs_%s_%s_%s.csv' % (str(label_gap), mark, end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/feat_%s_%s_%s.csv' % (str(label_gap), mark, end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path)
     else:
@@ -118,7 +118,7 @@ def extract_feat(end_date, time_gap, label):
         feat = pd.merge(feat, feat_sku_follow_amt(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_remark_amt(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_cart_amt(start_date, end_date), on='sku_id', how='left')
-        feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
+        # feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
         # 商品天数
         feat = pd.merge(feat, feat_sku_action_day(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_view_day(start_date, end_date), on='sku_id', how='left')
@@ -212,7 +212,7 @@ def extract_feat(end_date, time_gap, label):
     feat = pd.merge(feat, feat_sku_follow_amt(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_remark_amt(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_cart_amt(start_date, end_date), on='sku_id', how='left')
-    feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
+    # feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
     # 商品天数
     feat = pd.merge(feat, feat_sku_action_day(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_view_day(start_date, end_date), on='sku_id', how='left')

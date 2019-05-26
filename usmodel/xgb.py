@@ -153,14 +153,14 @@ def model(df_train, df_test, drop_column):
             'objective': 'binary:logistic',
             'scale_pos_weight': 1,
             # 调整
-            'learning_rate': 0.1,
-            'n_estimators': 1000,
-            'max_depth': 3,
-            'min_child_weight': 5,
+            'max_depth': 3,  # 3,4,5,6
+            'min_child_weight': 5,  # 2,3,4,5
             'gamma': 0,
             'subsample': 0.8,
             'colsample_bytree': 0.8,
             'eta': 0.05,
+            'learning_rate': 0.01,
+            'n_estimators': 1000,
         }
         plst = list(param.items())
         plst += [('eval_metric', 'auc')]  # auc logloss
@@ -267,7 +267,7 @@ def main():
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
-    drop_column = ['user_id', 'sku_id', 'shop_id','label']
+    drop_column = ['user_id', 'sku_id', 'shop_id', 'label']
     label_gap = 3  # [2,3,7]
 
     # 生成特征
@@ -278,7 +278,7 @@ def main():
     # bst_param(df_train, drop_column)
 
     # 构造模型
-    model(df_train, df_test, drop_column)
+    # model(df_train, df_test, drop_column)
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果

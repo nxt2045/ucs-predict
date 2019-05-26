@@ -361,7 +361,7 @@ def feat_sku_comment_amt(start_date, end_date):
     else:
         action = pd.read_csv(comment_path, na_filter=False, parse_dates='dt', skip_blank_lines=True)
         action = action[
-            (start_date <= action['action_time']) & (action['action_time'] <= end_date)]
+            (start_date <= action['dt']) & (action['dt'] <= end_date)]
         print(action.head())
         feat = action.groupby('sku_id').sum().reset_index()
         print(feat.head())
