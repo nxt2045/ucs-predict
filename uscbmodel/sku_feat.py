@@ -142,7 +142,7 @@ def feat_cart_plus(start_date, end_date):
 # 商品信息
 def feat_sku():
     print('product.csv')
-    feat = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate', 'brand','shop_id'])
+    feat = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate', 'brand', 'shop_id'])
     return feat
 
 
@@ -351,7 +351,7 @@ def feat_sku_cart_amt(start_date, end_date):
     return feat
 
 
-# 商品历史评论数量
+# 商品历史评论数量(含比例)
 def feat_sku_comment_amt(start_date, end_date):
     print('sku_comment_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/sku_comment_amt_%s_%s.csv' % (
@@ -362,13 +362,13 @@ def feat_sku_comment_amt(start_date, end_date):
         comment = pd.read_csv(comment_path, na_filter=False, parse_dates=['dt'], skip_blank_lines=True)
         comment = comment[
             (start_date <= comment['dt']) & (comment['dt'] <= end_date)]
-        print(comment.head())
         feat = comment.groupby('sku_id').sum().reset_index()
-        print(feat.head())
-        feat['good/bad'] = feat['good_comments']/feat['bad_comments']
-        print(feat.head())
+        feat.fillna(0, inplace=True)
+        feat.ix[feat['comments'] == 0, 'comments'] = -1
+        feat['bad/all'] = feat['bad_comments'] / feat['comments'] * 100
+        feat['good/all'] = feat['good_comments'] / feat['comments'] * 100
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
