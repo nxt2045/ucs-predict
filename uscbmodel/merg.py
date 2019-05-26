@@ -118,7 +118,7 @@ def extract_feat(end_date, time_gap, label):
         feat = pd.merge(feat, feat_sku_follow_amt(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_remark_amt(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_cart_amt(start_date, end_date), on='sku_id', how='left')
-        # feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
+        feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
         # 商品天数
         feat = pd.merge(feat, feat_sku_action_day(start_date, end_date), on='sku_id', how='left')
         feat = pd.merge(feat, feat_sku_view_day(start_date, end_date), on='sku_id', how='left')
@@ -212,7 +212,7 @@ def extract_feat(end_date, time_gap, label):
     feat = pd.merge(feat, feat_sku_follow_amt(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_remark_amt(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_cart_amt(start_date, end_date), on='sku_id', how='left')
-    # feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
+    feat = pd.merge(feat, feat_sku_comment_amt(start_date, end_date), on='sku_id', how='left')
     # 商品天数
     feat = pd.merge(feat, feat_sku_action_day(start_date, end_date), on='sku_id', how='left')
     feat = pd.merge(feat, feat_sku_view_day(start_date, end_date), on='sku_id', how='left')
