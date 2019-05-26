@@ -1,3 +1,4 @@
+
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
@@ -17,7 +18,7 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 
-from merg_us import gen_feat
+from merg import gen_feat
 from sku_feat import feat_buy_plus
 
 # %% 配置
@@ -138,10 +139,10 @@ def model(df_train, df_test, drop_column):
         print('\n>> 开始划分X,y')
         X_train = df_train.drop(drop_column, axis=1).values
         y_train = df_train['label'].values
-        X_test = df_test.drop(drop_column, axis=1).values
-        y_test = df_test['label'].values
+        # X_test = df_test.drop(drop_column, axis=1).values
+        # y_test = df_test['label'].values
         dtrain = xgb.DMatrix(X_train, label=y_train)
-        dtest = xgb.DMatrix(X_test, label=y_test)
+        # dtest = xgb.DMatrix(X_test, label=y_test)
         print('<< 完成划分X,y')
         # 设置参数(gridcv最佳)
         print(datetime.now())
@@ -164,15 +165,16 @@ def model(df_train, df_test, drop_column):
         }
         plst = list(param.items())
         plst += [('eval_metric', 'auc')]  # auc logloss
-        num_round = 1000
-        evallist = [(dtest, 'eval'), (dtrain, 'train')]
+        num_round = 200
+        evallist = [(dtrain, 'train')]
         print('<< 完成设置参数')
 
         # 训练模型(watchlist)
         print(datetime.now())
         print('\n>> 开始训练模型')
-        bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=50)
+        bst = xgb.train(plst, dtrain, num_round)
         bst.save_model("./out/bst.model")
+        del dtrain
         print('<< 完成训练模型')
 
     # 划分(X,y)
@@ -186,6 +188,7 @@ def model(df_train, df_test, drop_column):
     # 测试模型
     print('\n>> 开始测试模型')
     y_probab = bst.predict(dtest)
+    del dtest
     print('> 概率转换0,1')
     df_pred = pd.concat([df_test, pd.DataFrame({'probab': y_probab, 'pred': [0] * len(y_probab)})], axis=1)
     del df_train, df_test
@@ -213,8 +216,6 @@ def model(df_train, df_test, drop_column):
     df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
     print('前%s行[test] label=1：' % (str(df_real.shape[0])))
     report(df_real, df_pred.iloc[:df_real.shape[0]])
-    print('前%s行 label=1：' % (str(180000)))
-    report(df_real, df_pred.iloc[:180000])
 
     for amt in range(160000, 250000, 10000):
         print('前%s行 label=1：' % (str(amt)))
@@ -269,21 +270,22 @@ def main():
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
-    drop_column = ['user_id', 'sku_id', 'label']
-    label_gap = 5  # [2,3,7]
+    drop_column = ['user_id', 'sku_id', 'shop_id','label']
+    label_gap = 3  # [2,3,7]
 
     # 生成特征
     df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
-    df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
+    # df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
+    # bst_param(df_train, drop_column)
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
+    model(df_train, df_train, drop_column)
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
-    df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
+    # df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
     # submit(df_sub, drop_column)
 
 
