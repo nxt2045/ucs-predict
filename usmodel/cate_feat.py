@@ -48,7 +48,7 @@ action_path = clean_path + "/action.csv"
 product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
-cache_path = '../cache/c'
+cache_path = '../cache/cate'
 
 
 # %% 特征提取

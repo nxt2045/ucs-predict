@@ -1,4 +1,3 @@
-
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
@@ -48,13 +47,11 @@ action_path = clean_path + "/action.csv"
 product_path = clean_path + "/product.csv"
 shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
-cache_path = '../cache/uc'
+cache_path = '../cache/ubrand'
 
 
 # %% 特征提取
 # TODO: (user_id,brand) pkey
-
-
 
 
 # GR: 数量系列
@@ -126,5 +123,3 @@ def feat_user_brand_cart_amt(start_date, end_date):
         feat = action.groupby(['user_id', 'brand']).size().reset_index(name='user_brand_cart_amt')
         # feat.to_csv(dump_path, index=False)
     return feat
-
-
