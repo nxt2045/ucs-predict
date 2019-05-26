@@ -164,7 +164,7 @@ def model(df_train, df_test, drop_column):
         }
         plst = list(param.items())
         plst += [('eval_metric', 'auc')]  # auc logloss
-        num_round = 500
+        num_round = 1000
         evallist = [(dtest, 'eval'), (dtrain, 'train')]
         print('<< 完成设置参数')
 
