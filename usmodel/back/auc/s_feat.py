@@ -7,7 +7,7 @@
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 
-from u_feat import *
+from user_feat import *
 import os
 import pandas as pd
 from datetime import timedelta

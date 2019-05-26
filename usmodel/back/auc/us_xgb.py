@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
 # @Author  : xiaotong niu
-# @File    : us_xgb.py
+# @File    : xgb.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 
 import os
 import time
-from s_feat import feat_buy_plus
+from sku_feat import feat_buy_plus
 from datetime import datetime
 from datetime import timedelta
 import numpy as np

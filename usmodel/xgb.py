@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
 # @Author  : xiaotong niu
-# @File    : us_xgb.py
+# @File    : xgb.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
@@ -18,7 +18,7 @@ import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 
 from merg_us import gen_feat
-from s_feat import feat_buy_plus
+from sku_feat import feat_buy_plus
 
 # %% 配置
 # 输出设置
@@ -128,6 +128,7 @@ def bst_param(df_train, drop_column):
     print('\n>> 开始划分X,y')
     X_train = df_train.drop(drop_column, axis=1).values
     y_train = df_train['label'].values
+    del df_train
     print('<< 完成划分X,y')
 
     print(datetime.now())
@@ -165,7 +166,7 @@ def bst_param(df_train, drop_column):
                             n_estimators=500,
                             silent=True,
                             objective='binary:logistic',
-                            nthread=-1,
+                            nthread=4,
                             gamma=0,
                             min_child_weight=5,
                             max_delta_step=0,
@@ -334,7 +335,7 @@ def main():
     train_end_date = '2018-4-8'
     test_end_date = '2018-4-1'
     sub_end_date = '2018-4-15'
-    drop_column = ['user_id', 'sku_id', 'label']
+    drop_column = ['user_id', 'sku_id', 'shop_id','label']
     label_gap = 3  # [2,3,7]
 
     # 生成特征
@@ -343,7 +344,7 @@ def main():
     df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
 
     # 优化参数
-    bst_param(df_train, drop_column)
+    # bst_param(df_train, drop_column)
 
     # 构造模型
     # model(df_train, df_test, drop_column)

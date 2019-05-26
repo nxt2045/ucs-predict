@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/9/2019
 # @Author  : xiaotong niu
-# @File    : u_feat.py
+# @File    : user_feat.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
