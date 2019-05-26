@@ -75,47 +75,47 @@ def impt_feat(df_train, drop_column):
 
 
 def report(real, pred):
-    print('real:', real.shape)
-    # print(real.head())
-    print('pred:', pred.shape)
-    # print(pred.head())
+    # print('real:', real.shape)
+    # # print(real.head())
+    # print('pred:', pred.shape)
+    # # print(pred.head())
 
     # 所有购买用户品类
     all_2 = real[['user_id', 'cate']]
-    print('all_2:', all_2.shape)
+    # print('all_2:', all_2.shape)
     # 所有预测购买用户品类
     all_pred_2 = pred[['user_id', 'cate']]
-    print('all_pred_2:', all_pred_2.shape)
+    # print('all_pred_2:', all_pred_2.shape)
     # 计算所有用户品类购买评价指标
     intersect = pd.merge(all_2, all_pred_2, how='inner')
     pos = intersect.shape[0]
     neg = all_pred_2.shape[0] - pos
-    print('pos:', pos)
-    print('neg:', neg)
+    # print('pos:', pos)
+    # print('neg:', neg)
     all_2_acc = 1.0 * pos / (pos + neg)
     all_2_recall = 1.0 * pos / len(all_2)
-    print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_2_acc))
-    print('所有用户品类中预测购买用户品类的召回率' + str(all_2_recall))
+    # print('所有用户品类中预测购买用户品类的准确率为 ' + str(all_2_acc))
+    # print('所有用户品类中预测购买用户品类的召回率' + str(all_2_recall))
     F11 = 3.0 * all_2_recall * all_2_acc / (2.0 * all_2_recall + all_2_acc)
-    print('F11=' + str(F11))
+    # print('F11=' + str(F11))
 
     # 所有用户品类店铺对
     all_3 = real[['user_id', 'cate', 'shop_id']]
-    print('all_3:', all_3.shape)
+    # print('all_3:', all_3.shape)
     # 所有预测用户品类店铺对
     all_pred_3 = pred[['user_id', 'cate', 'shop_id']]
-    print('all_pred_3:', all_pred_3.shape)
+    # print('all_pred_3:', all_pred_3.shape)
     intersect = pd.merge(all_3, all_pred_3, how='inner')
     pos = intersect.shape[0]
     neg = all_pred_2.shape[0] - pos
-    print('pos:', pos)
-    print('neg:', neg)
+    # print('pos:', pos)
+    # print('neg:', neg)
     all_3_acc = 1.0 * pos / (pos + neg)
     all_3_recall = 1.0 * pos / len(all_3)
-    print('所有用户品类中预测购买店铺的准确率为 ' + str(all_3_acc))
-    print('所有用户品类中预测购买店铺的召回率' + str(all_3_recall))
+    # print('所有用户品类中预测购买店铺的准确率为 ' + str(all_3_acc))
+    # print('所有用户品类中预测购买店铺的召回率' + str(all_3_recall))
     F12 = 5.0 * all_3_acc * all_3_recall / (2.0 * all_3_recall + 3.0 * all_3_acc)
-    print('F12=' + str(F12))
+    # print('F12=' + str(F12))
 
     score = 0.4 * F11 + 0.6 * F12
     print('score=' + str(score))
@@ -341,16 +341,16 @@ def main():
     # 生成特征
     df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
-    df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
 
     # 优化参数
     # bst_param(df_train, drop_column)
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
+    model(df_train, df_test, drop_column)
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
+    df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
     # submit(df_sub, drop_column)
 
 
