@@ -213,6 +213,8 @@ def model(df_train, df_test, drop_column):
     df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
     print('前%s行[test] label=1：' % (str(df_real.shape[0])))
     report(df_real, df_pred.iloc[:df_real.shape[0]])
+    print('前%s行 label=1：' % (str(180000)))
+    report(df_real, df_pred.iloc[:180000])
 
     for amt in range(160000, 250000, 10000):
         print('前%s行 label=1：' % (str(amt)))
