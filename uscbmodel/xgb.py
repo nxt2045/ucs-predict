@@ -153,10 +153,10 @@ def model(df_train, df_test, drop_column):
             'objective': 'binary:logistic',
             'scale_pos_weight': 1,
             # 调整
-            'learning_rate': 0.1,
+            'learning_rate': 0.01,
             'n_estimators': 1000,
-            'max_depth': 3,
-            'min_child_weight': 5,
+            'max_depth': 4,
+            'min_child_weight': 1,
             'gamma': 0,
             'subsample': 0.8,
             'colsample_bytree': 0.8,
@@ -278,7 +278,7 @@ def main():
     # bst_param(df_train, drop_column)
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
+    model(df_train, df_test, drop_column)
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
