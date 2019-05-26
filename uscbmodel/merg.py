@@ -13,6 +13,7 @@ from datetime import timedelta
 from datetime import datetime
 from user_feat import *
 from sku_feat import *
+from brand_feat import *
 from cate_feat import *
 from shop_feat import *
 from usku_feat import *
@@ -229,6 +230,13 @@ def extract_feat(end_date, time_gap, label):
     feat = pd.merge(feat, feat_sku_last_amt(start_date, end_date), on='sku_id', how='left')
     feat.fillna(0, inplace=True)
     feat = feat.astype(int)
+    # GR: 品牌
+    # 品牌数量
+    feat = pd.merge(feat, feat_brand_view_amt(start_date, end_date), on='brand', how='left')
+    feat = pd.merge(feat, feat_brand_buy_amt(start_date, end_date), on='brand', how='left')
+    feat = pd.merge(feat, feat_brand_follow_amt(start_date, end_date), on='brand', how='left')
+    feat = pd.merge(feat, feat_brand_remark_amt(start_date, end_date), on='brand', how='left')
+    feat = pd.merge(feat, feat_brand_cart_amt(start_date, end_date), on='brand', how='left')
     # GR: 品类
     # 品类数量
     feat = pd.merge(feat, feat_cate_view_amt(start_date, end_date), on='cate', how='left')
