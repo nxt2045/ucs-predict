@@ -129,7 +129,7 @@ def gen_feat_1(end_date, label):
         # 用户其他
         feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
         feat = pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-    
+
         # GR: 用户品类
         # 用户品类数量
         feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
@@ -139,7 +139,8 @@ def gen_feat_1(end_date, label):
         feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
         # 用户品类其他
         feat = pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
+        feat = pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
+                        how='left')
         # GR: 用户店铺
         # 用户店铺数量
         feat = pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
@@ -149,7 +150,8 @@ def gen_feat_1(end_date, label):
         feat = pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
         # 用户店铺其他
         feat = pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        feat = pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
+                        how='left')
         feat.fillna(0, inplace=True)
         feat = feat.astype(int)
         # 画图
@@ -163,19 +165,25 @@ def gen_feat_1(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
+                if len(counts) > 2:
+                    plt.figure(figsize=(20, 20))
+                    fig = plt.figure(figsize=(10, 12))
+                    ax1 = fig.add_subplot(2, 1, 1)
+                    sns.boxplot(x=col, y="label", orient="h", data=df)
+                    ax2 = fig.add_subplot(2, 1, 2)
+                    sns.violinplot(x=col, y="label", orient="h", data=df)
+                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,
+                        bbox_inches='tight')
         f.close()
-    
+
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path+'/feat_%s.csv'%(str(gap)),index=False)
+        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
     return feat
 
 
@@ -253,13 +261,19 @@ def gen_feat_2(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
+                if len(counts) > 2:
+                    plt.figure(figsize=(20, 20))
+                    fig = plt.figure(figsize=(10, 12))
+                    ax1 = fig.add_subplot(2, 1, 1)
+                    sns.boxplot(x=col, y="label", orient="h", data=df)
+                    ax2 = fig.add_subplot(2, 1, 2)
+                    sns.violinplot(x=col, y="label", orient="h", data=df)
+                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,
+                        bbox_inches='tight')
         f.close()
 
         # 最后调整
@@ -343,13 +357,19 @@ def gen_feat_3(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
+                if len(counts) > 2:
+                    plt.figure(figsize=(20, 20))
+                    fig = plt.figure(figsize=(10, 12))
+                    ax1 = fig.add_subplot(2, 1, 1)
+                    sns.boxplot(x=col, y="label", orient="h", data=df)
+                    ax2 = fig.add_subplot(2, 1, 2)
+                    sns.violinplot(x=col, y="label", orient="h", data=df)
+                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,
+                        bbox_inches='tight')
         f.close()
 
         # 最后调整
@@ -433,13 +453,19 @@ def gen_feat_7(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
+                if len(counts) > 2:
+                    plt.figure(figsize=(20, 20))
+                    fig = plt.figure(figsize=(10, 12))
+                    ax1 = fig.add_subplot(2, 1, 1)
+                    sns.boxplot(x=col, y="label", orient="h", data=df)
+                    ax2 = fig.add_subplot(2, 1, 2)
+                    sns.violinplot(x=col, y="label", orient="h", data=df)
+                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,
+                        bbox_inches='tight')
         f.close()
 
         # 最后调整
@@ -523,13 +549,19 @@ def gen_feat_14(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
+                if len(counts) > 2:
+                    plt.figure(figsize=(20, 20))
+                    fig = plt.figure(figsize=(10, 12))
+                    ax1 = fig.add_subplot(2, 1, 1)
+                    sns.boxplot(x=col, y="label", orient="h", data=df)
+                    ax2 = fig.add_subplot(2, 1, 2)
+                    sns.violinplot(x=col, y="label", orient="h", data=df)
+                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,
+                        bbox_inches='tight')
         f.close()
 
         # 最后调整
@@ -551,7 +583,7 @@ def gen_feat_30(end_date, label):
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
-    # 初始化feat
+        # 初始化feat
         feat = label
         # GR: 用户
         # 用户是否
@@ -577,7 +609,7 @@ def gen_feat_30(end_date, label):
         # 用户其他
         pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
         pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-    
+
         # GR: 用户品类
         # 用户品类数量
         pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
@@ -586,11 +618,11 @@ def gen_feat_30(end_date, label):
         pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
         pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
         # 用户品类天数
-        pd.merge(feat, feat_user_cate_view_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_buy_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_follow_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_remark_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_cart_day(start_date, end_date), on=['user_id','cate'], how='left')
+        pd.merge(feat, feat_user_cate_view_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_buy_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_follow_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_remark_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_cart_day(start_date, end_date), on=['user_id', 'cate'], how='left')
         # 用户品类其他
         pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
         pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
@@ -627,15 +659,21 @@ def gen_feat_30(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
+                if len(counts) > 2:
+                    plt.figure(figsize=(20, 20))
+                    fig = plt.figure(figsize=(10, 12))
+                    ax1 = fig.add_subplot(2, 1, 1)
+                    sns.boxplot(x=col, y="label", orient="h", data=df)
+                    ax2 = fig.add_subplot(2, 1, 2)
+                    sns.violinplot(x=col, y="label", orient="h", data=df)
+                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,
+                        bbox_inches='tight')
         f.close()
-    
+
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
