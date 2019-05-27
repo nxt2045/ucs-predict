@@ -67,11 +67,11 @@ def gen_feat(end_date, label_gap, mark):
     else:
         label = gen_label(end_date, label_gap, mark)
         feat_concat = [label]
-        feat_concat.append(gen_feat_1(end_date, label))
-        feat_concat.append(gen_feat_2(end_date, label))
-        feat_concat.append(gen_feat_3(end_date, label))
-        feat_concat.append(gen_feat_7(end_date, label))
-        feat_concat.append(gen_feat_14(end_date, label))
+        # feat_concat.append(gen_feat_1(end_date, label))
+        # feat_concat.append(gen_feat_2(end_date, label))
+        # feat_concat.append(gen_feat_3(end_date, label))
+        # feat_concat.append(gen_feat_7(end_date, label))
+        # feat_concat.append(gen_feat_14(end_date, label))
         feat_concat.append(gen_feat_30(end_date, label))
         feat = pd.concat(feat_concat, axis=1)
 
@@ -672,3 +672,13 @@ def gen_label(end_date, label_gap, mark):
     label = label.astype('int')
     print("shape", label.shape)
     return label
+
+if __name__ == "__main__":
+    # 定义参数
+    train_end_date = '2018-4-1'
+    test_end_date = '2018-4-8'
+    drop_column = ['user_id', 'cate', 'shop_id', 'label']
+    label_gap = 3
+
+    # 生成特征
+    df_train = gen_feat(train_end_date, label_gap, 'train')

@@ -131,7 +131,6 @@ def feat_shop_cart_amt(start_date, end_date):
     return feat
 
 
-
 # GR: 天数
 
 
@@ -139,8 +138,8 @@ def feat_shop_cart_amt(start_date, end_date):
 def feat_shop_view_day(start_date, end_date):
     print('shop_view_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/shop_view_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                             start_date.strftime('%y%m%d'),
-                                                             end_date.strftime('%y%m%d'))
+                                                              start_date.strftime('%y%m%d'),
+                                                              end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -158,8 +157,8 @@ def feat_shop_view_day(start_date, end_date):
 def feat_shop_buy_day(start_date, end_date):
     print('shop_buy_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/shop_buy_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                            start_date.strftime('%y%m%d'),
-                                                            end_date.strftime('%y%m%d'))
+                                                             start_date.strftime('%y%m%d'),
+                                                             end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -177,8 +176,8 @@ def feat_shop_buy_day(start_date, end_date):
 def feat_shop_follow_day(start_date, end_date):
     print('shop_follow_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/shop_follow_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                               start_date.strftime('%y%m%d'),
-                                                               end_date.strftime('%y%m%d'))
+                                                                start_date.strftime('%y%m%d'),
+                                                                end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -196,8 +195,8 @@ def feat_shop_follow_day(start_date, end_date):
 def feat_shop_remark_day(start_date, end_date):
     print('shop_remark_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/shop_remark_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                               start_date.strftime('%y%m%d'),
-                                                               end_date.strftime('%y%m%d'))
+                                                                start_date.strftime('%y%m%d'),
+                                                                end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -215,8 +214,8 @@ def feat_shop_remark_day(start_date, end_date):
 def feat_shop_cart_day(start_date, end_date):
     print('shop_cart_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/shop_cart_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                             start_date.strftime('%y%m%d'),
-                                                             end_date.strftime('%y%m%d'))
+                                                              start_date.strftime('%y%m%d'),
+                                                              end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -228,8 +227,6 @@ def feat_shop_cart_day(start_date, end_date):
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
-
-
 
 
 # %% 特征提取
@@ -323,7 +320,8 @@ def feat_user_shop_if_cart(start_date, end_date):
 def feat_user_shop_view_amt(start_date, end_date):
     print('user_shop_view_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_shop_view_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+                                                                   start_date.strftime('%y%m%d'),
+                                                                   end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -336,8 +334,9 @@ def feat_user_shop_view_amt(start_date, end_date):
 # 用户店铺购买量
 def feat_user_shop_buy_amt(start_date, end_date):
     print('user_shop_buy_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/%s/user_shop_buy_amt_%s_%s.csv' % ( end_date.strftime('%y%m%d'),
-        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/%s/user_shop_buy_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                  start_date.strftime('%y%m%d'),
+                                                                  end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -350,8 +349,9 @@ def feat_user_shop_buy_amt(start_date, end_date):
 # 用户店铺关注量
 def feat_user_shop_follow_amt(start_date, end_date):
     print('user_shop_follow_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/%s/user_shop_follow_amt_%s_%s.csv' % ( end_date.strftime('%y%m%d'),
-        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/%s/user_shop_follow_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                     start_date.strftime('%y%m%d'),
+                                                                     end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -364,8 +364,9 @@ def feat_user_shop_follow_amt(start_date, end_date):
 # 用户店铺评论量
 def feat_user_shop_remark_amt(start_date, end_date):
     print('user_shop_remark_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/%s/user_shop_remark_amt_%s_%s.csv' % ( end_date.strftime('%y%m%d'),
-        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/%s/user_shop_remark_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                     start_date.strftime('%y%m%d'),
+                                                                     end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -378,8 +379,9 @@ def feat_user_shop_remark_amt(start_date, end_date):
 # 用户店铺购物车量
 def feat_user_shop_cart_amt(start_date, end_date):
     print('user_shop_cart_amt_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-    dump_path = cache_path + '/%s/user_shop_cart_amt_%s_%s.csv' % ( end_date.strftime('%y%m%d'),
-        start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    dump_path = cache_path + '/%s/user_shop_cart_amt_%s_%s.csv' % (end_date.strftime('%y%m%d'),
+                                                                   start_date.strftime('%y%m%d'),
+                                                                   end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -395,8 +397,8 @@ def feat_user_shop_cart_amt(start_date, end_date):
 def feat_user_shop_view_day(start_date, end_date):
     print('user_shop_view_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_shop_view_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                  start_date.strftime('%y%m%d'),
-                                                                  end_date.strftime('%y%m%d'))
+                                                                   start_date.strftime('%y%m%d'),
+                                                                   end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -414,8 +416,8 @@ def feat_user_shop_view_day(start_date, end_date):
 def feat_user_shop_buy_day(start_date, end_date):
     print('user_shop_buy_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_shop_buy_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                 start_date.strftime('%y%m%d'),
-                                                                 end_date.strftime('%y%m%d'))
+                                                                  start_date.strftime('%y%m%d'),
+                                                                  end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -433,8 +435,8 @@ def feat_user_shop_buy_day(start_date, end_date):
 def feat_user_shop_follow_day(start_date, end_date):
     print('user_shop_follow_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_shop_follow_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                    start_date.strftime('%y%m%d'),
-                                                                    end_date.strftime('%y%m%d'))
+                                                                     start_date.strftime('%y%m%d'),
+                                                                     end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -452,8 +454,8 @@ def feat_user_shop_follow_day(start_date, end_date):
 def feat_user_shop_remark_day(start_date, end_date):
     print('user_shop_remark_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_shop_remark_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                    start_date.strftime('%y%m%d'),
-                                                                    end_date.strftime('%y%m%d'))
+                                                                     start_date.strftime('%y%m%d'),
+                                                                     end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -471,8 +473,8 @@ def feat_user_shop_remark_day(start_date, end_date):
 def feat_user_shop_cart_day(start_date, end_date):
     print('user_shop_cart_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_shop_cart_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                  start_date.strftime('%y%m%d'),
-                                                                  end_date.strftime('%y%m%d'))
+                                                                   start_date.strftime('%y%m%d'),
+                                                                   end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -635,7 +637,8 @@ def feat_user_shop_last_amt(start_date, end_date):
         product = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'shop_id'])
         feat = pd.merge(feat, product, on='sku_id', how='left')
         feat.drop('sku_id', axis=1, inplace=True)
-        feat = feat.groupby(['user_id', 'shop_id']).sum().reset_index(name='user_shop_last_amt')
+        feat = feat.groupby(['user_id', 'shop_id']).sum().reset_index()
+        feat.rename(columns={'user_sku_last_amt': 'user_shop_last_amt'}, inplace=True)
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat

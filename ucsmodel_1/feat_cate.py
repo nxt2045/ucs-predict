@@ -636,7 +636,8 @@ def feat_user_cate_last_amt(start_date, end_date):
         product = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate'])
         feat = pd.merge(feat, product, on='sku_id', how='left')
         feat.drop('sku_id', axis=1, inplace=True)
-        feat = feat.groupby(['user_id', 'cate']).sum().reset_index(name='user_cate_last_amt')
+        feat = feat.groupby(['user_id', 'cate']).sum().reset_index()
+        feat.rename(columns={'user_sku_last_amt': 'user_cate_last_amt'}, inplace=True)
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
