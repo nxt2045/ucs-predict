@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/9/2019
 # @Author  : xiaotong niu
-# @File    : user_feat.py
+# @File    : feat_user.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
@@ -20,8 +20,6 @@ pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
 register_matplotlib_converters()
 plt.style.use('seaborn')
-plt.rcParams['figure.figsize'] = (12, 8)
-
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
@@ -334,6 +332,7 @@ def feat_user_cart_amt(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # GR: 天数
 # 用户行为天数
 def feat_user_action_day(start_date, end_date):
@@ -353,12 +352,13 @@ def feat_user_action_day(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # 用户浏览天数
 def feat_user_view_day(start_date, end_date):
     print('user_view_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_view_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                              start_date.strftime('%y%m%d'),
+                                                              end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -376,8 +376,8 @@ def feat_user_view_day(start_date, end_date):
 def feat_user_buy_day(start_date, end_date):
     print('user_buy_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_buy_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                             start_date.strftime('%y%m%d'),
+                                                             end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -389,6 +389,7 @@ def feat_user_buy_day(start_date, end_date):
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
+
 
 # 用户关注天数
 def feat_user_follow_day(start_date, end_date):
@@ -408,6 +409,7 @@ def feat_user_follow_day(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # 用户评论天数
 def feat_user_remark_day(start_date, end_date):
     print('user_remark_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
@@ -426,12 +428,13 @@ def feat_user_remark_day(start_date, end_date):
         feat.to_csv(dump_path, index=False)
     return feat
 
+
 # 用户购物车天数
 def feat_user_cart_day(start_date, end_date):
     print('user_cart_day_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
     dump_path = cache_path + '/%s/user_cart_day_%s_%s.csv' % (end_date.strftime('%y%m%d'),
-                                                                start_date.strftime('%y%m%d'),
-                                                                end_date.strftime('%y%m%d'))
+                                                              start_date.strftime('%y%m%d'),
+                                                              end_date.strftime('%y%m%d'))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -443,7 +446,6 @@ def feat_user_cart_day(start_date, end_date):
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
-
 
 
 # GR: 其他
@@ -563,7 +565,6 @@ def feat_user_last_amt(start_date, end_date):
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
-
 
 
 if __name__ == "__main__":

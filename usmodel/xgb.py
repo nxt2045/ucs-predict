@@ -153,10 +153,10 @@ def model(df_train, df_test, drop_column):
             'objective': 'binary:logistic',
             'scale_pos_weight': 1,
             # 调整
-            'learning_rate': 0.1,
+            'learning_rate': 0.01,
             'n_estimators': 1000,
-            'max_depth': 3,
-            'min_child_weight': 5,
+            'max_depth': 4,
+            'min_child_weight': 1,
             'gamma': 0,
             'subsample': 0.8,
             'colsample_bytree': 0.8,
@@ -213,12 +213,12 @@ def model(df_train, df_test, drop_column):
     df_pred = df_pred[['user_id', 'cate', 'shop_id', 'pred']]
     print('前%s行[test] label=1：' % (str(df_real.shape[0])))
     report(df_real, df_pred.iloc[:df_real.shape[0]])
-    print('前%s行 label=1：' % (str(180000)))
-    report(df_real, df_pred.iloc[:180000])
-
-    for amt in range(160000, 250000, 10000):
-        print('前%s行 label=1：' % (str(amt)))
-        report(df_real, df_pred.iloc[:amt])
+    print('前%s行 label=1：' % (str(160000)))
+    report(df_real, df_pred.iloc[:160000])
+    #
+    # for amt in range(160000, 250000, 10000):
+    #     print('前%s行 label=1：' % (str(amt)))
+    #     report(df_real, df_pred.iloc[:amt])
     print('<< 完成测试模型')
 
 
@@ -279,11 +279,11 @@ def main():
     # 优化参数
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
+    model(df_train, df_test, drop_column)
     # impt_feat(df_train, drop_column)
 
     # 生成提交结果
-    df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
+    # df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
     # submit(df_sub, drop_column)
 
 

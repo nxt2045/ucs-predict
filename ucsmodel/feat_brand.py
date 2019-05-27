@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 # @DATE    : 5/14/2019
 # @Author  : xiaotong niu
-# @File    : brand_feat.py
+# @File    : feat_brand.py
 # @Project : JData-Predict
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 
-from user_feat import *
-from sku_feat import *
+from feat_user import *
+from feat_sku import *
 
 import os
 import pandas as pd
@@ -23,8 +23,6 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
 register_matplotlib_converters()
-plt.rcParams['figure.figsize'] = (12, 8)
-
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
@@ -149,7 +147,7 @@ def feat_brand_view_day(start_date, end_date):
         view = feat_view_plus(start_date, end_date)[['brand', 'action_time']]
         view.sort_values(['brand', 'action_time'], inplace=True)
         view['action_time'] = view['action_time'].values.astype('datetime64[D]')
-        view = view.drop_duplibrands(['brand', 'action_time'])
+        view = view.drop_duplicates(['brand', 'action_time'])
         feat = view.groupby('brand').size().reset_index(name='brand_view_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
@@ -168,7 +166,7 @@ def feat_brand_buy_day(start_date, end_date):
         buy = feat_buy_plus(start_date, end_date)[['brand', 'action_time']]
         buy.sort_values(['brand', 'action_time'], inplace=True)
         buy['action_time'] = buy['action_time'].values.astype('datetime64[D]')
-        buy = buy.drop_duplibrands(['brand', 'action_time'])
+        buy = buy.drop_duplicates(['brand', 'action_time'])
         feat = buy.groupby('brand').size().reset_index(name='brand_buy_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
@@ -187,7 +185,7 @@ def feat_brand_follow_day(start_date, end_date):
         follow = feat_follow_plus(start_date, end_date)[['brand', 'action_time']]
         follow.sort_values(['brand', 'action_time'], inplace=True)
         follow['action_time'] = follow['action_time'].values.astype('datetime64[D]')
-        follow = follow.drop_duplibrands(['brand', 'action_time'])
+        follow = follow.drop_duplicates(['brand', 'action_time'])
         feat = follow.groupby('brand').size().reset_index(name='brand_follow_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
@@ -206,7 +204,7 @@ def feat_brand_remark_day(start_date, end_date):
         remark = feat_remark_plus(start_date, end_date)[['brand', 'action_time']]
         remark.sort_values(['brand', 'action_time'], inplace=True)
         remark['action_time'] = remark['action_time'].values.astype('datetime64[D]')
-        remark = remark.drop_duplibrands(['brand', 'action_time'])
+        remark = remark.drop_duplicates(['brand', 'action_time'])
         feat = remark.groupby('brand').size().reset_index(name='brand_remark_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
@@ -225,10 +223,132 @@ def feat_brand_cart_day(start_date, end_date):
         cart = feat_cart_plus(start_date, end_date)[['brand', 'action_time']]
         cart.sort_values(['brand', 'action_time'], inplace=True)
         cart['action_time'] = cart['action_time'].values.astype('datetime64[D]')
-        cart = cart.drop_duplibrands(['brand', 'action_time'])
+        cart = cart.drop_duplicates(['brand', 'action_time'])
         feat = cart.groupby('brand').size().reset_index(name='brand_cart_day')
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
 
 
+# TODO: (user_id,brand) pkey
+
+
+# GR: 数量系列
+# 用户品牌浏览量
+def feat_user_brand_view_amt(start_date, end_date):
+    print('user_brand_view_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_brand_view_amt_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_view_plus(start_date, end_date)
+        feat = action.groupby(['user_id', 'brand']).size().reset_index(name='user_brand_view_amt')
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户品牌购买量
+def feat_user_brand_buy_amt(start_date, end_date):
+    print('user_brand_buy_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_brand_buy_amt_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_buy_plus(start_date, end_date)
+        feat = action.groupby(['user_id', 'brand']).size().reset_index(name='user_brand_buy_amt')
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户品牌关注量
+def feat_user_brand_follow_amt(start_date, end_date):
+    print('user_brand_follow_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_brand_follow_amt_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_follow_plus(start_date, end_date)
+        feat = action.groupby(['user_id', 'brand']).size().reset_index(name='user_brand_follow_amt')
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户品牌评论量
+def feat_user_brand_remark_amt(start_date, end_date):
+    print('user_brand_remark_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_brand_remark_amt_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_remark_plus(start_date, end_date)
+        feat = action.groupby(['user_id', 'brand']).size().reset_index(name='user_brand_remark_amt')
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 用户品牌购物车量
+def feat_user_brand_cart_amt(start_date, end_date):
+    print('user_brand_cart_amt_%s_%s.csv' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_brand_cart_amt_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_cart_plus(start_date, end_date)
+        feat = action.groupby(['user_id', 'brand']).size().reset_index(name='user_brand_cart_amt')
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+# GR: 其他
+# 用户品牌用户行为比例
+def feat_user_brand_user_action_ratio(start_date, end_date):
+    print('user_brand_user_action_ratio_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/user_brand_user_action_ratio_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        action = feat_action(start_date, end_date)[['user_id', 'sku_id']]
+        feat = action.drop_duplicates(['user_id', 'sku_id'])
+        product = pd.read_csv(product_path, na_filter=False,usecols=['sku_id','brand'])
+        feat = pd.merge(feat, product, on='sku_id', how='left')
+
+        feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on=['user_id'], how='left')
+        feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on=['user_id'], how='left')
+        feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on=['user_id'], how='left')
+        feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on=['user_id'], how='left')
+        feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on=['user_id'], how='left')
+
+        feat = pd.merge(feat, feat_user_brand_view_amt(start_date, end_date), on=['user_id', 'brand'], how='left')
+        feat = pd.merge(feat, feat_user_brand_buy_amt(start_date, end_date), on=['user_id', 'brand'], how='left')
+        feat = pd.merge(feat, feat_user_brand_follow_amt(start_date, end_date), on=['user_id', 'brand'], how='left')
+        feat = pd.merge(feat, feat_user_brand_remark_amt(start_date, end_date), on=['user_id', 'brand'], how='left')
+        feat = pd.merge(feat, feat_user_brand_cart_amt(start_date, end_date), on=['user_id', 'brand'], how='left')
+        feat.fillna(0, inplace=True)
+
+        feat.ix[feat['user_view_amt'] == 0, 'user_view_amt'] = -1
+        feat['user_brand_user_view_ratio'] = feat['user_brand_view_amt'] / (feat['user_view_amt']) * 100
+
+        feat.ix[feat['user_buy_amt'] == 0, 'user_buy_amt'] = -1
+        feat['user_brand_user_buy_ratio'] = feat['user_brand_buy_amt'] / (feat['user_buy_amt']) * 100
+
+        feat.ix[feat['user_follow_amt'] == 0, 'user_follow_amt'] = -1
+        feat['user_brand_user_follow_ratio'] = feat['user_brand_follow_amt'] / (feat['user_follow_amt']) * 100
+
+        feat.ix[feat['user_remark_amt'] == 0, 'user_remark_amt'] = -1
+        feat['user_brand_user_remark_ratio'] = feat['user_brand_remark_amt'] / (feat['user_remark_amt']) * 100
+
+        feat.ix[feat['user_cart_amt'] == 0, 'user_cart_amt'] = -1
+        feat['user_brand_user_cart_ratio'] = feat['user_brand_cart_amt'] / (feat['user_cart_amt']) * 100
+
+        feat = feat[
+            ['user_id', 'brand', 'user_brand_user_view_ratio', 'user_brand_user_buy_ratio',
+             'user_brand_user_follow_ratio', 'user_brand_user_remark_ratio', 'user_brand_user_cart_ratio']]
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+
+    return feat

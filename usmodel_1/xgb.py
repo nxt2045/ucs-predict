@@ -18,15 +18,13 @@ import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 
 from merg import gen_feat
-from sku_feat import feat_buy_plus
+from feat_sku import feat_buy_plus
 
 # %% 配置
 # 输出设置
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.width', None)
-plt.rcParams['figure.figsize'] = (12, 8)
-
 # 时间划分
 data_start_date = "2018-02-01"
 data_end_date = "2018-04-15"
@@ -153,10 +151,10 @@ def model(df_train, df_test, drop_column):
             'objective': 'binary:logistic',
             'scale_pos_weight': 1,
             # 调整
-            'learning_rate': 0.1,
+            'learning_rate': 0.01,
             'n_estimators': 1000,
-            'max_depth': 3,
-            'min_child_weight': 5,
+            'max_depth': 4,
+            'min_child_weight': 1,
             'gamma': 0,
             'subsample': 0.8,
             'colsample_bytree': 0.8,
@@ -164,7 +162,7 @@ def model(df_train, df_test, drop_column):
         }
         plst = list(param.items())
         plst += [('eval_metric', 'auc')]  # auc logloss
-        num_round = 1000
+        num_round = 2000
         evallist = [(dtest, 'eval'), (dtrain, 'train')]
         print('<< 完成设置参数')
 
@@ -274,6 +272,7 @@ def main():
 
     # 生成特征
     df_train = gen_feat(train_end_date, time_gap, label_gap, 'train')
+
     df_test = gen_feat(test_end_date, time_gap, label_gap, 'test')
 
     # 优化参数
@@ -281,7 +280,7 @@ def main():
 
     # 构造模型
     model(df_train, df_test, drop_column)
-    # impt_feat(df_train, drop_column)
+    impt_feat(df_train, drop_column)
 
     # 生成提交结果
     # df_sub = gen_feat(sub_end_date, time_gap, label_gap, 'submit')
