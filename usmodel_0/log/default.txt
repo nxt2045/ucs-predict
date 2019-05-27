@@ -1,0 +1,22 @@
+        print('\n>> 开始设置参数')
+        weight = (len(y_train) - np.sum(y_train)) / (np.sum(y_train))
+        param = {
+            # 默认
+            'silent': 0,
+            'objective': 'binary:logistic',
+            'scale_pos_weight': 1,
+            # 调整
+            'learning_rate': 0.1,
+            'n_estimators': 1000,
+            'max_depth': 3,
+            'min_child_weight': 5,
+            'gamma': 0,
+            'subsample': 0.8,
+            'colsample_bytree': 0.8,
+            'eta': 0.05,
+        }
+        plst = list(param.items())
+        plst += [('eval_metric', 'auc')]  # auc logloss
+        num_round = 1000
+        evallist = [(dtest, 'eval'), (dtrain, 'train')]
+        print('<< 完成设置参数')
