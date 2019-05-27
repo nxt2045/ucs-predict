@@ -166,13 +166,12 @@ def gen_feat_1(end_date, label):
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
                 if len(counts) > 2:
-                    plt.figure(figsize=(20, 20))
-                    fig = plt.figure(figsize=(10, 12))
-                    ax1 = fig.add_subplot(2, 1, 1)
-                    sns.boxplot(x=col, y="label", orient="h", data=df)
-                    ax2 = fig.add_subplot(2, 1, 2)
-                    sns.violinplot(x=col, y="label", orient="h", data=df)
-                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(10, 10))
+                    sns.boxplot(y=col, x="label", data=df, ax=ax1)
+                    sns.violinplot(y=col, x="label", data=df, ax=ax2)
+                    # 指定子图的标题
+                    fig.suptitle('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.tight_layout(w_pad=0.1, rect=[0, 0.03, 1, 0.95])
                     plt.savefig(
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
@@ -262,13 +261,12 @@ def gen_feat_2(end_date, label):
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
                 if len(counts) > 2:
-                    plt.figure(figsize=(20, 20))
-                    fig = plt.figure(figsize=(10, 12))
-                    ax1 = fig.add_subplot(2, 1, 1)
-                    sns.boxplot(x=col, y="label", orient="h", data=df)
-                    ax2 = fig.add_subplot(2, 1, 2)
-                    sns.violinplot(x=col, y="label", orient="h", data=df)
-                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(10, 10))
+                    sns.boxplot(y=col, x="label", data=df, ax=ax1)
+                    sns.violinplot(y=col, x="label", data=df, ax=ax2)
+                    # 指定子图的标题
+                    fig.suptitle('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.tight_layout(w_pad=0.1, rect=[0, 0.03, 1, 0.95])
                     plt.savefig(
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
@@ -358,13 +356,12 @@ def gen_feat_3(end_date, label):
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
                 if len(counts) > 2:
-                    plt.figure(figsize=(20, 20))
-                    fig = plt.figure(figsize=(10, 12))
-                    ax1 = fig.add_subplot(2, 1, 1)
-                    sns.boxplot(x=col, y="label", orient="h", data=df)
-                    ax2 = fig.add_subplot(2, 1, 2)
-                    sns.violinplot(x=col, y="label", orient="h", data=df)
-                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(10, 10))
+                    sns.boxplot(y=col, x="label", data=df, ax=ax1)
+                    sns.violinplot(y=col, x="label", data=df, ax=ax2)
+                    # 指定子图的标题
+                    fig.suptitle('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.tight_layout(w_pad=0.1, rect=[0, 0.03, 1, 0.95])
                     plt.savefig(
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
@@ -454,13 +451,12 @@ def gen_feat_7(end_date, label):
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
                 if len(counts) > 2:
-                    plt.figure(figsize=(20, 20))
-                    fig = plt.figure(figsize=(10, 12))
-                    ax1 = fig.add_subplot(2, 1, 1)
-                    sns.boxplot(x=col, y="label", orient="h", data=df)
-                    ax2 = fig.add_subplot(2, 1, 2)
-                    sns.violinplot(x=col, y="label", orient="h", data=df)
-                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(10, 10))
+                    sns.boxplot(y=col, x="label", data=df, ax=ax1)
+                    sns.violinplot(y=col, x="label", data=df, ax=ax2)
+                    # 指定子图的标题
+                    fig.suptitle('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.tight_layout(w_pad=0.1, rect=[0, 0.03, 1, 0.95])
                     plt.savefig(
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
@@ -550,13 +546,12 @@ def gen_feat_14(end_date, label):
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
                 if len(counts) > 2:
-                    plt.figure(figsize=(20, 20))
-                    fig = plt.figure(figsize=(10, 12))
-                    ax1 = fig.add_subplot(2, 1, 1)
-                    sns.boxplot(x=col, y="label", orient="h", data=df)
-                    ax2 = fig.add_subplot(2, 1, 2)
-                    sns.violinplot(x=col, y="label", orient="h", data=df)
-                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(10, 10))
+                    sns.boxplot(y=col, x="label", data=df, ax=ax1)
+                    sns.violinplot(y=col, x="label", data=df, ax=ax2)
+                    # 指定子图的标题
+                    fig.suptitle('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.tight_layout(w_pad=0.1, rect=[0, 0.03, 1, 0.95])
                     plt.savefig(
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
@@ -651,7 +646,7 @@ def gen_feat_30(end_date, label):
         # 画图
         print(datetime.now())
         print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s/feat.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
         for col in feat.columns:
             if col not in ['user_id', 'cate', 'shop_id', 'label']:
                 df = feat[['label', col]]
@@ -660,13 +655,12 @@ def gen_feat_30(end_date, label):
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
                 if len(counts) > 2:
-                    plt.figure(figsize=(20, 20))
-                    fig = plt.figure(figsize=(10, 12))
-                    ax1 = fig.add_subplot(2, 1, 1)
-                    sns.boxplot(x=col, y="label", orient="h", data=df)
-                    ax2 = fig.add_subplot(2, 1, 2)
-                    sns.violinplot(x=col, y="label", orient="h", data=df)
-                    plt.title('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(10, 10))
+                    sns.boxplot(y=col, x="label", data=df, ax=ax1)
+                    sns.violinplot(y=col, x="label", data=df, ax=ax2)
+                    # 指定子图的标题
+                    fig.suptitle('%s-%s %s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'), col))
+                    plt.tight_layout(w_pad=0.1, rect=[0, 0.03, 1, 0.95])
                     plt.savefig(
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
