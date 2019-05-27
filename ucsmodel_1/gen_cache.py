@@ -77,7 +77,7 @@ def gen_feat(end_date, label_gap, mark):
 
         print(datetime.now())
         print('>> 开始保存特征%s' % (str(feat.shape)))
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
     print("feat", feat.shape)
@@ -107,49 +107,49 @@ def gen_feat_1(end_date, label):
         feat = label
         # GR: 用户
         # 用户是否
-        feat = pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
         # 用户数量
-        feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
         # 用户天数
-        feat = pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
         # 用户其他
-        feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-    
+        pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
+
         # GR: 用户品类
         # 用户品类数量
-        feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
         # 用户品类其他
-        feat = pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
         # GR: 用户店铺
         # 用户店铺数量
-        feat = pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
         # 用户店铺其他
-        feat = pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
         feat.fillna(0, inplace=True)
         feat = feat.astype(int)
         # 画图
@@ -171,11 +171,11 @@ def gen_feat_1(end_date, label):
                 #                 dpi=300,
                 #                 bbox_inches='tight')
         f.close()
-    
+
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path+'/feat_%s.csv'%(str(gap)),index=False)
+        # feat.to_csv(dump_path+'/feat_%s.csv'%(str(gap)),index=False)
     return feat
 
 
@@ -192,366 +192,6 @@ def gen_feat_2(end_date, label):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
         # 初始化feat
-        feat = label
-        # GR: 用户
-        # 用户是否
-        feat = pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
-        # 用户数量
-        feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-        # 用户天数
-        feat = pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
-        # 用户其他
-        feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-
-        # GR: 用户品类
-        # 用户品类数量
-        feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        # 用户品类其他
-        feat = pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
-                        how='left')
-        # GR: 用户店铺
-        # 用户店铺数量
-        feat = pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        # 用户店铺其他
-        feat = pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
-                        how='left')
-        feat.fillna(0, inplace=True)
-        feat = feat.astype(int)
-        # 画图
-        print(datetime.now())
-        print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
-        for col in feat.columns:
-            if col not in ['user_id', 'cate', 'shop_id', 'label']:
-                df = feat[['label', col]]
-                counts = df[col].value_counts()
-                print('> %s: %s' % (col, str(len(counts))))
-                f.write(col + ': ' + str(counts.to_json()))
-                f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
-        f.close()
-
-        # 最后调整
-        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
-        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
-    return feat
-
-
-def gen_feat_3(end_date, label):
-    """生成某一结束时间对应的特征
-    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
-    """
-    gap = 3
-    print(datetime.now())
-    print('> 遍历特征 gap=%s' % (str(gap)))
-    start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
-    if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
-    else:
-        # 初始化feat
-        feat = label
-        # GR: 用户
-        # 用户是否
-        feat = pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
-        # 用户数量
-        feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-        # 用户天数
-        feat = pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
-        # 用户其他
-        feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-
-        # GR: 用户品类
-        # 用户品类数量
-        feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        # 用户品类其他
-        feat = pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
-                        how='left')
-        # GR: 用户店铺
-        # 用户店铺数量
-        feat = pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        # 用户店铺其他
-        feat = pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
-                        how='left')
-        feat.fillna(0, inplace=True)
-        feat = feat.astype(int)
-        # 画图
-        print(datetime.now())
-        print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
-        for col in feat.columns:
-            if col not in ['user_id', 'cate', 'shop_id', 'label']:
-                df = feat[['label', col]]
-                counts = df[col].value_counts()
-                print('> %s: %s' % (col, str(len(counts))))
-                f.write(col + ': ' + str(counts.to_json()))
-                f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
-        f.close()
-
-        # 最后调整
-        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
-        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
-    return feat
-
-
-def gen_feat_7(end_date, label):
-    """生成某一结束时间对应的特征
-    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
-    """
-    gap = 7
-    print(datetime.now())
-    print('> 遍历特征 gap=%s' % (str(gap)))
-    start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
-    if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
-    else:
-        # 初始化feat
-        feat = label
-        # GR: 用户
-        # 用户是否
-        feat = pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
-        # 用户数量
-        feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-        # 用户天数
-        feat = pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
-        # 用户其他
-        feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-
-        # GR: 用户品类
-        # 用户品类数量
-        feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        # 用户品类其他
-        feat = pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
-                        how='left')
-        # GR: 用户店铺
-        # 用户店铺数量
-        feat = pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        # 用户店铺其他
-        feat = pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
-                        how='left')
-        feat.fillna(0, inplace=True)
-        feat = feat.astype(int)
-        # 画图
-        print(datetime.now())
-        print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
-        for col in feat.columns:
-            if col not in ['user_id', 'cate', 'shop_id', 'label']:
-                df = feat[['label', col]]
-                counts = df[col].value_counts()
-                print('> %s: %s' % (col, str(len(counts))))
-                f.write(col + ': ' + str(counts.to_json()))
-                f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
-        f.close()
-
-        # 最后调整
-        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
-        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
-    return feat
-
-
-def gen_feat_14(end_date, label):
-    """生成某一结束时间对应的特征
-    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
-    """
-    gap = 14
-    print(datetime.now())
-    print('> 遍历特征 gap=%s' % (str(gap)))
-    start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
-    if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
-    else:
-        # 初始化feat
-        feat = label
-        # GR: 用户
-        # 用户是否
-        feat = pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
-        # 用户数量
-        feat = pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
-        # 用户天数
-        feat = pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
-        # 用户其他
-        feat = pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
-        feat = pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-
-        # GR: 用户品类
-        # 用户品类数量
-        feat = pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
-        # 用户品类其他
-        feat = pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
-        feat = pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
-                        how='left')
-        # GR: 用户店铺
-        # 用户店铺数量
-        feat = pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        # 用户店铺其他
-        feat = pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
-        feat = pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
-                        how='left')
-        feat.fillna(0, inplace=True)
-        feat = feat.astype(int)
-        # 画图
-        print(datetime.now())
-        print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
-        for col in feat.columns:
-            if col not in ['user_id', 'cate', 'shop_id', 'label']:
-                df = feat[['label', col]]
-                counts = df[col].value_counts()
-                print('> %s: %s' % (col, str(len(counts))))
-                f.write(col + ': ' + str(counts.to_json()))
-                f.write('\n')
-                # if len(counts) > 2:
-                #     plt.figure(figsize=(20, 6))
-                #     sns.violinplot(x=col, y="label", orient="h", data=df)
-                #     plt.title('%s %s violinplot' % (str(gap), col))
-                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
-                #                 dpi=300,
-                #                 bbox_inches='tight')
-        f.close()
-
-        # 最后调整
-        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
-        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
-    return feat
-
-
-def gen_feat_30(end_date, label):
-    """生成某一结束时间对应的特征
-    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
-    """
-    gap = 30
-    print(datetime.now())
-    print('> 遍历特征 gap=%s' % (str(gap)))
-    start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
-    if os.path.exists(dump_path):
-        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
-    else:
-    # 初始化feat
         feat = label
         # GR: 用户
         # 用户是否
@@ -577,7 +217,367 @@ def gen_feat_30(end_date, label):
         # 用户其他
         pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
         pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
-    
+
+        # GR: 用户品类
+        # 用户品类数量
+        pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        # 用户品类其他
+        pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
+                 how='left')
+        # GR: 用户店铺
+        # 用户店铺数量
+        pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        # 用户店铺其他
+        pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
+                 how='left')
+        feat.fillna(0, inplace=True)
+        feat = feat.astype(int)
+        # 画图
+        print(datetime.now())
+        print('>> 开始绘制特征%s' % (str(feat.shape)))
+        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        for col in feat.columns:
+            if col not in ['user_id', 'cate', 'shop_id', 'label']:
+                df = feat[['label', col]]
+                counts = df[col].value_counts()
+                print('> %s: %s' % (col, str(len(counts))))
+                f.write(col + ': ' + str(counts.to_json()))
+                f.write('\n')
+                # if len(counts) > 2:
+                #     plt.figure(figsize=(20, 6))
+                #     sns.violinplot(x=col, y="label", orient="h", data=df)
+                #     plt.title('%s %s violinplot' % (str(gap), col))
+                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
+                #                 dpi=300,
+                #                 bbox_inches='tight')
+        f.close()
+
+        # 最后调整
+        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
+        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
+        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+    return feat
+
+
+def gen_feat_3(end_date, label):
+    """生成某一结束时间对应的特征
+    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
+    """
+    gap = 3
+    print(datetime.now())
+    print('> 遍历特征 gap=%s' % (str(gap)))
+    start_date = end_date - timedelta(days=gap - 1)
+    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        # 初始化feat
+        feat = label
+        # GR: 用户
+        # 用户是否
+        pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
+        # 用户数量
+        pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+        # 用户天数
+        pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
+        # 用户其他
+        pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
+
+        # GR: 用户品类
+        # 用户品类数量
+        pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        # 用户品类其他
+        pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
+                 how='left')
+        # GR: 用户店铺
+        # 用户店铺数量
+        pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        # 用户店铺其他
+        pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
+                 how='left')
+        feat.fillna(0, inplace=True)
+        feat = feat.astype(int)
+        # 画图
+        print(datetime.now())
+        print('>> 开始绘制特征%s' % (str(feat.shape)))
+        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        for col in feat.columns:
+            if col not in ['user_id', 'cate', 'shop_id', 'label']:
+                df = feat[['label', col]]
+                counts = df[col].value_counts()
+                print('> %s: %s' % (col, str(len(counts))))
+                f.write(col + ': ' + str(counts.to_json()))
+                f.write('\n')
+                # if len(counts) > 2:
+                #     plt.figure(figsize=(20, 6))
+                #     sns.violinplot(x=col, y="label", orient="h", data=df)
+                #     plt.title('%s %s violinplot' % (str(gap), col))
+                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
+                #                 dpi=300,
+                #                 bbox_inches='tight')
+        f.close()
+
+        # 最后调整
+        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
+        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
+        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+    return feat
+
+
+def gen_feat_7(end_date, label):
+    """生成某一结束时间对应的特征
+    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
+    """
+    gap = 7
+    print(datetime.now())
+    print('> 遍历特征 gap=%s' % (str(gap)))
+    start_date = end_date - timedelta(days=gap - 1)
+    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        # 初始化feat
+        feat = label
+        # GR: 用户
+        # 用户是否
+        pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
+        # 用户数量
+        pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+        # 用户天数
+        pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
+        # 用户其他
+        pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
+
+        # GR: 用户品类
+        # 用户品类数量
+        pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        # 用户品类其他
+        pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
+                 how='left')
+        # GR: 用户店铺
+        # 用户店铺数量
+        pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        # 用户店铺其他
+        pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
+                 how='left')
+        feat.fillna(0, inplace=True)
+        feat = feat.astype(int)
+        # 画图
+        print(datetime.now())
+        print('>> 开始绘制特征%s' % (str(feat.shape)))
+        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        for col in feat.columns:
+            if col not in ['user_id', 'cate', 'shop_id', 'label']:
+                df = feat[['label', col]]
+                counts = df[col].value_counts()
+                print('> %s: %s' % (col, str(len(counts))))
+                f.write(col + ': ' + str(counts.to_json()))
+                f.write('\n')
+                # if len(counts) > 2:
+                #     plt.figure(figsize=(20, 6))
+                #     sns.violinplot(x=col, y="label", orient="h", data=df)
+                #     plt.title('%s %s violinplot' % (str(gap), col))
+                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
+                #                 dpi=300,
+                #                 bbox_inches='tight')
+        f.close()
+
+        # 最后调整
+        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
+        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
+        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+    return feat
+
+
+def gen_feat_14(end_date, label):
+    """生成某一结束时间对应的特征
+    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
+    """
+    gap = 14
+    print(datetime.now())
+    print('> 遍历特征 gap=%s' % (str(gap)))
+    start_date = end_date - timedelta(days=gap - 1)
+    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        # 初始化feat
+        feat = label
+        # GR: 用户
+        # 用户是否
+        pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
+        # 用户数量
+        pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+        # 用户天数
+        pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
+        # 用户其他
+        pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
+
+        # GR: 用户品类
+        # 用户品类数量
+        pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_buy_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_follow_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
+        # 用户品类其他
+        pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'],
+                 how='left')
+        # GR: 用户店铺
+        # 用户店铺数量
+        pd.merge(feat, feat_user_shop_view_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_buy_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_follow_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_remark_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_cart_amt(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        # 用户店铺其他
+        pd.merge(feat, feat_user_shop_action_ratio(start_date, end_date), on=['user_id', 'shop_id'], how='left')
+        pd.merge(feat, feat_user_shop_user_action_ratio(start_date, end_date), on=['user_id', 'shop_id'],
+                 how='left')
+        feat.fillna(0, inplace=True)
+        feat = feat.astype(int)
+        # 画图
+        print(datetime.now())
+        print('>> 开始绘制特征%s' % (str(feat.shape)))
+        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        for col in feat.columns:
+            if col not in ['user_id', 'cate', 'shop_id', 'label']:
+                df = feat[['label', col]]
+                counts = df[col].value_counts()
+                print('> %s: %s' % (col, str(len(counts))))
+                f.write(col + ': ' + str(counts.to_json()))
+                f.write('\n')
+                # if len(counts) > 2:
+                #     plt.figure(figsize=(20, 6))
+                #     sns.violinplot(x=col, y="label", orient="h", data=df)
+                #     plt.title('%s %s violinplot' % (str(gap), col))
+                #     plt.savefig('./vc/%s_%s/%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#')),
+                #                 dpi=300,
+                #                 bbox_inches='tight')
+        f.close()
+
+        # 最后调整
+        feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
+        feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
+        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+    return feat
+
+
+def gen_feat_30(end_date, label):
+    """生成某一结束时间对应的特征
+    特征缓存：pd.merge(feat,...) 换成 pd.merge(pkey,...)
+    """
+    gap = 30
+    print(datetime.now())
+    print('> 遍历特征 gap=%s' % (str(gap)))
+    start_date = end_date - timedelta(days=gap - 1)
+    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        # 初始化feat
+        feat = label
+        # GR: 用户
+        # 用户是否
+        pd.merge(feat, feat_user_if_view(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_buy(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_follow(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_remark(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_if_cart(start_date, end_date), on='user_id', how='left')
+        # 用户数量
+        pd.merge(feat, feat_user_action_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_amt(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_amt(start_date, end_date), on='user_id', how='left')
+        # 用户天数
+        pd.merge(feat, feat_user_action_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_view_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_follow_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_remark_day(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_cart_day(start_date, end_date), on='user_id', how='left')
+        # 用户其他
+        pd.merge(feat, feat_user_action_ratio(start_date, end_date), on='user_id', how='left')
+        pd.merge(feat, feat_user_buy_rate(start_date, end_date), on='user_id', how='left')
+
         # GR: 用户品类
         # 用户品类数量
         pd.merge(feat, feat_user_cate_view_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
@@ -586,11 +586,11 @@ def gen_feat_30(end_date, label):
         pd.merge(feat, feat_user_cate_remark_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
         pd.merge(feat, feat_user_cate_cart_amt(start_date, end_date), on=['user_id', 'cate'], how='left')
         # 用户品类天数
-        pd.merge(feat, feat_user_cate_view_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_buy_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_follow_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_remark_day(start_date, end_date), on=['user_id','cate'], how='left')
-        pd.merge(feat, feat_user_cate_cart_day(start_date, end_date), on=['user_id','cate'], how='left')
+        pd.merge(feat, feat_user_cate_view_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_buy_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_follow_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_remark_day(start_date, end_date), on=['user_id', 'cate'], how='left')
+        pd.merge(feat, feat_user_cate_cart_day(start_date, end_date), on=['user_id', 'cate'], how='left')
         # 用户品类其他
         pd.merge(feat, feat_user_cate_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
         pd.merge(feat, feat_user_cate_user_action_ratio(start_date, end_date), on=['user_id', 'cate'], how='left')
@@ -635,11 +635,11 @@ def gen_feat_30(end_date, label):
                 #                 dpi=300,
                 #                 bbox_inches='tight')
         f.close()
-    
+
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
     return feat
 
 
