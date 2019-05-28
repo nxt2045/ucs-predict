@@ -204,13 +204,17 @@ def split_action_type():
 
 # ucs来源
 def ucs_source():
+    """
+
+    :return:
+    """
     x = pd.date_range(start='2018-4-1', end='2018-4-8', freq='D', closed=None)
     y = []
     action = pd.read_csv(action_path, parse_dates=['action_time'], na_filter=False)
 
     for end_date in x:
         sub_y = []
-        print('时间：', end_date + timedelta(days=1))
+        print('时间：', end_date)
         for label_gap in [3, 5, 7, 14, 30]:
             print('间隔：', label_gap)
             # 可能购买
@@ -298,19 +302,5 @@ def uc_source():
     plt.savefig('./vc/uc_source_line.png', dpi=300, bbox_inches='tight')
 
 
-# action = pd.read_csv(ori_path + "/jdata_action.csv", na_filter=False, usecols=['action_time', 'type'],
-#                      parse_dates=['action_time'])
-# print(action['type'].value_counts())
-# action.sort_values(['action_time'], inplace=True)
-#
-# cart = action[action['type'] == 5]
-# cart.to_csv('./vc/cart.csv', index=False)
-#
-# remark = action[action['type'] == 4]
-# remark.to_csv('./vc/remark.csv', index=False)
-#
-# follow = action[action['type'] == 3]
-# follow.to_csv('./vc/follow.csv', index=False)
-
-# ucs_source()
+ucs_source()
 uc_source()
