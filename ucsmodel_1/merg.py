@@ -51,6 +51,7 @@ shop_path = clean_path + "/shop.csv"
 submit_path = '../submit'
 cache_path = '../cache'
 
+if_plot = False
 
 # %% 特征融合
 def gen_feat(end_date, label_gap, mark):
@@ -67,14 +68,14 @@ def gen_feat(end_date, label_gap, mark):
     else:
         label = gen_label(end_date, label_gap, mark)
         feat_concat = [label]
-        feat_concat.append(gen_feat_1(end_date, label))
-        feat_concat.append(gen_feat_2(end_date, label))
-        feat_concat.append(gen_feat_3(end_date, label))
+        # feat_concat.append(gen_feat_1(end_date, label))
+        # feat_concat.append(gen_feat_2(end_date, label))
+        # feat_concat.append(gen_feat_3(end_date, label))
         feat_concat.append(gen_feat_7(end_date, label))
         feat_concat.append(gen_feat_14(end_date, label))
         feat_concat.append(gen_feat_30(end_date, label))
         feat = pd.concat(feat_concat, axis=1)
-
+        feat.to_csv(dump_path, index=False)
     print('>> 完成生成特征%s' % (str(feat.shape)))
     return feat
 
@@ -155,24 +156,24 @@ def gen_feat_1(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
-                #     sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
-                #     ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-                #     sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
-                #     plt.subplots_adjust(hspace=0.2)
-                #     # 指定子图的标题
-                #     plt.savefig(
-                #         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
-                #                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
-                #         dpi=300,bbox_inches='tight')
+                if len(counts) > 2 and if_plot:
+                    fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
+                    sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
+                    ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+                    sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
+                    plt.subplots_adjust(hspace=0.2)
+                    # 指定子图的标题
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,bbox_inches='tight')
         f.close()
 
         # 最后调整
 
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -252,24 +253,24 @@ def gen_feat_2(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
-                #     sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
-                #     ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-                #     sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
-                #     plt.subplots_adjust(hspace=0.2)
-                #     # 指定子图的标题
-                #     plt.savefig(
-                #         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
-                #                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
-                #         dpi=300,bbox_inches='tight')
+                if len(counts) > 2 and if_plot:
+                    fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
+                    sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
+                    ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+                    sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
+                    plt.subplots_adjust(hspace=0.2)
+                    # 指定子图的标题
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,bbox_inches='tight')
         f.close()
 
         # 最后调整
 
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -349,24 +350,24 @@ def gen_feat_3(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
-                #     sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
-                #     ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-                #     sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
-                #     plt.subplots_adjust(hspace=0.2)
-                #     # 指定子图的标题
-                #     plt.savefig(
-                #         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
-                #                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
-                #         dpi=300,bbox_inches='tight')
+                if len(counts) > 2 and if_plot:
+                    fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
+                    sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
+                    ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+                    sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
+                    plt.subplots_adjust(hspace=0.2)
+                    # 指定子图的标题
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,bbox_inches='tight')
         f.close()
 
         # 最后调整
 
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -446,24 +447,24 @@ def gen_feat_7(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
-                #     sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
-                #     ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-                #     sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
-                #     plt.subplots_adjust(hspace=0.2)
-                #     # 指定子图的标题
-                #     plt.savefig(
-                #         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
-                #                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
-                #         dpi=300,bbox_inches='tight')
+                if len(counts) > 2 and if_plot:
+                    fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
+                    sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
+                    ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+                    sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
+                    plt.subplots_adjust(hspace=0.2)
+                    # 指定子图的标题
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,bbox_inches='tight')
         f.close()
 
         # 最后调整
 
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -543,24 +544,24 @@ def gen_feat_14(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
-                #     sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
-                #     ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-                #     sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
-                #     plt.subplots_adjust(hspace=0.2)
-                #     # 指定子图的标题
-                #     plt.savefig(
-                #         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
-                #                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
-                #         dpi=300,bbox_inches='tight')
+                if len(counts) > 2 and if_plot:
+                    fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
+                    sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
+                    ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+                    sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
+                    plt.subplots_adjust(hspace=0.2)
+                    # 指定子图的标题
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,bbox_inches='tight')
         f.close()
 
         # 最后调整
 
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -654,23 +655,23 @@ def gen_feat_30(end_date, label):
                 print('> %s: %s' % (col, str(len(counts))))
                 f.write(col + ': ' + str(counts.to_json()))
                 f.write('\n')
-                # if len(counts) > 2:
-                #     fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
-                #     sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
-                #     ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
-                #     sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
-                #     plt.subplots_adjust(hspace=0.2)
-                #     # 指定子图的标题
-                #     plt.savefig(
-                #         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
-                #                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
-                #         dpi=300,bbox_inches='tight')
+                if len(counts) > 2 and if_plot:
+                    fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
+                    sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
+                    ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+                    sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
+                    plt.subplots_adjust(hspace=0.2)
+                    # 指定子图的标题
+                    plt.savefig(
+                        './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
+                                                     start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
+                        dpi=300,bbox_inches='tight')
         f.close()
 
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path, index=False)
+        # feat.to_csv(dump_path, index=False)
     return feat
 
 
