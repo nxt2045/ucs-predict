@@ -75,18 +75,6 @@ def gen_feat(end_date, label_gap, mark):
         feat_concat.append(gen_feat_30(end_date, label))
         feat = pd.concat(feat_concat, axis=1)
 
-        print(datetime.now())
-        print('>> 开始保存特征%s' % (str(feat.shape)))
-        feat.to_csv(dump_path, index=False)
-    # TODO: 分箱数据 [结果变差]
-    # feat = map_feat(feat)
-    print("feat", feat.shape)
-    print("cols", feat.columns)
-    print("head")
-    print(feat.head())
-    print("tail")
-    print(feat.tail())
-    print(datetime.now())
     print('>> 完成生成特征%s' % (str(feat.shape)))
     return feat
 
@@ -99,7 +87,7 @@ def gen_feat_1(end_date, label):
     print(datetime.now())
     print('> 遍历特征 gap=%s' % (str(gap)))
     start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    dump_path = '%s/feat/%s_%s.csv' % (cache_path, end_date.strftime('%y%m%d'), str(gap))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -157,7 +145,9 @@ def gen_feat_1(end_date, label):
         # 画图
         print(datetime.now())
         print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        f = open(
+            './vc/%s_%s/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap), end_date.strftime('%y%m%d'), str(gap)),
+            'w')
         for col in feat.columns:
             if col not in ['user_id', 'cate', 'shop_id', 'label']:
                 df = feat[['label', col]]
@@ -182,7 +172,7 @@ def gen_feat_1(end_date, label):
 
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -194,7 +184,7 @@ def gen_feat_2(end_date, label):
     print(datetime.now())
     print('> 遍历特征 gap=%s' % (str(gap)))
     start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    dump_path = '%s/feat/%s_%s.csv' % (cache_path, end_date.strftime('%y%m%d'), str(gap))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -252,7 +242,9 @@ def gen_feat_2(end_date, label):
         # 画图
         print(datetime.now())
         print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        f = open(
+            './vc/%s_%s/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap), end_date.strftime('%y%m%d'), str(gap)),
+            'w')
         for col in feat.columns:
             if col not in ['user_id', 'cate', 'shop_id', 'label']:
                 df = feat[['label', col]]
@@ -262,22 +254,22 @@ def gen_feat_2(end_date, label):
                 f.write('\n')
                 if len(counts) > 2:
                     fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(8, 8))
-                    sns.boxplot(x=col, y="label", orient='h', data=df, ax=ax1)
+                    sns.boxplot(x=col, y="label", orient='h',data=df, ax=ax1)
                     ax1.set_title('%s-%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
                     sns.violinplot(x=col, y="label", orient='h', data=df, ax=ax2)
-                    plt.subplots_adjust(hspace=0)
+                    plt.subplots_adjust(hspace=0.2)
                     # 指定子图的标题
                     plt.savefig(
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
-                        dpi=300, bbox_inches='tight')
-
+                        dpi=300,bbox_inches='tight')
         f.close()
 
         # 最后调整
+
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -289,7 +281,7 @@ def gen_feat_3(end_date, label):
     print(datetime.now())
     print('> 遍历特征 gap=%s' % (str(gap)))
     start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    dump_path = '%s/feat/%s_%s.csv' % (cache_path, end_date.strftime('%y%m%d'), str(gap))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -347,7 +339,9 @@ def gen_feat_3(end_date, label):
         # 画图
         print(datetime.now())
         print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        f = open(
+            './vc/%s_%s/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap), end_date.strftime('%y%m%d'), str(gap)),
+            'w')
         for col in feat.columns:
             if col not in ['user_id', 'cate', 'shop_id', 'label']:
                 df = feat[['label', col]]
@@ -366,13 +360,13 @@ def gen_feat_3(end_date, label):
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
                         dpi=300,bbox_inches='tight')
-
         f.close()
 
         # 最后调整
+
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -384,7 +378,7 @@ def gen_feat_7(end_date, label):
     print(datetime.now())
     print('> 遍历特征 gap=%s' % (str(gap)))
     start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    dump_path = '%s/feat/%s_%s.csv' % (cache_path, end_date.strftime('%y%m%d'), str(gap))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -442,7 +436,9 @@ def gen_feat_7(end_date, label):
         # 画图
         print(datetime.now())
         print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        f = open(
+            './vc/%s_%s/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap), end_date.strftime('%y%m%d'), str(gap)),
+            'w')
         for col in feat.columns:
             if col not in ['user_id', 'cate', 'shop_id', 'label']:
                 df = feat[['label', col]]
@@ -461,13 +457,13 @@ def gen_feat_7(end_date, label):
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
                         dpi=300,bbox_inches='tight')
-
         f.close()
 
         # 最后调整
+
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -479,7 +475,7 @@ def gen_feat_14(end_date, label):
     print(datetime.now())
     print('> 遍历特征 gap=%s' % (str(gap)))
     start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    dump_path = '%s/feat/%s_%s.csv' % (cache_path, end_date.strftime('%y%m%d'), str(gap))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -537,7 +533,9 @@ def gen_feat_14(end_date, label):
         # 画图
         print(datetime.now())
         print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        f = open(
+            './vc/%s_%s/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap), end_date.strftime('%y%m%d'), str(gap)),
+            'w')
         for col in feat.columns:
             if col not in ['user_id', 'cate', 'shop_id', 'label']:
                 df = feat[['label', col]]
@@ -556,13 +554,13 @@ def gen_feat_14(end_date, label):
                         './vc/%s_%s/%s %s-%s.png' % (end_date.strftime('%y%m%d'), str(gap), col.replace('/', '#'),
                                                      start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')),
                         dpi=300,bbox_inches='tight')
-
         f.close()
 
         # 最后调整
+
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -574,7 +572,7 @@ def gen_feat_30(end_date, label):
     print(datetime.now())
     print('> 遍历特征 gap=%s' % (str(gap)))
     start_date = end_date - timedelta(days=gap - 1)
-    dump_path = cache_path + '/%s' % (end_date.strftime('%y%m%d'))
+    dump_path = '%s/feat/%s_%s.csv' % (cache_path, end_date.strftime('%y%m%d'), str(gap))
     if os.path.exists(dump_path):
         feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
     else:
@@ -646,7 +644,9 @@ def gen_feat_30(end_date, label):
         # 画图
         print(datetime.now())
         print('>> 开始绘制特征%s' % (str(feat.shape)))
-        f = open('./vc/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap)), 'w')
+        f = open(
+            './vc/%s_%s/%s_%s.txt' % (end_date.strftime('%y%m%d'), str(gap), end_date.strftime('%y%m%d'), str(gap)),
+            'w')
         for col in feat.columns:
             if col not in ['user_id', 'cate', 'shop_id', 'label']:
                 df = feat[['label', col]]
@@ -670,7 +670,7 @@ def gen_feat_30(end_date, label):
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 

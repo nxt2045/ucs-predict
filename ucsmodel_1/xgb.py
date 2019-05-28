@@ -161,7 +161,7 @@ def model(df_train, df_test, drop_column):
             'eta': 0.05,
         }
         plst = list(param.items())
-        plst += [('eval_metric', 'auc')]  # auc logloss
+        plst += [('eval_metric', ['accuracy','auc'])]  # auc logloss
         num_round = 1000
         evallist = [(dtest, 'eval'), (dtrain, 'train')]
         print('<< 完成设置参数')
@@ -230,11 +230,11 @@ def main():
     # 生成特征
     df_train = gen_feat(train_end_date, label_gap, 'train')
 
-    # df_test = gen_feat(test_end_date, label_gap, 'test')
+    df_test = gen_feat(test_end_date, label_gap, 'test')
 
     # 构造模型
-    # model(df_train, df_test, drop_column)
-    # impt_feat(df_train, drop_column)
+    model(df_train, df_test, drop_column)
+    impt_feat(df_train, drop_column)
 
 
 if __name__ == "__main__":
