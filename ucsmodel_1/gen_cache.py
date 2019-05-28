@@ -77,7 +77,7 @@ def gen_feat(end_date, label_gap, mark):
 
         print(datetime.now())
         print('>> 开始保存特征%s' % (str(feat.shape)))
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     # TODO: 分箱数据 [结果变差]
     # feat = map_feat(feat)
     print("feat", feat.shape)
@@ -175,7 +175,7 @@ def gen_feat_1(end_date, label):
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        # feat.to_csv(dump_path+'/feat_%s.csv'%(str(gap)),index=False)
+        feat.to_csv(dump_path+'/feat_%s.csv'%(str(gap)),index=False)
     return feat
 
 
@@ -265,7 +265,7 @@ def gen_feat_2(end_date, label):
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
     return feat
 
 
@@ -355,7 +355,7 @@ def gen_feat_3(end_date, label):
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
     return feat
 
 
@@ -445,7 +445,7 @@ def gen_feat_7(end_date, label):
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
     return feat
 
 
@@ -535,7 +535,7 @@ def gen_feat_14(end_date, label):
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
     return feat
 
 
@@ -639,7 +639,7 @@ def gen_feat_30(end_date, label):
         # 最后调整
         feat = feat.drop(['user_id', 'cate', 'shop_id', 'label'], axis=1)
         feat = feat.add_prefix(str(gap) + '_')  # 列名加上gap标签前缀
-        # feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
+        feat.to_csv(dump_path + '/feat_%s.csv' % (str(gap)), index=False)
     return feat
 
 

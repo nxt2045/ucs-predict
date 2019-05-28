@@ -63,7 +63,7 @@ def feat_action(start_date, end_date):
             action = pd.read_csv(action_path, parse_dates=['action_time'], na_filter=False, skip_blank_lines=True)
             feat = action[
                 (start_date <= action['action_time']) & (action['action_time'] < end_date + timedelta(days=1))]
-            # feat.to_csv(dump_path, index=False)
+            feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -77,7 +77,7 @@ def feat_view(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 1]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -91,7 +91,7 @@ def feat_buy(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 2]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -105,7 +105,7 @@ def feat_follow(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 3]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -133,7 +133,7 @@ def feat_cart(start_date, end_date):
     else:
         feat = feat_action(start_date, end_date)
         feat = feat[feat['type'] == 5]
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -158,7 +158,7 @@ def feat_user_if_action(start_date, end_date):
         feat.ix[feat['user_action_amt'] > 0, 'user_action_amt'] = 1
         feat.rename(columns={'user_action_amt': 'user_if_action'}, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -174,7 +174,7 @@ def feat_user_if_view(start_date, end_date):
         feat.ix[feat['user_view_amt'] > 0, 'user_view_amt'] = 1
         feat.rename(columns={'user_view_amt': 'user_if_view'}, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -190,7 +190,7 @@ def feat_user_if_buy(start_date, end_date):
         feat.ix[feat['user_buy_amt'] > 0, 'user_buy_amt'] = 1
         feat.rename(columns={'user_buy_amt': 'user_if_buy'}, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -206,7 +206,7 @@ def feat_user_if_follow(start_date, end_date):
         feat.ix[feat['user_follow_amt'] > 0, 'user_follow_amt'] = 1
         feat.rename(columns={'user_follow_amt': 'user_if_follow'}, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -222,7 +222,7 @@ def feat_user_if_remark(start_date, end_date):
         feat.ix[feat['user_remark_amt'] > 0, 'user_remark_amt'] = 1
         feat.rename(columns={'user_remark_amt': 'user_if_remark'}, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -238,7 +238,7 @@ def feat_user_if_cart(start_date, end_date):
         feat.ix[feat['user_cart_amt'] > 0, 'user_cart_amt'] = 1
         feat.rename(columns={'user_cart_amt': 'user_if_cart'}, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -254,7 +254,7 @@ def feat_user_action_amt(start_date, end_date):
         action = feat_action(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_action_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -269,7 +269,7 @@ def feat_user_view_amt(start_date, end_date):
         action = feat_view(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_view_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -284,7 +284,7 @@ def feat_user_buy_amt(start_date, end_date):
         action = feat_buy(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_buy_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -299,7 +299,7 @@ def feat_user_follow_amt(start_date, end_date):
         action = feat_follow(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_follow_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -314,7 +314,7 @@ def feat_user_remark_amt(start_date, end_date):
         action = feat_remark(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_remark_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -329,7 +329,7 @@ def feat_user_cart_amt(start_date, end_date):
         action = feat_cart(start_date, end_date)
         feat = action.groupby('user_id').size().reset_index(name='user_cart_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -349,7 +349,7 @@ def feat_user_action_day(start_date, end_date):
         action = action.drop_duplicates(['user_id', 'action_time'])
         feat = action.groupby('user_id').size().reset_index(name='user_action_day')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -368,7 +368,7 @@ def feat_user_view_day(start_date, end_date):
         view = view.drop_duplicates(['user_id', 'action_time'])
         feat = view.groupby('user_id').size().reset_index(name='user_view_day')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -387,7 +387,7 @@ def feat_user_buy_day(start_date, end_date):
         buy = buy.drop_duplicates(['user_id', 'action_time'])
         feat = buy.groupby('user_id').size().reset_index(name='user_buy_day')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -406,7 +406,7 @@ def feat_user_follow_day(start_date, end_date):
         follow = follow.drop_duplicates(['user_id', 'action_time'])
         feat = follow.groupby('user_id').size().reset_index(name='user_follow_day')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -425,7 +425,7 @@ def feat_user_remark_day(start_date, end_date):
         remark = remark.drop_duplicates(['user_id', 'action_time'])
         feat = remark.groupby('user_id').size().reset_index(name='user_remark_day')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -444,7 +444,7 @@ def feat_user_cart_day(start_date, end_date):
         cart = cart.drop_duplicates(['user_id', 'action_time'])
         feat = cart.groupby('user_id').size().reset_index(name='user_cart_day')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -474,7 +474,7 @@ def feat_user_action_ratio(start_date, end_date):
         feat = feat[['user_id', 'user_view_ratio', 'user_buy_ratio', 'user_follow_ratio', 'user_remark_ratio',
                      'user_cart_ratio']]
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
 
     return feat
 
@@ -504,7 +504,7 @@ def feat_user_buy_rate(start_date, end_date):
         feat['user_buy/view'] = feat['user_buy_amt'] / (feat['user_view_amt']) * 100
         feat = feat[['user_id', 'user_buy/view', 'user_buy/follow', 'user_buy/remark', 'user_buy/cart']]
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
 
     return feat
 
@@ -524,7 +524,7 @@ def feat_user_first_hour(start_date, end_date):
         feat['user_first_hour'] = [((end_date - i).total_seconds()) // 3600 for i in feat['action_time']]
         feat.drop('action_time', axis=1, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -543,7 +543,7 @@ def feat_user_last_hour(start_date, end_date):
         feat['user_last_hour'] = [((end_date - i).total_seconds()) // 3600 for i in feat['action_time']]
         feat.drop('action_time', axis=1, inplace=True)
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
@@ -563,7 +563,7 @@ def feat_user_last_amt(start_date, end_date):
         action = pd.merge(sub_action, action, on=['user_id', 'action_time'], how='left')
         feat = action.groupby('user_id').size().reset_index(name='user_last_amt')
         feat = feat.astype(int)
-        # feat.to_csv(dump_path, index=False)
+        feat.to_csv(dump_path, index=False)
     return feat
 
 
