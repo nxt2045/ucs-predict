@@ -204,14 +204,14 @@ def split_action_type():
 
 # ucs来源
 def ucs_source():
-    x = pd.date_range(start='2018-3-1', end='2018-4-8', freq='D', closed=None)
+    x = pd.date_range(start='2018-4-1', end='2018-4-8', freq='D', closed=None)
     y = []
     action = pd.read_csv(action_path, parse_dates=['action_time'], na_filter=False)
 
     for end_date in x:
         sub_y = []
         print('时间：', end_date + timedelta(days=1))
-        for label_gap in [3, 5, 7, 30]:
+        for label_gap in [3, 5, 7, 14, 30]:
             print('间隔：', label_gap)
             # 可能购买
             pkey = action[
@@ -243,22 +243,23 @@ def ucs_source():
             sub_y.append(1.0 * intersect.shape[0] / buy.shape[0])
         y.append(sub_y)
 
-    data = pd.DataFrame(y, index=x, columns=["3 days", "5 days", "7 days"])
+    data = pd.DataFrame(y, index=x, columns=["3 days", "5 days", "7 days", "14 days", "30 days"])
     data.to_csv('./vc/ucs_source.csv', index=False)
     plt.figure(figsize=(15, 6))
     sns.lineplot(data=data, linewidth=2.5)
     plt.savefig('./vc/ucs_source_line.png', dpi=300, bbox_inches='tight')
 
+
 # uc来源
 def uc_source():
-    x = pd.date_range(start='2018-3-1', end='2018-4-8', freq='D', closed=None)
+    x = pd.date_range(start='2018-4-1', end='2018-4-8', freq='D', closed=None)
     y = []
     action = pd.read_csv(action_path, parse_dates=['action_time'], na_filter=False)
 
     for end_date in x:
         sub_y = []
         print('时间：', end_date + timedelta(days=1))
-        for label_gap in [3, 5, 7, 30]:
+        for label_gap in [3, 5, 7, 14, 30]:
             print('间隔：', label_gap)
             # 可能购买
             pkey = action[
@@ -284,13 +285,13 @@ def uc_source():
             print('真实购买：', buy.shape)
 
             feat = pkey.append(buy)
-            feat = feat.groupby(['user_id', 'cate']).size().reset_index(name='ucs_size')
-            intersect = feat[feat['ucs_size'] > 1]
+            feat = feat.groupby(['user_id', 'cate']).size().reset_index(name='uc_size')
+            intersect = feat[feat['uc_size'] > 1]
             print('交集/真实：', 1.0 * intersect.shape[0] / buy.shape[0])
             sub_y.append(1.0 * intersect.shape[0] / buy.shape[0])
         y.append(sub_y)
 
-    data = pd.DataFrame(y, index=x, columns=["3 days", "5 days", "7 days"])
+    data = pd.DataFrame(y, index=x, columns=["3 days", "5 days", "7 days", "14 days", "30 days"])
     data.to_csv('./vc/uc_source.csv', index=False)
     plt.figure(figsize=(15, 6))
     sns.lineplot(data=data, linewidth=2.5)
@@ -311,4 +312,5 @@ def uc_source():
 # follow = action[action['type'] == 3]
 # follow.to_csv('./vc/follow.csv', index=False)
 
-ucs_source()
+# ucs_source()
+uc_source()
