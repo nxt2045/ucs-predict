@@ -215,6 +215,17 @@ def ucs_source():
     for end_date in x:
         sub_y = []
         print('时间：', end_date)
+        # 真实购买
+        buy = action[
+            (end_date + timedelta(days=1) <= action['action_time']) & (
+                    action['action_time'] < end_date + timedelta(days=8))]
+        buy = buy[buy['type'] == 2]
+        product = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate', 'shop_id'])
+        buy = pd.merge(buy, product, on='sku_id', how='left')
+        buy = buy.drop(['sku_id', 'type', 'module_id'], axis=1)
+        buy = buy.drop_duplicates(['user_id', 'cate', 'shop_id'])
+        buy = buy.reset_index(drop=True)
+        print('真实购买：', buy.shape)
         for label_gap in [3, 5, 7, 14, 30]:
             print('间隔：', label_gap)
             # 可能购买
@@ -228,26 +239,28 @@ def ucs_source():
             pkey.reset_index(drop=True)
             print('可能购买：', pkey.shape)
 
-            # 真实购买
-            buy = action[
-                (end_date + timedelta(days=1) <= action['action_time']) & (
-                        action['action_time'] < end_date + timedelta(days=8))]
-            buy = buy[buy['type'] == 2]
-            product = pd.read_csv(product_path, na_filter=False, usecols=['sku_id', 'cate', 'shop_id'])
-            buy = pd.merge(buy, product, on='sku_id', how='left')
-            buy = buy.drop(['sku_id', 'type', 'module_id'], axis=1)
-            buy = buy.drop_duplicates(['user_id', 'cate', 'shop_id'])
-            buy = buy.reset_index(drop=True)
-            print('真实购买：', buy.shape)
-
             feat = pkey.append(buy)
             feat = feat.groupby(['user_id', 'cate', 'shop_id']).size().reset_index(name='ucs_size')
             intersect = feat[feat['ucs_size'] > 1]
             print('交集/真实：', 1.0 * intersect.shape[0] / buy.shape[0])
             sub_y.append(1.0 * intersect.shape[0] / buy.shape[0])
+        # 可能购买
+        shop = pd.read_csv(shop_path, na_filter=False, usecols=['shop_cate', 'shop_id'])
+        pkey = buy[['cate']]
+        pkey = pd.merge(pkey, shop, on='sku_id', how='left')
+        pkey = pkey.drop(['sku_id', 'type', 'module_id'], axis=1)
+        pkey = pkey.drop_duplicates(['user_id', 'cate', 'shop_id'])
+        pkey.reset_index(drop=True)
+        print('可能购买：', pkey.shape)
+
+        feat = pkey.append(buy)
+        feat = feat.groupby(['user_id', 'cate', 'shop_id']).size().reset_index(name='ucs_size')
+        intersect = feat[feat['ucs_size'] > 1]
+        print('交集/真实：', 1.0 * intersect.shape[0] / buy.shape[0])
+        sub_y.append(1.0 * intersect.shape[0] / buy.shape[0])
         y.append(sub_y)
 
-    data = pd.DataFrame(y, index=x, columns=["3 days", "5 days", "7 days", "14 days", "30 days"])
+    data = pd.DataFrame(y, index=x, columns=["3 days", "5 days", "7 days", "14 days", "30 days", "shop_cate"])
     data.to_csv('./vc/ucs_source.csv', index=False)
     plt.figure(figsize=(15, 6))
     sns.lineplot(data=data, linewidth=2.5)
@@ -302,5 +315,5 @@ def uc_source():
     plt.savefig('./vc/uc_source_line.png', dpi=300, bbox_inches='tight')
 
 
-ucs_source()
 uc_source()
+ucs_source()
