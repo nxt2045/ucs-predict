@@ -1,14 +1,14 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @DATE    : 5/14/2019
+# @DATE    : 4/19/2019
 # @Author  : xiaotong niu
-# @File    : feat_cate.py
-# @Project : JData-Predict
+# @File    : feat_shop.py
+# @Project : JData-UCS
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 
-from feat_user import *
-from feat_sku import *
+from feature.feat_user import *
+from feature.feat_sku import *
 
 import os
 import pandas as pd
@@ -54,7 +54,88 @@ cache_path = '../cache/cate'
 
 # 品类系列
 
-# GR: 数量系列t
+# GR: 是否系列
+
+# 品类是否浏览
+def feat_cate_if_view(start_date, end_date):
+    print('cate_if_view_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/cate_if_view_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = feat_cate_view_amt(start_date, end_date)
+        feat.ix[feat['cate_view_amt'] > 0, 'cate_view_amt'] = 1
+        feat.rename(columns={'cate_view_amt': 'cate_if_view'}, inplace=True)
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 品类是否购买
+def feat_cate_if_buy(start_date, end_date):
+    print('cate_if_buy_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/cate_if_buy_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = feat_cate_buy_amt(start_date, end_date)
+        feat.ix[feat['cate_buy_amt'] > 0, 'cate_buy_amt'] = 1
+        feat.rename(columns={'cate_buy_amt': 'cate_if_buy'}, inplace=True)
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 品类是否关注
+def feat_cate_if_follow(start_date, end_date):
+    print('cate_if_follow_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/cate_if_follow_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = feat_cate_follow_amt(start_date, end_date)
+        feat.ix[feat['cate_follow_amt'] > 0, 'cate_follow_amt'] = 1
+        feat.rename(columns={'cate_follow_amt': 'cate_if_follow'}, inplace=True)
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 品类是否评论
+def feat_cate_if_remark(start_date, end_date):
+    print('cate_if_remark_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/cate_if_remark_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = feat_cate_remark_amt(start_date, end_date)
+        feat.ix[feat['cate_remark_amt'] > 0, 'cate_remark_amt'] = 1
+        feat.rename(columns={'cate_remark_amt': 'cate_if_remark'}, inplace=True)
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+
+# 品类是否购物车
+def feat_cate_if_cart(start_date, end_date):
+    print('cate_if_cart_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/cate_if_cart_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = feat_cate_cart_amt(start_date, end_date)
+        feat.ix[feat['cate_cart_amt'] > 0, 'cate_cart_amt'] = 1
+        feat.rename(columns={'cate_cart_amt': 'cate_if_cart'}, inplace=True)
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
+# GR: 数量系列
 
 # 品类浏览数量
 def feat_cate_view_amt(start_date, end_date):
@@ -227,6 +308,65 @@ def feat_cate_cart_day(start_date, end_date):
         feat = feat.astype(int)
         feat.to_csv(dump_path, index=False)
     return feat
+
+
+# GR: 其他
+# 品类行为比例
+def feat_cate_action_ratio(start_date, end_date):
+    print('cate_action_ratio_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/cate_action_ratio_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = pd.DataFrame({'cate': list(range(1, 82)), 'key': [1] * 81})
+        feat = pd.merge(feat, feat_cate_view_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_buy_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_follow_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_remark_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_cart_amt(start_date, end_date), on='cate_id', how='left')
+        feat.fillna(0, inplace=True)
+        feat.ix[feat['cate_view_amt'] == 0, 'cate_view_amt'] = -1
+        feat['cate_buy_ratio'] = feat['cate_buy_amt'] / (feat['cate_view_amt']) * 100
+        feat['cate_follow_ratio'] = feat['cate_follow_amt'] / (feat['cate_view_amt']) * 100
+        feat['cate_remark_ratio'] = feat['cate_remark_amt'] / (feat['cate_view_amt']) * 100
+        feat['cate_cart_ratio'] = feat['cate_cart_amt'] / (feat['cate_view_amt']) * 100
+        feat = feat[['cate_id', 'cate_buy_ratio', 'cate_follow_ratio', 'cate_remark_ratio',
+                     'cate_cart_ratio']]
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+
+    return feat
+
+
+# 品类购买转换率
+def feat_cate_buy_rate(start_date, end_date):
+    print('cate_buy_rate_%s_%s' % (start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d')))
+    dump_path = cache_path + '/%s/cate_buy_rate_%s_%s.csv' % (
+        end_date.strftime('%y%m%d'), start_date.strftime('%y%m%d'), end_date.strftime('%y%m%d'))
+    if os.path.exists(dump_path):
+        feat = pd.read_csv(dump_path, na_filter=False, skip_blank_lines=True)
+    else:
+        feat = pd.DataFrame({'cate': list(range(1, 82)), 'key': [1] * 81})
+        feat = pd.merge(feat, feat_cate_view_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_buy_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_follow_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_remark_amt(start_date, end_date), on='cate_id', how='left')
+        feat = pd.merge(feat, feat_cate_cart_amt(start_date, end_date), on='cate_id', how='left')
+        feat.fillna(0, inplace=True)
+        feat.ix[feat['cate_follow_amt'] == 0, 'cate_follow_amt'] = -1
+        feat['cate_buy/follow'] = feat['cate_buy_amt'] / (feat['cate_follow_amt']) * 100
+        feat.ix[feat['cate_remark_amt'] == 0, 'cate_remark_amt'] = -1
+        feat['cate_buy/remark'] = feat['cate_buy_amt'] / (feat['cate_remark_amt']) * 100
+        feat.ix[feat['cate_cart_amt'] == 0, 'cate_cart_amt'] = -1
+        feat['cate_buy/cart'] = feat['cate_buy_amt'] / (feat['cate_cart_amt']) * 100
+        feat.ix[feat['cate_view_amt'] == 0, 'cate_view_amt'] = -1
+        feat['cate_buy/view'] = feat['cate_buy_amt'] / (feat['cate_view_amt']) * 100
+        feat = feat[['cate_id', 'cate_buy/view', 'cate_buy/follow', 'cate_buy/remark', 'cate_buy/cart']]
+        feat = feat.astype(int)
+        feat.to_csv(dump_path, index=False)
+    return feat
+
 
 
 # TODO: (user_id,cate) pkey

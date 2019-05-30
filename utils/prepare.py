@@ -1,9 +1,9 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @DATE    : 4/20/2019
+# @DATE    : 4/16/2019
 # @Author  : xiaotong niu
 # @File    : prepare.py
-# @Project : JData-Predict
+# @Project : JData-UCS
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 

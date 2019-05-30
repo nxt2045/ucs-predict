@@ -1,13 +1,13 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @DATE    : 5/14/2019
+# @DATE    : 4/18/2019
 # @Author  : xiaotong niu
-# @File    : feat_cate.py
-# @Project : JData-Predict
+# @File    : feat_sku.py
+# @Project : JData-UCS
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 
-from feat_user import *
+from feature.feat_user import *
 import os
 import pandas as pd
 from datetime import timedelta

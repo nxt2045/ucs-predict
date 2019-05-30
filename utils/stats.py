@@ -1,15 +1,15 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @DATE    : 4/22/2019
+# @DATE    : 4/16/2019
 # @Author  : xiaotong
-# @File    : anaylse
+# @File    : stats.py
 # @Project : PyCharm
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 import seaborn as sns
 import matplotlib.pyplot as plt
-from feat_user import *
-from feat_cate import *
+from feature.feat_user import *
+from feature.feat_cate import *
 import os, time
 import numpy as np
 import pandas as pd

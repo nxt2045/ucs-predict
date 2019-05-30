@@ -1,14 +1,14 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @DATE    : 5/14/2019
+# @DATE    : 4/19/2019
 # @Author  : xiaotong niu
-# @File    : feat_cate.py
-# @Project : JData-Predict
+# @File    : feat_shop.py
+# @Project : JData-UCS
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 
-from feat_user import *
-from feat_sku import *
+from feature.feat_user import *
+from feature.feat_sku import *
 
 import os
 import pandas as pd

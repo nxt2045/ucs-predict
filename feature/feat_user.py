@@ -1,9 +1,9 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @DATE    : 5/9/2019
+# @DATE    : 4/18/2019
 # @Author  : xiaotong niu
 # @File    : feat_user.py
-# @Project : JData-Predict
+# @Project : JData-UCS
 # @Github  ：https://github.com/isNxt
 # @Describ : ...
 import os
