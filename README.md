@@ -1,4 +1,4 @@
-用户品类下店铺的预测（数据挖掘课程大作业）    
+用户品类下店铺的预测（data-mining）    
 详细信息见 [比赛官方说明](https://jdata.jd.com/html/detail.html?id=8)
 # 1. 数据处理 
 ## 1.1 填补空值
